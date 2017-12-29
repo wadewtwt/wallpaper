@@ -12,6 +12,8 @@ $menuTitle = '总管理后台';
 $baseUrl = '';
 $menu = [
     ['label' => '首页', 'icon' => 'circle-o', 'url' => [$baseUrl . '/home']],
+    ['label' => '人员管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/person']],
+    ['label' => '职称管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/position']],
     ['label' => '用户管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/user']],
     ['label' => '管理员管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/admin']],
     [

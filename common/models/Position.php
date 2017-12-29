@@ -2,7 +2,7 @@
 
 namespace common\models;
 
-use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "position".
@@ -62,5 +62,19 @@ class Position extends \common\models\base\ActiveRecord
     public function getPeople()
     {
         return $this->hasMany(Person::className(), ['position_id' => 'id']);
+    }
+
+    /**
+     * 得到所有职称
+     * @param bool $map
+     * @return array|\yii\db\ActiveRecord[]
+     */
+    public static function findIdName($map = false)
+    {
+        $model = self::find()->select(['id', 'name'])->asArray()->all();
+        if ($map) {
+            return ArrayHelper::map($model, 'id', 'name');
+        }
+        return $model;
     }
 }
