@@ -11,7 +11,7 @@ class InitController extends Controller
     public function actionInitData()
     {
         $this->initAdmin();
-        $this->initUser();
+        //$this->initUser();
     }
 
     protected function initAdmin()
@@ -20,6 +20,7 @@ class InitController extends Controller
         $model->id = Admin::SUPER_ADMIN_ID;
         $model->username = 'admin';
         $model->setPassword(123456);
+        $model->cellphone = '12345678910';
         $model->generateAuthKey();
         $model->name = '超级管理员';
         $model->save();

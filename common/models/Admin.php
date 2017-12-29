@@ -14,6 +14,7 @@ use yii\web\IdentityInterface;
  * @property string $username
  * @property string $password_hash
  * @property string $name
+ * @property string $cellphone
  * @property string $auth_key
  * @property integer $status
  * @property integer $created_at
@@ -61,9 +62,9 @@ class Admin extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['username', 'password_hash', 'name', 'auth_key'], 'required'],
+            [['username', 'password_hash', 'name', 'cellphone', 'auth_key'], 'required'],
             [['status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
-            [['username', 'password_hash', 'name', 'auth_key', 'auth_role'], 'string', 'max' => 255],
+            [['username', 'password_hash', 'name', 'cellphone', 'auth_key', 'auth_role'], 'string', 'max' => 255],
             [['username'], 'unique'],
         ];
     }
@@ -78,6 +79,7 @@ class Admin extends ActiveRecord implements IdentityInterface
             'username' => '登录名',
             'password_hash' => '密码',
             'name' => '管理员姓名',
+            'cellphone' => '手机号',
             'auth_key' => 'Auth Key',
             'status' => '状态',
             'created_at' => '创建时间',

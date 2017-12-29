@@ -20,6 +20,9 @@ $columns = [
         'attribute' => 'name',
     ],
     [
+        'attribute' => 'cellphone',
+    ],
+    [
         'attribute' => 'status',
         'value' => function (Admin $model) {
             return $model->getStatusName();

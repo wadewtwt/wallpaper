@@ -8,6 +8,7 @@ $form = SimpleAjaxForm::begin(['header' => ($model->isNewRecord ? '创建' : '�
 
 echo $form->field($model, 'username');
 echo $form->field($model, 'name')->label('姓名');
+echo $form->field($model, 'cellphone');
 if ($model->isNewRecord) {
     echo $form->field($model, 'password_hash')->passwordInput();
 }

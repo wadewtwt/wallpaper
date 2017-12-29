@@ -5,9 +5,9 @@ return [
     'components' => [
         'db' => [
             'class' => 'yii\db\Connection',
-            'dsn' => 'mysql:host=127.0.0.1;dbname=yii2advanced',
+            'dsn' => 'mysql:host=192.168.18.250;dbname=kucun_zhuangbei',
             'username' => 'root',
-            'password' => '',
+            'password' => 'root',
             'charset' => 'utf8',
             'enableSchemaCache' => true,
             'schemaCacheDuration' => 60,
@@ -17,19 +17,19 @@ return [
         ],
         ConfigString::COMPONENT_REDIS => [
             'class' => 'yii\redis\Connection',
-            'hostname' => '127.0.0.1',
+            'hostname' => '192.168.18.250',
             'port' => 6379,
             'database' => 0,
         ],
         ConfigString::COMPONENT_SESSION_REDIS => [
             'class' => 'yii\redis\Connection',
-            'hostname' => '127.0.0.1',
+            'hostname' => '192.168.18.250',
             'port' => 6379,
             'database' => 1,
         ],
         ConfigString::COMPONENT_CACHE_REDIS => [
             'class' => 'yii\redis\Connection',
-            'hostname' => '127.0.0.1',
+            'hostname' => '192.168.18.250',
             'port' => 6379,
             'database' => 2,
         ],

@@ -9,6 +9,7 @@ class m171102_084733_init_user extends \console\migrations\Migration
             'username' => $this->string()->notNull()->unique()->comment('登录名'),
             'password_hash' => $this->string()->notNull()->comment('密码'),
             'name' => $this->string()->notNull()->comment('管理员姓名'),
+            'cellphone' => $this->string()->notNull()->comment('手机号'),
             'auth_key' => $this->string()->notNull()->comment('Auth Key'),
         ], $this->commonColumns([
             'status', 'created_at', 'created_by', 'updated_at', 'updated_by'
