@@ -2,8 +2,6 @@
 
 namespace common\models;
 
-use Yii;
-
 /**
  * This is the model class for table "expendable_detail".
  *
@@ -24,6 +22,13 @@ use Yii;
  */
 class ExpendableDetail extends \common\models\base\ActiveRecord
 {
+    const STOCK_INPUT = 10;
+    const STOCK_OUTPUT = 20;
+    public static $stockOperation = [
+        self::STOCK_INPUT => '入库' ,
+        self::STOCK_OUTPUT => '出库'
+    ];
+
     /**
      * @inheritdoc
      */
@@ -81,4 +86,12 @@ class ExpendableDetail extends \common\models\base\ActiveRecord
     {
         return $this->hasOne(Resource::className(), ['id' => 'resource_id']);
     }
+
+    /**
+     * @return string
+     */
+    public function getStockOperation(){
+        return $this->toName($this->operation, self::$stockOperation);
+    }
+
 }

@@ -15,6 +15,7 @@ $menu = [
     ['label' => '人员管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/person']],
     ['label' => '职称管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/position']],
     ['label' => '消耗品管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/res-expendable']],
+    ['label' => '消耗品详细', 'icon' => 'circle-o', 'url' => [$baseUrl . '/expendable-detail']],
     ['label' => '设备管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/res-device']],
     ['label' => '用户管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/user']],
     ['label' => '管理员管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/admin']],

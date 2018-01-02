@@ -31,8 +31,8 @@ $columns = [
     ],
     [
         'class' => '\kartik\grid\ActionColumn',
-        'width' => '150px',
-        'template' => '{update} {delete}',
+        'width' => '250px',
+        'template' => '{update} {delete} {expendable-detail}',
         'buttons' => [
             'update' => function ($url) {
                 $options = [
@@ -48,6 +48,12 @@ $columns = [
                 ];
                 return Html::a('删除', $url, $options);
             },
+            'expendable-detail' => function($url){
+                $option = [
+                    'class' => 'btn btn-default show_ajax_modal'
+                ];
+                return Html::a('物品明细', $url, $option);
+            }
         ],
     ],
 ];

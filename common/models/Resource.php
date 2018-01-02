@@ -2,6 +2,8 @@
 
 namespace common\models;
 
+use yii\helpers\ArrayHelper;
+
 /**
  * This is the model class for table "resource".
  *
@@ -44,6 +46,7 @@ class Resource extends \common\models\base\ActiveRecord
     public function rules()
     {
         return [
+            [['name'],'unique'],
             [['type', 'name'], 'required'],
             [['type', 'min_stock', 'current_stock', 'scrap_cycle', 'maintenance_cycle', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['name'], 'string', 'max' => 255],
@@ -93,5 +96,15 @@ class Resource extends \common\models\base\ActiveRecord
     public function getExpendableDetails()
     {
         return $this->hasMany(ExpendableDetail::className(), ['resource_id' => 'id']);
+    }
+
+    public static function findExpendableDevice($isExpendable = true){
+        if($isExpendable){
+            $type = Resource::TYPE_EXPENDABLE;
+        }else{
+            $type = Resource::TYPE_DEVICE;
+        }
+        $model = self::find()->select(['id','name'])->andWhere(['type' => $type])->asArray()->all();
+        return ArrayHelper::map($model,'id','name');
     }
 }
