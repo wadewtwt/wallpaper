@@ -14,6 +14,7 @@ $menu = [
     ['label' => '首页', 'icon' => 'circle-o', 'url' => [$baseUrl . '/home']],
     ['label' => '人员管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/person']],
     ['label' => '职称管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/position']],
+    ['label' => '消耗品管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/resource']],
     ['label' => '用户管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/user']],
     ['label' => '管理员管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/admin']],
     [

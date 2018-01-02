@@ -2,8 +2,6 @@
 
 namespace common\models;
 
-use Yii;
-
 /**
  * This is the model class for table "resource".
  *
@@ -26,6 +24,19 @@ use Yii;
  */
 class Resource extends \common\models\base\ActiveRecord
 {
+    const TYPE_RESOURCE = 10;
+    const TYPE_DEVICE = 20;
+    public static $type = [
+        self::TYPE_RESOURCE => '消耗品',
+        self::TYPE_DEVICE => '设备'
+    ];
+
+    const STATUS_NORMAL = 0;
+    const STATUS_DELETED = 10;
+    public static $status = [
+        self::STATUS_NORMAL => '正常',
+        self::STATUS_DELETED => '已删除'
+    ];
     /**
      * @inheritdoc
      */
