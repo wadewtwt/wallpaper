@@ -5,7 +5,7 @@ namespace backend\models;
 use common\components\ActiveDataProvider;
 use common\models\Resource;
 
-class ResourceSearch extends Resource
+class ResDeviceSearch extends Resource
 {
     public function rules()
     {
@@ -16,7 +16,7 @@ class ResourceSearch extends Resource
 
     public function search($params)
     {
-        $query = Resource::find()->andWhere(['status' => Resource::STATUS_NORMAL]);
+        $query = Resource::find()->andWhere(['status' => Resource::STATUS_NORMAL, 'type' => Resource::TYPE_DEVICE]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

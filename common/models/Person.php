@@ -26,8 +26,8 @@ class Person extends \common\models\base\ActiveRecord
     const PERSON_STATUS_DELETE = 10;
 
     public static $personStatusData = [
-        self::PERSON_STATUS_NORMAL => "正常",
-        self::PERSON_STATUS_DELETE => "已删"
+        self::PERSON_STATUS_NORMAL => '正常',
+        self::PERSON_STATUS_DELETE => '已删'
     ];
     /**
      * @inheritdoc

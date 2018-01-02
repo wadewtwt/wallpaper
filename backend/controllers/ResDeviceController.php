@@ -3,21 +3,21 @@
 namespace backend\controllers;
 
 use backend\components\AuthWebController;
-use backend\models\ResourceSearch;
-use Yii;
-use common\models\Resource;
-use yii\web\NotFoundHttpException;
 use backend\components\MessageAlert;
+use backend\models\ResDeviceSearch;
 use common\components\Tools;
+use common\models\Resource;
+use Yii;
+use yii\web\NotFoundHttpException;
 
-class ResourceController extends AuthWebController
+class ResDeviceController extends AuthWebController
 {
     // 列表
     public function actionIndex()
     {
         $this->rememberUrl();
 
-        $searchModel = new ResourceSearch();
+        $searchModel = new ResDeviceSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -31,14 +31,14 @@ class ResourceController extends AuthWebController
     {
         $model = new Resource();
         if($model->load(Yii::$app->request->post())){
+            $model->type = Resource::TYPE_DEVICE;
             if($model->validate() && $model->save(false)){
-                MessageAlert::set(['success' => '添加成功']);
+                MessageAlert::set(['success' => '添加成功！']);
             }else{
-                MessageAlert::set(['error' => '添加失败：' . Tools::formatModelErrors2String($model->errors)]);
+                MessageAlert::set(['error' => '添加失败：'.Tools::formatModelErrors2String($model->errors)]);
             }
             return $this->actionPreviousRedirect();
         }
-        $model->type = Resource::TYPE_RESOURCE;
         return $this->renderAjax('_update_create',[
             'model' => $model
         ]);
@@ -49,14 +49,14 @@ class ResourceController extends AuthWebController
     {
         $model = $this->findModel($id);
         if($model->load(Yii::$app->request->post())){
-            if ($model->validate() && $model->save()){
-                MessageAlert::set(['success' => '修改成功！']);
+            if($model->validate() && $model->save(false)){
+                MessageAlert::set(['success' => '修改成功!']);
             }else{
                 MessageAlert::set(['error' => '修改失败：'.Tools::formatModelErrors2String($model->errors)]);
             }
             return $this->actionPreviousRedirect();
         }
-        $model->type = Resource::TYPE_RESOURCE;
+
         return $this->renderAjax('_update_create',[
             'model' => $model
         ]);
@@ -69,21 +69,23 @@ class ResourceController extends AuthWebController
         $model->status = Resource::STATUS_DELETED;
         $isDelete = $model->save();
         if($isDelete){
-            MessageAlert::set(['success' => '删除成功']);
+            MessageAlert::set(['success' => '删除成功！']);
         }else{
-            MessageAlert::set(['error' => '删除失败：'.Tools::formatModelErrors2String($model->errors)]);
+            MessageAlert::set(['success' => '删除失败：'.Tools::formatModelErrors2String($model->errors)]);
         }
         return $this->actionPreviousRedirect();
     }
 
-
-    protected function findModel($id)
-    {
+    /**
+     * @param $id
+     * @return \common\models\Resource;
+     * @throws NotFoundHttpException
+     */
+    protected function findModel($id){
         $model = Resource::findOne($id);
-        if (!$model) {
+        if(!$model){
             throw new NotFoundHttpException();
         }
         return $model;
     }
-
 }

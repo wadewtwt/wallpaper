@@ -1,6 +1,6 @@
 <?php
 /** @var $this yii\web\view */
-/** @var $model backend\models\ResourceSearch */
+/** @var $model backend\models\ResExpendableSearch */
 
 use backend\widgets\SimpleSearchForm;
 

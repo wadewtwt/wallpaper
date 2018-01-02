@@ -1,7 +1,7 @@
 <?php
 /** @var $this yii\web\View */
 /** @var $dataProvider common\components\ActiveDataProvider */
-/** @var $searchModel backend\models\ResourceSearch */
+/** @var $searchModel backend\models\ResExpendableSearch */
 
 use backend\widgets\SimpleDynaGrid;
 use yii\helpers\Html;

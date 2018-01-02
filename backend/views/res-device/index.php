@@ -1,14 +1,14 @@
 <?php
 /** @var $this yii\web\View */
 /** @var $dataProvider common\components\ActiveDataProvider */
-/** @var $searchModel backend\models\PersonSearch */
+/** @var $searchModel backend\models\ResDeviceSearch */
 
 use backend\widgets\SimpleDynaGrid;
 use yii\helpers\Html;
 
-$this->title = '人员管理列表';
+$this->title = '设备列表';
 $this->params['breadcrumbs'] = [
-    '人员管理',
+    '设备',
     $this->title,
 ];
 
@@ -21,16 +21,21 @@ $columns = [
         'attribute' => 'name',
     ],
     [
-        'attribute' => 'position.name',
-        'label' => '职称'
+        'attribute' => 'min_stock',
     ],
     [
-        'attribute' => 'cellphone',
+        'attribute' => 'current_stock',
+    ],
+    [
+        'attribute' => 'scrap_cycle',
+    ],
+    [
+        'attribute' => 'maintenance_cycle',
     ],
     [
         'class' => '\kartik\grid\ActionColumn',
-        'width' => '300px',
-        'template' => '{update} {delete} {device-detail}',
+        'width' => '150px',
+        'template' => '{update} {delete}',
         'buttons' => [
             'update' => function ($url) {
                 $options = [
@@ -40,32 +45,23 @@ $columns = [
             },
             'delete' => function ($url) {
                 $options = [
-                    'class' => 'btn btn-danger',
+                    'class' => 'btn btn-default',
                     'data-method' => 'post',
-                    'data-confirm' => '确定删除该人员？'
+                    'data-confirm' => '确定删除该设备？'
                 ];
                 return Html::a('删除', $url, $options);
-            },
-            'device-detail' => function ($url) {
-                $options = [
-                    'class' => 'btn btn-default',
-                ];
-                return Html::a('查看装备领取记录', $url, $options);
             },
         ],
     ],
 ];
 
 $simpleDynaGrid = new SimpleDynaGrid([
-    'dynaGridId' => 'dynagrid-person-index',
+    'dynaGridId' => 'dynagrid-res-device-index',
     'columns' => $columns,
     'dataProvider' => $dataProvider,
     'extraToolbar' => [
         [
             'content' => Html::a('新增', ['create'], ['class' => 'btn btn-default show_ajax_modal'])
-        ],
-        [
-            'content' => Html::a('查看已删除', ['delete-index'], ['class' => 'btn btn-default show_ajax_modal'])
         ]
     ]
 ]);
