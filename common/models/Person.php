@@ -2,6 +2,8 @@
 
 namespace common\models;
 
+use kriss\components\CellphoneValidator;
+
 /**
  * This is the model class for table "person".
  *
@@ -44,6 +46,7 @@ class Person extends \common\models\base\ActiveRecord
             [['name', 'cellphone', 'position_id'], 'required'],
             [['position_id', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['name', 'cellphone'], 'string', 'max' => 255],
+            [['cellphone'], CellphoneValidator::className()],
             [['position_id'], 'exist', 'skipOnError' => true, 'targetClass' => Position::className(), 'targetAttribute' => ['position_id' => 'id']],
         ];
     }
