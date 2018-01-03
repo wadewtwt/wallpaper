@@ -3,6 +3,7 @@
 namespace common\models;
 
 use kriss\components\CellphoneValidator;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "person".
@@ -84,4 +85,17 @@ class Person extends \common\models\base\ActiveRecord
     {
         return $this->hasOne(Position::className(), ['id' => 'position_id']);
     }
+
+    /**
+     * @param bool $map
+     * @return array|\yii\db\ActiveRecord[]|Person
+     */
+    public static function findIdName($map = false){
+        $model = self::find()->select(['id','name'])->asArray()->all();
+        if($map){
+            return ArrayHelper::map($model,'id','name');
+        }
+        return $model;
+    }
+
 }
