@@ -42,16 +42,5 @@ class ExpendableDetailController extends AuthWebController
         ]);
     }
 
-    // 更新
-    public function actionUpdate($id)
-    {
-        // TODO
-    }
-
-    // 删除
-    public function actionDelete($id)
-    {
-        // TODO
-    }
 
 }

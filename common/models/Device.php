@@ -2,8 +2,6 @@
 
 namespace common\models;
 
-use Yii;
-
 /**
  * This is the model class for table "device".
  *
@@ -28,6 +26,13 @@ use Yii;
  */
 class Device extends \common\models\base\ActiveRecord
 {
+    const DATA_ONLINE = 0;
+    const DATA_OFFLINE = 10;
+    public static $DataIsOnline = [
+        self::DATA_ONLINE => '在线',
+        self::DATA_OFFLINE => '离线'
+    ];
+
     /**
      * @inheritdoc
      */
@@ -96,4 +101,9 @@ class Device extends \common\models\base\ActiveRecord
     {
         return $this->hasMany(DeviceDetail::className(), ['device_id' => 'id']);
     }
+
+    public function getDataIsOnline(){
+        return $this->toName($this->is_online,self::$DataIsOnline);
+    }
+
 }
