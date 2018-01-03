@@ -2,8 +2,6 @@
 
 namespace common\models;
 
-use Yii;
-
 /**
  * This is the model class for table "device_detail".
  *
@@ -21,6 +19,13 @@ use Yii;
  */
 class DeviceDetail extends \common\models\base\ActiveRecord
 {
+    const STOCK_INPUT = 10;
+    const STOCK_OUTPUT = 20;
+    public static $stockOperation = [
+        self::STOCK_INPUT => '入库' ,
+        self::STOCK_OUTPUT => '出库'
+    ];
+
     /**
      * @inheritdoc
      */
@@ -66,5 +71,9 @@ class DeviceDetail extends \common\models\base\ActiveRecord
     public function getDevice()
     {
         return $this->hasOne(Device::className(), ['id' => 'device_id']);
+    }
+
+    public function getDeviceDetailOperation(){
+        return $this->toName($this->operation, self::$stockOperation);
     }
 }
