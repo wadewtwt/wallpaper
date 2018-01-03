@@ -29,6 +29,9 @@ class ExpendableDetail extends \common\models\base\ActiveRecord
         self::STOCK_OUTPUT => '出库'
     ];
 
+    const STATUS_NORMAL = 0;
+    const STATUS_DELETED = 10;
+
     /**
      * @inheritdoc
      */

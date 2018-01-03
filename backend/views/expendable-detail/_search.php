@@ -9,7 +9,7 @@ use common\models\Resource;
 $form = SimpleSearchForm::begin(['action' => ['index']]);
 
 echo $form->field($model, 'operation')->radioList(ExpendableDetail::$stockOperation, []);
-echo $form->field($model, 'resource_id')->dropDownList(Resource::findExpendableDevice(), [
+echo $form->field($model, 'resource_id')->dropDownList(Resource::findExpendableDevice(true), [
     'prompt' => '请选择消耗品'
 ]);
 
