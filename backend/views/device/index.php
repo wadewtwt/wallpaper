@@ -5,6 +5,7 @@
 
 use backend\widgets\SimpleDynaGrid;
 use common\models\Device;
+use yii\helpers\Html;
 
 $this->title = '设备明细列表';
 $this->params['breadcrumbs'] = [
@@ -43,6 +44,19 @@ $columns = [
     ],
     [
         'attribute' => 'quantity',
+    ],
+    [
+        'class' => '\kartik\grid\ActionColumn',
+        'width' => '150px',
+        'template' => '{detail}',
+        'buttons' => [
+            'detail' => function ($url) {
+                $options = [
+                    'class' => 'btn btn-default',
+                ];
+                return Html::a('使用明细', $url, $options);
+            },
+        ],
     ],
 ];
 
