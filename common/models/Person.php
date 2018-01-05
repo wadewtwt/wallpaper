@@ -93,7 +93,7 @@ class Person extends \common\models\base\ActiveRecord
      */
     public static function findAllIdName($map = false)
     {
-        $model = self::find()->select(['id', 'name'])->asArray()->all();
+        $model = self::find()->select(['id', 'name'])->where(['status' => self::STATUS_NORMAL])->asArray()->all();
         if ($map) {
             return ArrayHelper::map($model, 'id', 'name');
         }
