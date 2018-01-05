@@ -34,11 +34,7 @@ class ApplyOrderController extends AuthWebController
     public function actionCreate()
     {
         $model = new ApplyOrder();
-//        if($_POST){
-//            echo "<pre>";
-//            print_r($_POST);
-//            die;
-//        }
+
         if ($postValue = Yii::$app->request->post('ApplyOrder', [])) {
             // apply_order表的插入
             $applOrder = new ApplyOrder();
@@ -93,16 +89,6 @@ class ApplyOrderController extends AuthWebController
                 }
             }
 
-//            echo "<pre>";
-//            print_r($count);die;
-
-//            if ($model->validate()) {
-//                echo 123;die;
-//                $postValue = Yii::$app->request->post();
-//                MessageAlert::set(['success' => '新增成功！']);
-//            } else {
-//                MessageAlert::set(['error' => '新增失败']);
-//            }
             return $this->actionPreviousRedirect();
         }
 
