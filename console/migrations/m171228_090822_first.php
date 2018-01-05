@@ -115,6 +115,7 @@ class m171228_090822_first extends Migration
             'id' => $this->primaryKey(),
             'apply_order_id' => $this->integer()->notNull()->comment('入库单 ID'),
             'resource_id' => $this->integer()->notNull()->comment('资源 ID'),
+            'container_id' => $this->integer()->notNull()->comment('货位 ID'),
             'rfid' => $this->string()->comment('RFID'),
             'quantity' => $this->integer()->notNull()->defaultValue(0)->comment('数量'),
         ], $this->commonColumns([
@@ -123,6 +124,7 @@ class m171228_090822_first extends Migration
         ), $this->setTableComment('申请单详情表'));
         $this->addForeignKey('fx-apply_order_detail-apply_order', 'apply_order_detail', 'apply_order_id', 'apply_order', 'id');
         $this->addForeignKey('fx-apply_order_detail-resource', 'apply_order_detail', 'resource_id', 'resource', 'id');
+        $this->addForeignKey('fx-apply_order_detail-container', 'apply_order_detail', 'container_id', 'container', 'id');
 
     }
 

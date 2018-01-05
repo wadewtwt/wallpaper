@@ -10,6 +10,7 @@ use Yii;
  * @property integer $id
  * @property integer $apply_order_id
  * @property integer $resource_id
+ * @property integer $container_id
  * @property string $rfid
  * @property integer $quantity
  * @property integer $status
@@ -18,7 +19,8 @@ use Yii;
  * @property integer $updated_at
  * @property integer $updated_by
  *
- * @property Resource $resource
+ * @property Container $container
+ * @property \common\models\Resource $resource
  * @property ApplyOrder $applyOrder
  */
 class ApplyOrderDetail extends \common\models\base\ActiveRecord
@@ -37,11 +39,12 @@ class ApplyOrderDetail extends \common\models\base\ActiveRecord
     public function rules()
     {
         return [
-            [['apply_order_id', 'resource_id'], 'required'],
-            [['apply_order_id', 'resource_id', 'quantity', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [['apply_order_id', 'resource_id', 'container_id'], 'required'],
+            [['apply_order_id', 'resource_id', 'container_id', 'quantity', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['rfid'], 'string', 'max' => 255],
-            [['resource_id'], 'exist', 'skipOnError' => true, 'targetClass' => Resource::className(), 'targetAttribute' => ['resource_id' => 'id']],
+            [['container_id'], 'exist', 'skipOnError' => true, 'targetClass' => Container::className(), 'targetAttribute' => ['container_id' => 'id']],
             [['apply_order_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplyOrder::className(), 'targetAttribute' => ['apply_order_id' => 'id']],
+            [['resource_id'], 'exist', 'skipOnError' => true, 'targetClass' => Resource::className(), 'targetAttribute' => ['resource_id' => 'id']],
         ];
     }
 
@@ -54,6 +57,7 @@ class ApplyOrderDetail extends \common\models\base\ActiveRecord
             'id' => 'ID',
             'apply_order_id' => '入库单 ID',
             'resource_id' => '资源 ID',
+            'container_id' => '货位 ID',
             'rfid' => 'RFID',
             'quantity' => '数量',
             'status' => '状态',
@@ -62,6 +66,14 @@ class ApplyOrderDetail extends \common\models\base\ActiveRecord
             'updated_at' => '修改时间',
             'updated_by' => '修改人',
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getContainer()
+    {
+        return $this->hasOne(Container::className(), ['id' => 'container_id']);
     }
 
     /**
