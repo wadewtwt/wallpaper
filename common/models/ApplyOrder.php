@@ -106,15 +106,17 @@ class ApplyOrder extends \common\models\base\ActiveRecord
      * 类别操作：入库、出库、申领、归还
      * @return string
      */
-    public function operationData(){
-        return $this->toName($this->type,self::$operationData);
+    public function operationData()
+    {
+        return $this->toName($this->type, self::$operationData);
     }
 
     /**
      * 申领类型：使用、保养、拆封
      * @return string
      */
-    public function pickTypeData(){
-        return $this->toName($this->pick_type,self::$pickTypeData);
+    public function pickTypeData()
+    {
+        return $this->toName($this->pick_type, self::$pickTypeData);
     }
 }

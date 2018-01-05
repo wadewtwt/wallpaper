@@ -39,7 +39,7 @@ class ApplyOrderController extends AuthWebController
 //            print_r($_POST);
 //            die;
 //        }
-        if ($postValue = Yii::$app->request->post('ApplyOrder',[])) {
+        if ($postValue = Yii::$app->request->post('ApplyOrder', [])) {
             // apply_order表的插入
             $applOrder = new ApplyOrder();
             $applOrder->type = ApplyOrder::OPERATION_INPUT;
@@ -49,7 +49,7 @@ class ApplyOrderController extends AuthWebController
 
             $applyOrderId = $applOrder->id;// 获得刚插入apply_order那条数据的id
 
-            foreach($postValue['res'] as $k=>$v){
+            foreach ($postValue['res'] as $k => $v) {
                 // apply_order_detail表
                 $applyOrderDetail = new ApplyOrderDetail();
                 $applyOrderDetail->apply_order_id = $applyOrderId;
@@ -57,7 +57,7 @@ class ApplyOrderController extends AuthWebController
                 $applyOrderDetail->container_id = $v['containerId'];
                 $applyOrderDetail->quantity = $v['quantity'];
                 $applyOrderDetail->save(false);
-                if($v['resType'] == ApplyOrder::TABLE_TYPE_EXPENDABLE){
+                if ($v['resType'] == ApplyOrder::TABLE_TYPE_EXPENDABLE) {
                     // expendable_detail表
                     $expendableDetail = new ExpendableDetail();
                     $expendableDetail->resource_id = $v['resourceId'];
@@ -68,7 +68,7 @@ class ApplyOrderController extends AuthWebController
                     $expendableDetail->created_at = time();// 出入库时间
                     $expendableDetail->scrap_at = 0;// 暂时不定
                     $expendableDetail->save(false);
-                }elseif($v['resType'] == ApplyOrder::TABLE_TYPE_DEVICE){
+                } elseif ($v['resType'] == ApplyOrder::TABLE_TYPE_DEVICE) {
                     // device表
                     $device = new Device();
                     $device->resource_id = $v['resourceId'];
@@ -88,7 +88,7 @@ class ApplyOrderController extends AuthWebController
                     $device_detail->operation = ApplyOrder::OPERATION_INPUT;
                     $device_detail->remark = $postValue['reason'];
                     $device_detail->save(false);
-                }else{
+                } else {
                     throw new NotFoundHttpException();
                 }
             }
