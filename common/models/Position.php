@@ -65,16 +65,15 @@ class Position extends \common\models\base\ActiveRecord
     }
 
     /**
-     * 得到所有职称
      * @param bool $map
-     * @return array|\yii\db\ActiveRecord[]
+     * @return array|Position[]
      */
-    public static function findIdName($map = false)
+    public static function findAllIdName($map = false)
     {
-        $model = self::find()->select(['id', 'name'])->asArray()->all();
+        $models = static::find()->select(['id', 'name'])->asArray()->all();
         if ($map) {
-            return ArrayHelper::map($model, 'id', 'name');
+            return ArrayHelper::map($models, 'id', 'name');
         }
-        return $model;
+        return $models;
     }
 }

@@ -16,7 +16,7 @@ class PersonSearch extends Person
 
     public function search($params)
     {
-        $query = Person::find()->andWhere(['status' => Person::PERSON_STATUS_NORMAL]);
+        $query = Person::find()->andWhere(['status' => Person::STATUS_NORMAL]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

@@ -23,13 +23,14 @@ use yii\helpers\ArrayHelper;
  */
 class Person extends \common\models\base\ActiveRecord
 {
-    const PERSON_STATUS_NORMAL = 0;
-    const PERSON_STATUS_DELETE = 10;
+    const STATUS_NORMAL = 0;
+    const STATUS_DELETE = 10;
 
-    public static $personStatusData = [
-        self::PERSON_STATUS_NORMAL => '正常',
-        self::PERSON_STATUS_DELETE => '已删'
+    public static $statusData = [
+        self::STATUS_NORMAL => '正常',
+        self::STATUS_DELETE => '已删',
     ];
+
     /**
      * @inheritdoc
      */
@@ -90,10 +91,11 @@ class Person extends \common\models\base\ActiveRecord
      * @param bool $map
      * @return array|\yii\db\ActiveRecord[]|Person
      */
-    public static function findIdName($map = false){
-        $model = self::find()->select(['id','name'])->asArray()->all();
-        if($map){
-            return ArrayHelper::map($model,'id','name');
+    public static function findAllIdName($map = false)
+    {
+        $model = self::find()->select(['id', 'name'])->asArray()->all();
+        if ($map) {
+            return ArrayHelper::map($model, 'id', 'name');
         }
         return $model;
     }

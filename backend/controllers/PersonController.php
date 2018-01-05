@@ -65,7 +65,7 @@ class PersonController extends AuthWebController
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-        $model->status = Person::PERSON_STATUS_DELETE;
+        $model->status = Person::STATUS_DELETE;
         $isDelete = $model->save();
         if ($isDelete) {
             MessageAlert::set(['success' => '删除成功']);
