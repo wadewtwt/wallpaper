@@ -32,6 +32,11 @@ class Resource extends \common\models\base\ActiveRecord
     const STATUS_NORMAL = 0;
     const STATUS_DELETED = 10;
 
+    public static $typeData = [
+        self::TYPE_EXPENDABLE => '消耗品',
+        self::TYPE_DEVICE => '设备',
+    ];
+
     /**
      * @inheritdoc
      */
@@ -46,7 +51,7 @@ class Resource extends \common\models\base\ActiveRecord
     public function rules()
     {
         return [
-            [['name'],'unique'],
+            [['name'], 'unique'],
             [['type', 'name'], 'required'],
             [['type', 'min_stock', 'current_stock', 'scrap_cycle', 'maintenance_cycle', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['name'], 'string', 'max' => 255],
@@ -98,13 +103,22 @@ class Resource extends \common\models\base\ActiveRecord
         return $this->hasMany(ExpendableDetail::className(), ['resource_id' => 'id']);
     }
 
-    public static function findExpendableDevice($isExpendable = true){
-        if($isExpendable){
+    /**
+     * @return string
+     */
+    public function getTypeName()
+    {
+        return $this->toName($this->type, self::$typeData);
+    }
+
+    public static function findExpendableDevice($isExpendable = true)
+    {
+        if ($isExpendable) {
             $type = Resource::TYPE_EXPENDABLE;
-        }else{
+        } else {
             $type = Resource::TYPE_DEVICE;
         }
-        $model = self::find()->select(['id','name'])->andWhere(['type' => $type])->asArray()->all();
-        return ArrayHelper::map($model,'id','name');
+        $model = self::find()->select(['id', 'name'])->andWhere(['type' => $type])->asArray()->all();
+        return ArrayHelper::map($model, 'id', 'name');
     }
 }

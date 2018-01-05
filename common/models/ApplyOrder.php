@@ -26,6 +26,11 @@ class ApplyOrder extends \common\models\base\ActiveRecord
     const OPERATION_OUTPUT = 20;
     const OPERATION_APPLY = 30;
     const OPERATION_RETURN = 40;
+
+    const PICK_TYPE_USE = 10;
+    const PICK_TYPE_MAINTENANCE = 20;
+    const PICK_TYPE_SEAL_OFF = 30;
+
     public static $operationData = [
         self::OPERATION_INPUT => '入库',
         self::OPERATION_OUTPUT => '出库',
@@ -33,17 +38,11 @@ class ApplyOrder extends \common\models\base\ActiveRecord
         self::OPERATION_RETURN => '归还'
     ];
 
-    const PICK_TYPE_USE = 10;
-    const PICK_TYPE_MAINTENANCE = 20;
-    const PICK_TYPE_SEAL_OFF = 30;
     public static $pickTypeData = [
         self::PICK_TYPE_USE => '使用',
         self::PICK_TYPE_MAINTENANCE => '保养',
         self::PICK_TYPE_SEAL_OFF => '拆封'
     ];
-
-    const TABLE_TYPE_EXPENDABLE = 10;
-    const TABLE_TYPE_DEVICE = 20;
 
     /**
      * @inheritdoc

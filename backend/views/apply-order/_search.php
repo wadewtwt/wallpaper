@@ -7,7 +7,7 @@ use common\models\Person;
 use common\models\ApplyOrder;
 
 $form = SimpleSearchForm::begin(['action' => ['index']]);
-echo $form->field($model, 'person_id')->dropDownList(Person::findIdName(true), [
+echo $form->field($model, 'person_id')->dropDownList(Person::findAllIdName(true), [
     'prompt' => '请选择'
 ])->label('申请人');
 echo $form->field($model, 'type')->radioList([ApplyOrder::OPERATION_INPUT => '申请入库']);

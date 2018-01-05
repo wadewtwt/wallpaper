@@ -2,7 +2,7 @@
 
 namespace common\models;
 
-use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "container".
@@ -74,5 +74,34 @@ class Container extends \common\models\base\ActiveRecord
     public function getExpendableDetails()
     {
         return $this->hasMany(ExpendableDetail::className(), ['container_id' => 'id']);
+    }
+
+    /**
+     * @param bool $map
+     * @param bool $withQuantity
+     * @return array|Container[]
+     */
+    public static function findAllIdName($map = false, $withQuantity = false)
+    {
+        $select = ['id', 'name'];
+        $toArrayProperties = [
+            self::className() => ['id', 'name']
+        ];
+        if ($withQuantity) {
+            $select += ['free_quantity', 'total_quantity'];
+            $toArrayProperties = [
+                self::className() => [
+                    'id',
+                    'name' => function (self $model) {
+                        return $model->name . "({$model->free_quantity}/{$model->total_quantity}";
+                    }
+                ]
+            ];
+        }
+        $models = ArrayHelper::toArray(self::find()->select($select)->asArray()->all(), $toArrayProperties);
+        if ($map) {
+            return ArrayHelper::map($models, 'id', 'name');
+        }
+        return $models;
     }
 }

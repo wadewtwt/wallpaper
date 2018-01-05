@@ -4,15 +4,14 @@ namespace backend\controllers;
 
 use backend\components\AuthWebController;
 use backend\models\ApplyOrderSearch;
-use common\components\Tools;
 use common\models\ApplyOrder;
 use common\models\ApplyOrderDetail;
-use common\models\Device;
-use common\models\DeviceDetail;
-use common\models\ExpendableDetail;
+use common\models\Resource;
 use Yii;
-use yii\web\NotFoundHttpException;
-use backend\components\MessageAlert;
+use yii\base\Model;
+use yii\helpers\ArrayHelper;
+use yii\web\Response;
+use yii\widgets\ActiveForm;
 
 class ApplyOrderController extends AuthWebController
 {
@@ -34,66 +33,41 @@ class ApplyOrderController extends AuthWebController
     public function actionCreate()
     {
         $model = new ApplyOrder();
+        $models = [new ApplyOrderDetail()];
 
-        if ($postValue = Yii::$app->request->post('ApplyOrder', [])) {
-            // apply_order表的插入
-            $applOrder = new ApplyOrder();
-            $applOrder->type = ApplyOrder::OPERATION_INPUT;
-            $applOrder->person_id = $postValue['person_id'];
-            $applOrder->reason = $postValue['reason'];
-            $applOrder->save(false);
+        $request = Yii::$app->getRequest();
 
-            $applyOrderId = $applOrder->id;// 获得刚插入apply_order那条数据的id
-
-            foreach ($postValue['res'] as $k => $v) {
-                // apply_order_detail表
-                $applyOrderDetail = new ApplyOrderDetail();
-                $applyOrderDetail->apply_order_id = $applyOrderId;
-                $applyOrderDetail->resource_id = $v['resourceId'];
-                $applyOrderDetail->container_id = $v['containerId'];
-                $applyOrderDetail->quantity = $v['quantity'];
-                $applyOrderDetail->save(false);
-                if ($v['resType'] == ApplyOrder::TABLE_TYPE_EXPENDABLE) {
-                    // expendable_detail表
-                    $expendableDetail = new ExpendableDetail();
-                    $expendableDetail->resource_id = $v['resourceId'];
-                    $expendableDetail->container_id = $v['containerId'];
-                    $expendableDetail->operation = ApplyOrder::OPERATION_INPUT;
-                    $expendableDetail->quantity = $v['quantity'];
-                    $expendableDetail->remark = $postValue['reason'];
-                    $expendableDetail->created_at = time();// 出入库时间
-                    $expendableDetail->scrap_at = 0;// 暂时不定
-                    $expendableDetail->save(false);
-                } elseif ($v['resType'] == ApplyOrder::TABLE_TYPE_DEVICE) {
-                    // device表
-                    $device = new Device();
-                    $device->resource_id = $v['resourceId'];
-                    $device->container_id = $v['containerId'];
-                    $device->is_online = 0;// 暂时不定
-                    $device->online_change_at = time();
-                    $device->maintenance_at = 0;// 暂时不定
-                    $device->scrap_at = 0;// 暂时不定
-                    $device->quantity = $v['quantity'];
-                    $device->save(false);
-
-                    // 获得刚存入device表的id
-                    $deviceId = $device->id;
-                    // device_detail表
-                    $device_detail = new DeviceDetail();
-                    $device_detail->device_id = $deviceId;
-                    $device_detail->operation = ApplyOrder::OPERATION_INPUT;
-                    $device_detail->remark = $postValue['reason'];
-                    $device_detail->save(false);
-                } else {
-                    throw new NotFoundHttpException();
-                }
+        if ($request->isPost) {
+            $data = $request->post('ApplyOrderDetail', []);
+            foreach (array_keys($data) as $index) {
+                $models[$index] = new ApplyOrderDetail();
             }
-
-            return $this->actionPreviousRedirect();
+            Model::loadMultiple($models, $request->post());
+            if ($request->post('ajax') !== null) {
+                // models 数据的 ajax 验证
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                $result = ActiveForm::validateMultiple($models);
+                return $result;
+            }
+            // 装载数据，处理业务
+            if ($model->load($request->post())) {
+                $model->type = ApplyOrder::OPERATION_INPUT;
+                $model->save(false);
+                foreach ($models as $detail) {
+                    /** @var $detail ApplyOrderDetail */
+                    $detail->apply_order_id = $model->id;
+                    $detail->save(false);
+                }
+                return $this->actionPreviousRedirect();
+            }
         }
 
-        return $this->render('_create_update', [
-            'model' => $model
+        $resourceData = $this->getResourceData(ArrayHelper::getColumn($models, 'resource_id'));
+
+        return $this->render('create_update', [
+            'model' => $model,
+            'models' => $models,
+            'resourceData' => $resourceData
         ]);
     }
 
@@ -112,18 +86,7 @@ class ApplyOrderController extends AuthWebController
     // 作废
     public function actionDelete($id)
     {
-        $model = $this->findModel($id);
-        if ($model->load(Yii::$app->request->post())) {
-            if ($model->validate() && $model->save(false)) {
-                MessageAlert::set(['success' => '作废成功！']);
-            } else {
-                MessageAlert::set(['error' => '作废失败：' . Tools::formatModelErrors2String($model->errors)]);
-            }
-            return $this->actionPreviousRedirect();
-        }
-        return $this->renderAjax('_delete', [
-            'model' => $model
-        ]);
+        // TODO
     }
 
     // 明细
@@ -139,17 +102,20 @@ class ApplyOrderController extends AuthWebController
     }
 
     /**
-     * @param $id
-     * @return null|static|ApplyOrder
-     * @throws NotFoundHttpException
+     * 获取资源的 id 和 name 信息
+     * @param $resourceIds
+     * @return array
      */
-    protected function findModel($id)
+    protected function getResourceData($resourceIds)
     {
-        $model = ApplyOrder::findOne($id);
-        if (!$model) {
-            throw new NotFoundHttpException();
-        }
-        return $model;
+        return ArrayHelper::map(ArrayHelper::toArray(Resource::find()->select(['id', 'name', 'type'])->where(['id' => $resourceIds])->all(), [
+            Resource::className() => [
+                'id',
+                'nameType' => function (\common\models\Resource $model) {
+                    return $model->name . '(' . $model->getTypeName() . ')';
+                }
+            ]
+        ]), 'id', 'nameType');
     }
 
 }
