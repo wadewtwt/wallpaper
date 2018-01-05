@@ -91,7 +91,7 @@ class Person extends \common\models\base\ActiveRecord
      * @return array|\yii\db\ActiveRecord[]|Person
      */
     public static function findIdName($map = false){
-        $model = self::find()->select(['id','name'])->asArray()->all();
+        $model = self::find()->select(['id','name'])->andWhere(['status' => 0])->asArray()->all();
         if($map){
             return ArrayHelper::map($model,'id','name');
         }

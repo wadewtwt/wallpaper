@@ -20,7 +20,7 @@ echo $this->render('_search', [
 $columns = [
     [
         'attribute' => 'type',
-        'value' => function(ApplyOrder $model){
+        'value' => function (ApplyOrder $model) {
             return $model->operationData();
         }
     ],
@@ -35,7 +35,7 @@ $columns = [
     ],
     [
         'attribute' => 'pick_type',
-        'value' => function(ApplyOrder $model){
+        'value' => function (ApplyOrder $model) {
             return $model->pickTypeData();
         }
     ],
@@ -58,7 +58,7 @@ $columns = [
             },
             'delete' => function ($url) {
                 $options = [
-                    'class' => 'btn btn-default',
+                    'class' => 'btn btn-default show_ajax_modal',
                 ];
                 return Html::a('作废', $url, $options);
             },

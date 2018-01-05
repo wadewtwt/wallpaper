@@ -42,6 +42,9 @@ class ApplyOrder extends \common\models\base\ActiveRecord
         self::PICK_TYPE_SEAL_OFF => '拆封'
     ];
 
+    const TABLE_TYPE_EXPENDABLE = 10;
+    const TABLE_TYPE_DEVICE = 20;
+
     /**
      * @inheritdoc
      */
