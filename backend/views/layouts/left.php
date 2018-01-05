@@ -21,6 +21,7 @@ $menu = [
     ['label' => '设备使用明细', 'icon' => 'circle-o', 'url' => [$baseUrl . '/device-detail']],
     ['label' => '货区管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/container']],
     ['label' => '入库单管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order']],
+    ['label' => '入库单明细', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-detail']],
     ['label' => '用户管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/user']],
     ['label' => '管理员管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/admin']],
     [
