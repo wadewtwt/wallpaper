@@ -16,7 +16,7 @@ class ApplyOrderSearch extends ApplyOrder
 
     public function search($params)
     {
-        $query = ApplyOrder::find();
+        $query = ApplyOrder::find()->andWhere(['type' => ApplyOrder::OPERATION_INPUT]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
