@@ -33,6 +33,12 @@ class Device extends \common\models\base\ActiveRecord
     const STATUS_OUTPUT = 10; // 已出库
     const STATUS_PICKED = 20; // 被领走
 
+    public static $statusData = [
+        self::STATUS_NORMAL => '正常',
+        self::STATUS_OUTPUT => '已出库',
+        self::STATUS_PICKED => '被领走',
+    ];
+
     /**
      * @inheritdoc
      */
@@ -100,6 +106,14 @@ class Device extends \common\models\base\ActiveRecord
     public function getDeviceDetails()
     {
         return $this->hasMany(DeviceDetail::className(), ['device_id' => 'id']);
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatusName()
+    {
+        return $this->toName($this->status, self::$statusData);
     }
 
     /**
