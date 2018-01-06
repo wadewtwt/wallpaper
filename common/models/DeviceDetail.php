@@ -12,18 +12,21 @@ namespace common\models;
  * @property integer $status
  * @property integer $created_at
  * @property integer $created_by
- * @property integer $updated_at
- * @property integer $updated_by
  *
  * @property Device $device
  */
 class DeviceDetail extends \common\models\base\ActiveRecord
 {
-    const STOCK_INPUT = 10;
-    const STOCK_OUTPUT = 20;
-    public static $stockOperation = [
-        self::STOCK_INPUT => '入库' ,
-        self::STOCK_OUTPUT => '出库'
+    const OPERATION_INPUT = 10;
+    const OPERATION_OUTPUT = 20;
+    const OPERATION_APPLY = 30;
+    const OPERATION_RETURN = 40;
+
+    public static $operationData = [
+        self::OPERATION_INPUT => '入库',
+        self::OPERATION_OUTPUT => '出库',
+        self::OPERATION_APPLY => '申领',
+        self::OPERATION_RETURN => '归还',
     ];
 
     /**
@@ -40,8 +43,8 @@ class DeviceDetail extends \common\models\base\ActiveRecord
     public function rules()
     {
         return [
-            [['device_id', 'operation', 'remark'], 'required'],
-            [['device_id', 'operation', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [['device_id', 'operation'], 'required'],
+            [['device_id', 'operation', 'status', 'created_at', 'created_by'], 'integer'],
             [['remark'], 'string', 'max' => 255],
             [['device_id'], 'exist', 'skipOnError' => true, 'targetClass' => Device::className(), 'targetAttribute' => ['device_id' => 'id']],
         ];
@@ -60,8 +63,6 @@ class DeviceDetail extends \common\models\base\ActiveRecord
             'status' => '状态',
             'created_at' => '创建时间',
             'created_by' => '创建人',
-            'updated_at' => '修改时间',
-            'updated_by' => '修改人',
         ];
     }
 
@@ -73,7 +74,25 @@ class DeviceDetail extends \common\models\base\ActiveRecord
         return $this->hasOne(Device::className(), ['id' => 'device_id']);
     }
 
-    public function getDeviceDetailOperation(){
-        return $this->toName($this->operation, self::$stockOperation);
+    /**
+     * @return string
+     */
+    public function getOperationName()
+    {
+        return $this->toName($this->operation, self::$operationData);
+    }
+
+    /**
+     * @param $deviceId
+     * @param $operation
+     * @param $remark
+     */
+    public static function createOne($deviceId, $operation, $remark = null)
+    {
+        $model = new DeviceDetail();
+        $model->device_id = $deviceId;
+        $model->operation = $operation;
+        $model->remark = $remark;
+        $model->save(false);
     }
 }

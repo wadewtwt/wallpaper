@@ -2,6 +2,9 @@
 
 namespace common\models;
 
+use Yii;
+use yii\base\Exception;
+
 /**
  * This is the model class for table "device".
  *
@@ -26,12 +29,7 @@ namespace common\models;
  */
 class Device extends \common\models\base\ActiveRecord
 {
-    const DATA_ONLINE = 0;
-    const DATA_OFFLINE = 10;
-    public static $DataIsOnline = [
-        self::DATA_ONLINE => '在线',
-        self::DATA_OFFLINE => '离线'
-    ];
+    const STATUS_NORMAL = 0;
 
     /**
      * @inheritdoc
@@ -102,8 +100,43 @@ class Device extends \common\models\base\ActiveRecord
         return $this->hasMany(DeviceDetail::className(), ['device_id' => 'id']);
     }
 
-    public function getDataIsOnline(){
-        return $this->toName($this->is_online,self::$DataIsOnline);
+    /**
+     * @param \common\models\Resource $resource
+     * @param $rfid
+     * @param $quantity
+     * @param $containerId
+     * @throws Exception
+     */
+    public static function createOne(\common\models\Resource $resource, $rfid, $quantity, $containerId)
+    {
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            // 修改货位库存
+            $resource->current_stock += $quantity;
+            $resource->save(false);
+            // 创建设备
+            $device = Device::findOne(['rfid' => $rfid, 'status' => self::STATUS_NORMAL]);
+            if ($device) {
+                throw new Exception("RFID 为'{$rfid}'的设备已存在");
+            }
+            $device = new Device();
+            $device->resource_id = $resource->id;
+            $device->container_id = $containerId;
+            $device->rfid = $rfid;
+            $device->is_online = 0;
+            $device->online_change_at = time();
+            $device->maintenance_at = time() + ($resource->maintenance_cycle * 86400);
+            $device->scrap_at = time() + ($resource->scrap_cycle * 86400);
+            $device->quantity = $quantity;
+            $device->save(false);
+            // 更新明细
+            DeviceDetail::createOne($device->id, DeviceDetail::OPERATION_INPUT);
+
+            $transaction->commit();
+        } catch (Exception $e) {
+            $transaction->rollBack();
+            throw $e;
+        }
     }
 
 }

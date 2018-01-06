@@ -27,7 +27,7 @@ $columns = [
     [
         'attribute' => 'is_online',
         'value' => function (Device $model){
-            return $model->getDataIsOnline();
+            return $model->is_online ? '在线' : '离线';
         }
     ],
     [

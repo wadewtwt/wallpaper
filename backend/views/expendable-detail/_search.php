@@ -8,9 +8,11 @@ use common\models\Resource;
 
 $form = SimpleSearchForm::begin(['action' => ['index']]);
 
-echo $form->field($model, 'operation')->radioList(ExpendableDetail::$stockOperation, []);
+echo $form->field($model, 'operation')->dropDownList(ExpendableDetail::$operationData, [
+    'prompt' => '全部'
+]);
 echo $form->field($model, 'resource_id')->dropDownList(Resource::findExpendableDevice(true), [
-    'prompt' => '请选择消耗品'
+    'prompt' => '全部'
 ])->label('消耗品名称');
 
 echo $form->renderFooterButtons();

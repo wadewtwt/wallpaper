@@ -10,7 +10,7 @@ class ApplyOrderSearch extends ApplyOrder
     public function rules()
     {
         return [
-            [['type', 'person_id'], 'integer'],
+            [['person_id', 'status'], 'integer'],
         ];
     }
 
@@ -37,6 +37,7 @@ class ApplyOrderSearch extends ApplyOrder
         $query->andFilterWhere([
             'type' => $this->type,
             'person_id' => $this->person_id,
+            'status' => $this->status,
         ]);
 
         return $dataProvider;

@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use yii\base\Exception;
 
 /**
  * This is the model class for table "apply_order_detail".
@@ -13,11 +14,6 @@ use Yii;
  * @property integer $container_id
  * @property string $rfid
  * @property integer $quantity
- * @property integer $status
- * @property integer $created_at
- * @property integer $created_by
- * @property integer $updated_at
- * @property integer $updated_by
  *
  * @property Container $container
  * @property \common\models\Resource $resource
@@ -40,7 +36,7 @@ class ApplyOrderDetail extends \common\models\base\ActiveRecord
     {
         return [
             [['apply_order_id', 'resource_id', 'container_id'], 'required'],
-            [['apply_order_id', 'resource_id', 'container_id', 'quantity', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [['apply_order_id', 'resource_id', 'container_id', 'quantity'], 'integer'],
             [['rfid'], 'string', 'max' => 255],
             [['container_id'], 'exist', 'skipOnError' => true, 'targetClass' => Container::className(), 'targetAttribute' => ['container_id' => 'id']],
             [['apply_order_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplyOrder::className(), 'targetAttribute' => ['apply_order_id' => 'id']],
@@ -60,11 +56,6 @@ class ApplyOrderDetail extends \common\models\base\ActiveRecord
             'container_id' => '货位 ID',
             'rfid' => 'RFID',
             'quantity' => '数量',
-            'status' => '状态',
-            'created_at' => '创建时间',
-            'created_by' => '创建人',
-            'updated_at' => '修改时间',
-            'updated_by' => '修改人',
         ];
     }
 
@@ -90,5 +81,31 @@ class ApplyOrderDetail extends \common\models\base\ActiveRecord
     public function getApplyOrder()
     {
         return $this->hasOne(ApplyOrder::className(), ['id' => 'apply_order_id']);
+    }
+
+    public function saveToResource()
+    {
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            // 资源保存到对应表中
+            $resource = $this->resource;
+            if ($resource->type == Resource::TYPE_EXPENDABLE) {
+                ExpendableDetail::createOne($resource, $this->rfid, $this->quantity, $this->container_id, ExpendableDetail::OPERATION_INPUT);
+            } elseif ($resource->type == Resource::TYPE_DEVICE) {
+                Device::createOne($resource, $this->rfid, $this->quantity, $this->container_id);
+            } else {
+                throw new Exception('未知的 type');
+            }
+            // 货位库存减少
+            $count = Container::updateAllCounters(['free_quantity' => -1], ['id' => $this->container_id]);
+            if ($count != 1) {
+                throw new Exception('货位库存减少失败');
+            }
+
+            $transaction->commit();
+        } catch (Exception $e) {
+            $transaction->rollBack();
+            throw $e;
+        }
     }
 }
