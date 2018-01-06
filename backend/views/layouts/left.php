@@ -20,7 +20,10 @@ $menu = [
     ['label' => '设备详细', 'icon' => 'circle-o', 'url' => [$baseUrl . '/device']],
     ['label' => '设备使用明细', 'icon' => 'circle-o', 'url' => [$baseUrl . '/device-detail']],
     ['label' => '货区管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/container']],
-    ['label' => '入库单管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-input']],
+    ['label' => '入库管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-input']],
+    ['label' => '出库管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-output']],
+    ['label' => '申领管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-apply']],
+    ['label' => '退还管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-return']],
     ['label' => '用户管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/user']],
     ['label' => '管理员管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/admin']],
     [

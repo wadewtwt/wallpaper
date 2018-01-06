@@ -7,7 +7,7 @@ $isPrint = isset($isPrint) ? $isPrint : false;
 ?>
 <div class="container">
     <div class="page-header">
-        <h1 class="text-center">入库单</h1>
+        <h1 class="text-center"><?= $model->getTypeName() ?>单</h1>
     </div>
     <div>
         <p><strong>申请人：</strong><?= $model->person->name ?></p>

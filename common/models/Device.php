@@ -24,12 +24,14 @@ use yii\base\Exception;
  * @property integer $updated_by
  *
  * @property Container $container
- * @property Resource $resource
+ * @property \common\models\Resource $resource
  * @property DeviceDetail[] $deviceDetails
  */
 class Device extends \common\models\base\ActiveRecord
 {
-    const STATUS_NORMAL = 0;
+    const STATUS_NORMAL = 0; // 正常在库
+    const STATUS_OUTPUT = 10; // 已出库
+    const STATUS_PICKED = 20; // 被领走
 
     /**
      * @inheritdoc
@@ -101,37 +103,71 @@ class Device extends \common\models\base\ActiveRecord
     }
 
     /**
-     * @param \common\models\Resource $resource
+     * 创建一次设备操作
+     * @param $resource \common\models\Resource
      * @param $rfid
      * @param $quantity
      * @param $containerId
+     * @param $deviceDetailOperation
      * @throws Exception
+     * @throws \yii\db\Exception
      */
-    public static function createOne(\common\models\Resource $resource, $rfid, $quantity, $containerId)
+    public static function createOne($resource, $rfid, $quantity, $containerId, $deviceDetailOperation)
     {
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            // 修改货位库存
-            $resource->current_stock += $quantity;
-            $resource->save(false);
-            // 创建设备
-            $device = Device::findOne(['rfid' => $rfid, 'status' => self::STATUS_NORMAL]);
-            if ($device) {
-                throw new Exception("RFID 为'{$rfid}'的设备已存在");
+            // 修改设备信息
+            if ($deviceDetailOperation == DeviceDetail::OPERATION_INPUT) {
+                $device = Device::findOne(['rfid' => $rfid, 'status' => self::STATUS_NORMAL]);
+                if ($device) {
+                    throw new Exception("RFID 为'{$rfid}'的设备已存在");
+                }
+                $device = new Device();
+                $device->resource_id = $resource->id;
+                $device->container_id = $containerId;
+                $device->rfid = $rfid;
+                $device->is_online = 0;
+                $device->online_change_at = time();
+                $device->maintenance_at = time() + ($resource->maintenance_cycle * 86400);
+                $device->scrap_at = time() + ($resource->scrap_cycle * 86400);
+                $device->quantity = $quantity;
+                $device->status = self::STATUS_NORMAL;
+                $device->save(false);
+            } elseif (in_array($deviceDetailOperation, [DeviceDetail::OPERATION_OUTPUT, DeviceDetail::OPERATION_APPLY, DeviceDetail::OPERATION_RETURN])) {
+                $device = Device::findOne([
+                    'rfid' => $rfid, 'quantity' => $quantity,
+                    'resource_id' => $resource->id, 'container_id' => $containerId,
+                    'status' => self::STATUS_NORMAL,
+                ]);
+                if (!$device) {
+                    $containerName = Container::find()->select(['name'])->where(['id' => $containerId])->scalar();
+                    throw new Exception("货位'{$containerName}'上 RFID 为'{$rfid}'，且数量为'{$quantity}'的'{$resource->name}'不存在或已出库");
+                }
+                if ($deviceDetailOperation == DeviceDetail::OPERATION_OUTPUT) {
+                    $device->status = self::STATUS_OUTPUT;
+                } elseif ($deviceDetailOperation == DeviceDetail::OPERATION_APPLY) {
+                    $device->status = self::STATUS_PICKED;
+                } elseif ($deviceDetailOperation == DeviceDetail::OPERATION_RETURN) {
+                    $device->status = self::STATUS_NORMAL;
+                } else {
+                    throw new Exception('未知的 $deviceDetailOperation');
+                }
+                $device->save(false);
+            } else {
+                throw new Exception('未知的 $deviceDetailOperation');
             }
-            $device = new Device();
-            $device->resource_id = $resource->id;
-            $device->container_id = $containerId;
-            $device->rfid = $rfid;
-            $device->is_online = 0;
-            $device->online_change_at = time();
-            $device->maintenance_at = time() + ($resource->maintenance_cycle * 86400);
-            $device->scrap_at = time() + ($resource->scrap_cycle * 86400);
-            $device->quantity = $quantity;
-            $device->save(false);
+            // 修改资源库存
+            $resource = $device->resource;
+            if (in_array($deviceDetailOperation, [DeviceDetail::OPERATION_OUTPUT, DeviceDetail::OPERATION_APPLY])) {
+                $resource->current_stock -= $device->quantity;
+            } elseif (in_array($deviceDetailOperation, [DeviceDetail::OPERATION_INPUT, DeviceDetail::OPERATION_RETURN])) {
+                $resource->current_stock += $device->quantity;
+            } else {
+                throw new Exception('未知的 operation');
+            }
+            $resource->save(false);
             // 更新明细
-            DeviceDetail::createOne($device->id, DeviceDetail::OPERATION_INPUT);
-
+            DeviceDetail::createOne($device->id, $deviceDetailOperation);
             $transaction->commit();
         } catch (Exception $e) {
             $transaction->rollBack();
