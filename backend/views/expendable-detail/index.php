@@ -26,7 +26,7 @@ $columns = [
     [
         'attribute' => 'operation',
         'value' => function (ExpendableDetail $model){
-            return $model->getStockOperation();
+            return $model->getOperationName();
         }
     ],
     [

@@ -18,7 +18,7 @@ $columns = [
     [
         'attribute' => 'operation',
         'value' => function (DeviceDetail $model){
-            return $model->getDeviceDetailOperation();
+            return $model->getOperationName();
         }
     ],
     [

@@ -22,26 +22,40 @@ namespace common\models;
  */
 class ApplyOrder extends \common\models\base\ActiveRecord
 {
-    const OPERATION_INPUT = 10;
-    const OPERATION_OUTPUT = 20;
-    const OPERATION_APPLY = 30;
-    const OPERATION_RETURN = 40;
+    const TYPE_INPUT = 10;
+    const TYPE_OUTPUT = 20;
+    const TYPE_APPLY = 30;
+    const TYPE_RETURN = 40;
 
     const PICK_TYPE_USE = 10;
     const PICK_TYPE_MAINTENANCE = 20;
     const PICK_TYPE_SEAL_OFF = 30;
 
-    public static $operationData = [
-        self::OPERATION_INPUT => '入库',
-        self::OPERATION_OUTPUT => '出库',
-        self::OPERATION_APPLY => '申领',
-        self::OPERATION_RETURN => '归还'
+    const STATUS_APPLYING = 0; // 申请中
+    const STATUS_OPERATE_PRINT = 1; // 打印，仅作状态校验
+    const STATUS_OPERATE_UPDATE = 2; // 修改，仅作状态校验
+    const STATUS_AUDITED = 10; // 审核通过
+    const STATUS_OVER = 30; // 已完成
+    const STATUS_DELETE = 99; // 作废
+
+    public static $typeData = [
+        self::TYPE_INPUT => '入库',
+        self::TYPE_OUTPUT => '出库',
+        self::TYPE_APPLY => '申领',
+        self::TYPE_RETURN => '归还'
     ];
 
     public static $pickTypeData = [
         self::PICK_TYPE_USE => '使用',
         self::PICK_TYPE_MAINTENANCE => '保养',
         self::PICK_TYPE_SEAL_OFF => '拆封'
+    ];
+
+    public static $statusData = [
+        self::STATUS_APPLYING => '申请中',
+        self::STATUS_AUDITED => '审核通过',
+        self::STATUS_OVER => '已完成',
+        self::STATUS_DELETE => '作废',
     ];
 
     /**
@@ -72,11 +86,11 @@ class ApplyOrder extends \common\models\base\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'type' => '类别:入库、出库、申领、归还',
+            'type' => '类别',
             'person_id' => '申请人 ID',
             'reason' => '理由',
             'delete_reason' => '作废理由',
-            'pick_type' => '申领类型:使用、保养、拆封',
+            'pick_type' => '申领类型',
             'status' => '状态',
             'created_at' => '创建时间',
             'created_by' => '创建人',
@@ -105,17 +119,49 @@ class ApplyOrder extends \common\models\base\ActiveRecord
      * 类别操作：入库、出库、申领、归还
      * @return string
      */
-    public function operationData()
+    public function getTypeName()
     {
-        return $this->toName($this->type, self::$operationData);
+        return $this->toName($this->type, self::$typeData);
     }
 
     /**
      * 申领类型：使用、保养、拆封
      * @return string
      */
-    public function pickTypeData()
+    public function getPickTypeName()
     {
         return $this->toName($this->pick_type, self::$pickTypeData);
+    }
+
+    /**
+     * 申领类型：使用、保养、拆封
+     * @return string
+     */
+    public function getStatusName()
+    {
+        return $this->toName($this->status, self::$statusData);
+    }
+
+    /**
+     * 检查状态
+     * @param $toStatus
+     * @return bool
+     */
+    public function checkStatus($toStatus)
+    {
+        switch ($toStatus) {
+            case self::STATUS_APPLYING:
+                return true;
+            case self::STATUS_OPERATE_PRINT:
+            case self::STATUS_OPERATE_UPDATE:
+            case self::STATUS_AUDITED:
+                return $this->status == self::STATUS_APPLYING;
+            case self::STATUS_OVER:
+                return $this->status == self::STATUS_AUDITED;
+            case self::STATUS_DELETE:
+                return !in_array($this->status, [self::STATUS_DELETE, self::STATUS_OVER]);
+            default:
+                return false;
+        }
     }
 }

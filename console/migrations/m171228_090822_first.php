@@ -61,7 +61,7 @@ class m171228_090822_first extends Migration
             'rfid' => $this->string()->notNull()->comment('RFID'),
             'operation' => $this->integer()->notNull()->comment('操作:出库、入库'),
             'quantity' => $this->integer()->notNull()->comment('数量'),
-            'remark' => $this->string()->notNull()->comment('说明'),
+            'remark' => $this->string()->comment('说明'),
             'scrap_at' => $this->integer()->notNull()->comment('报废时间'),
         ], $this->commonColumns([
             'status', 'created_at', 'created_by',
@@ -91,9 +91,9 @@ class m171228_090822_first extends Migration
             'id' => $this->primaryKey(),
             'device_id' => $this->integer()->notNull()->comment('设备 ID'),
             'operation' => $this->smallInteger(1)->notNull()->comment('操作'),
-            'remark' => $this->string()->notNull()->comment('说明'),
+            'remark' => $this->string()->comment('说明'),
         ], $this->commonColumns([
-            'status', 'created_at', 'created_by', 'updated_at', 'updated_by'
+            'status', 'created_at', 'created_by'
         ])
         ), $this->setTableComment('设备使用明细表'));
         $this->addForeignKey('fx-device_detail-device', 'device_detail', 'device_id', 'device', 'id');
@@ -111,17 +111,14 @@ class m171228_090822_first extends Migration
         ), $this->setTableComment('申请单表'));
         $this->addForeignKey('fx-apply_order-person', 'apply_order', 'person_id', 'person', 'id');
 
-        $this->createTable('apply_order_detail', array_merge([
+        $this->createTable('apply_order_detail', [
             'id' => $this->primaryKey(),
             'apply_order_id' => $this->integer()->notNull()->comment('入库单 ID'),
             'resource_id' => $this->integer()->notNull()->comment('资源 ID'),
             'container_id' => $this->integer()->notNull()->comment('货位 ID'),
             'rfid' => $this->string()->comment('RFID'),
             'quantity' => $this->integer()->notNull()->defaultValue(0)->comment('数量'),
-        ], $this->commonColumns([
-            'status', 'created_at', 'created_by', 'updated_at', 'updated_by'
-        ])
-        ), $this->setTableComment('申请单详情表'));
+        ], $this->setTableComment('申请单详情表'));
         $this->addForeignKey('fx-apply_order_detail-apply_order', 'apply_order_detail', 'apply_order_id', 'apply_order', 'id');
         $this->addForeignKey('fx-apply_order_detail-resource', 'apply_order_detail', 'resource_id', 'resource', 'id');
         $this->addForeignKey('fx-apply_order_detail-container', 'apply_order_detail', 'container_id', 'container', 'id');

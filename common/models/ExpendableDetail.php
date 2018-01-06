@@ -2,6 +2,9 @@
 
 namespace common\models;
 
+use Yii;
+use yii\base\Exception;
+
 /**
  * This is the model class for table "expendable_detail".
  *
@@ -22,11 +25,12 @@ namespace common\models;
  */
 class ExpendableDetail extends \common\models\base\ActiveRecord
 {
-    const STOCK_INPUT = 10;
-    const STOCK_OUTPUT = 20;
-    public static $stockOperation = [
-        self::STOCK_INPUT => '入库' ,
-        self::STOCK_OUTPUT => '出库'
+    const OPERATION_INPUT = 10;
+    const OPERATION_OUTPUT = 20;
+
+    public static $operationData = [
+        self::OPERATION_INPUT => '入库',
+        self::OPERATION_OUTPUT => '出库'
     ];
 
     const STATUS_NORMAL = 0;
@@ -46,7 +50,7 @@ class ExpendableDetail extends \common\models\base\ActiveRecord
     public function rules()
     {
         return [
-            [['resource_id', 'container_id', 'rfid', 'operation', 'quantity', 'remark', 'scrap_at'], 'required'],
+            [['resource_id', 'container_id', 'rfid', 'operation', 'quantity', 'scrap_at'], 'required'],
             [['resource_id', 'container_id', 'operation', 'quantity', 'scrap_at', 'status', 'created_at', 'created_by'], 'integer'],
             [['rfid', 'remark'], 'string', 'max' => 255],
             [['container_id'], 'exist', 'skipOnError' => true, 'targetClass' => Container::className(), 'targetAttribute' => ['container_id' => 'id']],
@@ -64,7 +68,7 @@ class ExpendableDetail extends \common\models\base\ActiveRecord
             'resource_id' => '资源 ID',
             'container_id' => '货位 ID',
             'rfid' => 'RFID',
-            'operation' => '操作:出库、入库',
+            'operation' => '操作',
             'quantity' => '数量',
             'remark' => '说明',
             'scrap_at' => '报废时间',
@@ -93,8 +97,49 @@ class ExpendableDetail extends \common\models\base\ActiveRecord
     /**
      * @return string
      */
-    public function getStockOperation(){
-        return $this->toName($this->operation, self::$stockOperation);
+    public function getOperationName()
+    {
+        return $this->toName($this->operation, self::$operationData);
+    }
+
+    /**
+     * @param \common\models\Resource $resource
+     * @param $rfid
+     * @param $quantity
+     * @param $containerId
+     * @param $operation
+     * @param $remark
+     * @throws \yii\db\Exception
+     */
+    public static function createOne(\common\models\Resource $resource, $rfid, $quantity, $containerId, $operation, $remark = null)
+    {
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            // 修改货位库存
+            if ($operation == self::OPERATION_INPUT) {
+                $resource->current_stock += $quantity;
+            } elseif ($operation == self::OPERATION_OUTPUT) {
+                $resource->current_stock -= $quantity;
+            } else {
+                throw new Exception('未知的 operation');
+            }
+            $resource->save(false);
+            // 创建消耗品明细
+            $model = new self();
+            $model->resource_id = $resource->id;
+            $model->rfid = $rfid;
+            $model->quantity = $quantity;
+            $model->container_id = $containerId;
+            $model->operation = $operation;
+            $model->remark = $remark;
+            $model->scrap_at = time() + ($resource->scrap_cycle * 86400);
+            $model->save(false);
+
+            $transaction->commit();
+        } catch (Exception $e) {
+            $transaction->rollBack();
+            throw $e;
+        }
     }
 
 }

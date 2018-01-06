@@ -1,7 +1,7 @@
 <?php
 /** @var $this \yii\web\View */
-/** @var $model \common\models\ApplyOrder */
-/** @var $models \common\models\ApplyOrderDetail[] */
+/** @var $applyOrder \common\models\ApplyOrder */
+/** @var $applyOrderDetails \common\models\ApplyOrderDetail[] */
 /** @var $resourceData array */
 
 use backend\widgets\SimpleActiveForm;
@@ -14,13 +14,13 @@ use yii\helpers\Url;
 
 $form = SimpleActiveForm::begin();
 
-echo $form->field($model, 'person_id')->dropDownList(Person::findAllIdName(true), [
+echo $form->field($applyOrder, 'person_id')->dropDownList(Person::findAllIdName(true), [
     'prompt' => '请选择'
 ])->label('申请人');
-echo $form->field($model, 'reason')->textarea(['rows' => 4]);
+echo $form->field($applyOrder, 'reason')->textarea(['rows' => 4]);
 
 echo TabularInput::widget([
-    'models' => $models,
+    'models' => $applyOrderDetails,
     'attributeOptions' => [
         'enableAjaxValidation' => true,
         'enableClientValidation' => true,
@@ -51,6 +51,7 @@ echo TabularInput::widget([
         [
             'name' => 'container_id',
             'title' => '货位',
+            'enableError' => true,
             'type' => TabularColumn::TYPE_DROPDOWN,
             'items' => Container::findAllIdName(true, true),
             'options' => [
@@ -60,10 +61,12 @@ echo TabularInput::widget([
         [
             'name' => 'rfid',
             'title' => 'RFID',
+            'enableError' => true,
         ],
         [
             'name' => 'quantity',
             'title' => '数量',
+            'enableError' => true,
             'defaultValue' => 1,
         ],
 
