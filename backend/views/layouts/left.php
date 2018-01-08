@@ -12,13 +12,29 @@ $menuTitle = '总管理后台';
 $baseUrl = '';
 $menu = [
     ['label' => '首页', 'icon' => 'circle-o', 'url' => [$baseUrl . '/home']],
-    ['label' => '人员管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/person']],
-    ['label' => '职称管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/position']],
-    ['label' => '消耗品管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/res-expendable']],
-    ['label' => '消耗品详细', 'icon' => 'circle-o', 'url' => [$baseUrl . '/expendable-detail']],
-    ['label' => '设备管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/res-device']],
-    ['label' => '设备详细', 'icon' => 'circle-o', 'url' => [$baseUrl . '/device']],
-    ['label' => '设备使用明细', 'icon' => 'circle-o', 'url' => [$baseUrl . '/device-detail']],
+    [
+        'label' => '人员管理', 'icon' => 'list', 'url' => '#',
+        'items' => [
+            ['label' => '人员管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/person']],
+            ['label' => '职称管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/position']],
+        ]
+    ],
+    [
+        'label' => '消耗品管理', 'icon' => 'list', 'url' => '#',
+        'items' => [
+            ['label' => '消耗品列表', 'icon' => 'circle-o', 'url' => [$baseUrl . '/res-expendable']],
+            ['label' => '消耗品详细', 'icon' => 'circle-o', 'url' => [$baseUrl . '/expendable-detail']],
+        ]
+    ],
+    [
+        'label' => '设备管理', 'icon' => 'list', 'url' => '#',
+        'items' => [
+            ['label' => '设备列表', 'icon' => 'circle-o', 'url' => [$baseUrl . '/res-device']],
+            ['label' => '设备详细', 'icon' => 'circle-o', 'url' => [$baseUrl . '/device']],
+            ['label' => '设备使用明细', 'icon' => 'circle-o', 'url' => [$baseUrl . '/device-detail']],
+        ]
+    ],
+
     ['label' => '货区管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/container']],
     ['label' => '入库单管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-input']],
     ['label' => '用户管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/user']],

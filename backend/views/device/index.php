@@ -7,9 +7,9 @@ use backend\widgets\SimpleDynaGrid;
 use common\models\Device;
 use yii\helpers\Html;
 
-$this->title = '设备明细列表';
+$this->title = '设备详细列表';
 $this->params['breadcrumbs'] = [
-    '设备明细',
+    '设备管理',
     $this->title,
 ];
 
@@ -50,11 +50,11 @@ $columns = [
         'width' => '150px',
         'template' => '{detail}',
         'buttons' => [
-            'detail' => function ($url) {
+            'detail' => function ($url,$model) {
                 $options = [
                     'class' => 'btn btn-default',
                 ];
-                return Html::a('使用明细', $url, $options);
+                return Html::a('使用明细', ['/device-detail','DeviceDetailSearch[device_id]' => $model->id], $options);
             },
         ],
     ],

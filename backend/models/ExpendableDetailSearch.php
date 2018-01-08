@@ -16,6 +16,7 @@ class ExpendableDetailSearch extends ExpendableDetail
 
     public function search($params)
     {
+
         $query = ExpendableDetail::find()->andWhere(['status' => ExpendableDetail::STATUS_NORMAL]);
 
         $dataProvider = new ActiveDataProvider([

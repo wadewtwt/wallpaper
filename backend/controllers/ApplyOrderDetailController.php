@@ -3,17 +3,17 @@
 namespace backend\controllers;
 
 use backend\components\AuthWebController;
-use backend\models\DeviceDetailSearch;
+use backend\models\ApplyOrderDetailSearch;
 use Yii;
 
-class DeviceDetailController extends AuthWebController
+class ApplyOrderDetailController extends AuthWebController
 {
     // 列表
-    public function actionIndex()
+    public function actionIndex($id)
     {
         $this->rememberUrl();
 
-        $searchModel = new DeviceDetailSearch();
+        $searchModel = new ApplyOrderDetailSearch($id);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [

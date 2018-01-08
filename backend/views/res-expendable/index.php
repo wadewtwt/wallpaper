@@ -48,11 +48,11 @@ $columns = [
                 ];
                 return Html::a('删除', $url, $options);
             },
-            'expendable-detail' => function($url){
+            'expendable-detail' => function($url,$model){
                 $option = [
-                    'class' => 'btn btn-default show_ajax_modal'
+                    'class' => 'btn btn-default'
                 ];
-                return Html::a('物品明细', $url, $option);
+                return Html::a('物品明细', ['/expendable-detail','ExpendableDetailSearch[resource_id]'=>$model->id], $option);
             }
         ],
     ],

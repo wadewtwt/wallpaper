@@ -7,7 +7,7 @@ use yii\helpers\Html;
 
 $this->title = '职称管理列表';
 $this->params['breadcrumbs'] = [
-    '职称管理',
+    '人员管理',
     $this->title,
 ];
 

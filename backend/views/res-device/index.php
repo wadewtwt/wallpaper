@@ -34,8 +34,8 @@ $columns = [
     ],
     [
         'class' => '\kartik\grid\ActionColumn',
-        'width' => '150px',
-        'template' => '{update} {delete}',
+        'width' => '300px',
+        'template' => '{update} {delete} {detail}',
         'buttons' => [
             'update' => function ($url) {
                 $options = [
@@ -45,11 +45,17 @@ $columns = [
             },
             'delete' => function ($url) {
                 $options = [
-                    'class' => 'btn btn-default',
+                    'class' => 'btn btn-danger',
                     'data-method' => 'post',
                     'data-confirm' => '确定删除该设备？'
                 ];
                 return Html::a('删除', $url, $options);
+            },
+            'detail' => function ($url, $model) {
+                $options = [
+                    'class' => 'btn btn-default',
+                ];
+                return Html::a('物品明细', ['/device', 'DeviceSearch[resource_id]' => $model->id], $options);
             },
         ],
     ],

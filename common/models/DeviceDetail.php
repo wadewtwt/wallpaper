@@ -95,4 +95,10 @@ class DeviceDetail extends \common\models\base\ActiveRecord
         $model->remark = $remark;
         $model->save(false);
     }
+
+    public function getResource(){
+        return $this->hasOne(Resource::className(),['id' => 'resource_id'])
+            ->viaTable('device',['id' => 'device_id']);
+    }
+
 }

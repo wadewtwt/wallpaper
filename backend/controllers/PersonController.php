@@ -75,13 +75,6 @@ class PersonController extends AuthWebController
         return $this->actionPreviousRedirect();
     }
 
-    // 已删除人员
-    public function actionDeleteIndex()
-    {
-        $this->rememberUrl();
-
-    }
-
     /**
      * @param $id
      * @return null|static|Person

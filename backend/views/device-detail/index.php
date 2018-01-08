@@ -7,17 +7,20 @@ use common\models\DeviceDetail;
 
 $this->title = '设备使用明细列表';
 $this->params['breadcrumbs'] = [
-    '设备使用明细',
+    '设备管理',
     $this->title,
 ];
 
 $columns = [
     [
-        'attribute' => 'device.resource_id',
+        'attribute' => 'device_id',
+        'value' => function (DeviceDetail $model) {
+            return $model->resource->name;
+        }
     ],
     [
         'attribute' => 'operation',
-        'value' => function (DeviceDetail $model){
+        'value' => function (DeviceDetail $model) {
             return $model->getOperationName();
         }
     ],

@@ -3,21 +3,20 @@
 namespace backend\models;
 
 use common\components\ActiveDataProvider;
-use common\models\Person;
+use common\models\ApplyOrderDetail;
 
-class PersonSearch extends Person
+class ApplyOrderDetailSearch extends ApplyOrderDetail
 {
     public function rules()
     {
         return [
-            [['name', 'cellphone'], 'string'],
-            [['position_id'],'integer']
+            [['apply_order_id', 'resource_id', 'container_id'], 'integer'],
         ];
     }
 
     public function search($params)
     {
-        $query = Person::find()->andWhere(['status' => Person::STATUS_NORMAL]);
+        $query = ApplyOrderDetail::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -36,11 +35,10 @@ class PersonSearch extends Person
         }
 
         $query->andFilterWhere([
-            'position_id' => $this->position_id,
+            'apply_order_id' => $this->apply_order_id,
+            'resource_id' => $this->resource_id,
+            'container_id' => $this->container_id,
         ]);
-
-        $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'cellphone', $this->cellphone]);
 
         return $dataProvider;
     }

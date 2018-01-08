@@ -46,12 +46,6 @@ $columns = [
                 ];
                 return Html::a('删除', $url, $options);
             },
-            'device-detail' => function ($url) {
-                $options = [
-                    'class' => 'btn btn-default',
-                ];
-                return Html::a('查看装备领取记录', $url, $options);
-            },
         ],
     ],
 ];
@@ -64,9 +58,6 @@ $simpleDynaGrid = new SimpleDynaGrid([
         [
             'content' => Html::a('新增', ['create'], ['class' => 'btn btn-default show_ajax_modal'])
         ],
-        [
-            'content' => Html::a('查看已删除', ['delete-index'], ['class' => 'btn btn-default show_ajax_modal'])
-        ]
     ]
 ]);
 $simpleDynaGrid->renderDynaGrid();

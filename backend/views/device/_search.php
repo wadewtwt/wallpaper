@@ -1,6 +1,5 @@
 <?php
 /** @var $this yii\web\view */
-
 /** @var $model backend\models\DeviceSearch */
 
 use backend\widgets\SimpleSearchForm;
