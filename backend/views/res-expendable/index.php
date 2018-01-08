@@ -52,7 +52,7 @@ $columns = [
                 $option = [
                     'class' => 'btn btn-default'
                 ];
-                return Html::a('物品明细', ['/expendable-detail','ExpendableDetailSearch[resource_id]'=>$model->id], $option);
+                return Html::a('物品明细', ['/expendable-detail','resource_id'=>$model->id], $option);
             }
         ],
     ],

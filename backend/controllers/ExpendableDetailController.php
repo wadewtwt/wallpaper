@@ -12,11 +12,13 @@ use common\components\Tools;
 class ExpendableDetailController extends AuthWebController
 {
     // 列表
-    public function actionIndex()
+    public function actionIndex($resource_id='')
     {
         $this->rememberUrl();
 
-        $searchModel = new ExpendableDetailSearch();
+        $searchModel = new ExpendableDetailSearch([
+            'resource_id' => $resource_id
+        ]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [

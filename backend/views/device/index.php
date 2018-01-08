@@ -61,7 +61,7 @@ $columns = [
                 $options = [
                     'class' => 'btn btn-default',
                 ];
-                return Html::a('使用明细', ['/device-detail','DeviceDetailSearch[device_id]' => $model->id], $options);
+                return Html::a('使用明细', ['/device-detail','device_id' => $model->id], $options);
             },
         ],
     ],

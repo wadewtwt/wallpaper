@@ -9,11 +9,13 @@ use Yii;
 class DeviceDetailController extends AuthWebController
 {
     // 列表
-    public function actionIndex()
+    public function actionIndex($device_id = '')
     {
         $this->rememberUrl();
 
-        $searchModel = new DeviceDetailSearch();
+        $searchModel = new DeviceDetailSearch([
+            'device_id' => $device_id
+        ]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
