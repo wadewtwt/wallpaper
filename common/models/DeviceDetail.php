@@ -100,5 +100,4 @@ class DeviceDetail extends \common\models\base\ActiveRecord
         return $this->hasOne(Resource::className(),['id' => 'resource_id'])
             ->viaTable('device',['id' => 'device_id']);
     }
-
 }
