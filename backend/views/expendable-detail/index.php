@@ -6,7 +6,7 @@
 use backend\widgets\SimpleDynaGrid;
 use common\models\ExpendableDetail;
 
-$this->title = '消耗品明细列表';
+$this->title = '消耗品详细列表';
 $this->params['breadcrumbs'] = [
     '消耗品管理',
     $this->title,
