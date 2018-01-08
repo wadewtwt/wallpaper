@@ -17,6 +17,9 @@ class SearchController extends AuthWebController
         if (!is_null($q)) {
             $models = Resource::find()->select(['id', 'name', 'type'])
                 ->where(['like', 'name', $q])
+                ->andFilterWhere([
+                    'type' => Yii::$app->request->get('type')
+                ])
                 ->limit(20)
                 ->all();
             $newData = [];

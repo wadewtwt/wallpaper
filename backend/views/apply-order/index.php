@@ -1,14 +1,13 @@
 <?php
 /** @var $this yii\web\View */
 /** @var $dataProvider common\components\ActiveDataProvider */
-
 /** @var $searchModel backend\models\ApplyOrderSearch */
 
 use backend\widgets\SimpleDynaGrid;
 use yii\helpers\Html;
 use common\models\ApplyOrder;
 
-$typeName = '入库';
+$typeName = $searchModel->getTypeName();
 
 $this->title = $typeName . '单管理列表';
 $this->params['breadcrumbs'] = [

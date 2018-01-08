@@ -1,6 +1,7 @@
 <?php
 /** @var $this yii\web\View */
 /** @var $dataProvider common\components\ActiveDataProvider */
+
 /** @var $searchModel backend\models\DeviceSearch */
 
 use backend\widgets\SimpleDynaGrid;
@@ -26,7 +27,7 @@ $columns = [
     ],
     [
         'attribute' => 'is_online',
-        'value' => function (Device $model){
+        'value' => function (Device $model) {
             return $model->is_online ? '在线' : '离线';
         }
     ],
@@ -44,6 +45,12 @@ $columns = [
     ],
     [
         'attribute' => 'quantity',
+    ],
+    [
+        'attribute' => 'status',
+        'value' => function (Device $model) {
+            return $model->getStatusName();
+        }
     ],
     [
         'class' => '\kartik\grid\ActionColumn',

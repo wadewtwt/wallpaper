@@ -83,23 +83,57 @@ class ApplyOrderDetail extends \common\models\base\ActiveRecord
         return $this->hasOne(ApplyOrder::className(), ['id' => 'apply_order_id']);
     }
 
-    public function saveToResource()
+    /**
+     * 处理明细操作
+     * @param $applyOrderType
+     * @throws Exception
+     * @throws \yii\db\Exception
+     */
+    public function solveOrderDetail($applyOrderType)
     {
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            // 资源保存到对应表中
+            switch ($applyOrderType) {
+                case ApplyOrder::TYPE_INPUT:
+                    $containerFreeCountPlus = -1; // 货位空闲数增加数
+                    $expendableOperation = ExpendableDetail::OPERATION_INPUT; // 消耗品操作
+                    $deviceOperation = DeviceDetail::OPERATION_INPUT; // 设备明细操作
+                    break;
+                case ApplyOrder::TYPE_OUTPUT:
+                    $containerFreeCountPlus = 1;
+                    $expendableOperation = ExpendableDetail::OPERATION_OUTPUT;
+                    $deviceOperation = DeviceDetail::OPERATION_OUTPUT;
+                    break;
+                case ApplyOrder::TYPE_APPLY:
+                    $containerFreeCountPlus = 1;
+                    $expendableOperation = false;
+                    $deviceOperation = DeviceDetail::OPERATION_APPLY;
+                    break;
+                case ApplyOrder::TYPE_RETURN:
+                    $containerFreeCountPlus = -1;
+                    $expendableOperation = false;
+                    $deviceOperation = DeviceDetail::OPERATION_RETURN;
+                    break;
+                default:
+                    throw new Exception('未知的 $applyOrderType');
+            }
+
+            // 修改对应资源的信息
             $resource = $this->resource;
             if ($resource->type == Resource::TYPE_EXPENDABLE) {
-                ExpendableDetail::createOne($resource, $this->rfid, $this->quantity, $this->container_id, ExpendableDetail::OPERATION_INPUT);
+                if ($expendableOperation === false) {
+                    throw new Exception("applyOrderType 为 {$applyOrderType} 时，不允许操作消耗品");
+                }
+                ExpendableDetail::createOne($resource, $this->rfid, $this->quantity, $this->container_id, $expendableOperation);
             } elseif ($resource->type == Resource::TYPE_DEVICE) {
-                Device::createOne($resource, $this->rfid, $this->quantity, $this->container_id);
+                Device::createOne($resource, $this->rfid, $this->quantity, $this->container_id, $deviceOperation);
             } else {
                 throw new Exception('未知的 type');
             }
-            // 货位库存减少
-            $count = Container::updateAllCounters(['free_quantity' => -1], ['id' => $this->container_id]);
+            // 处理货位信息
+            $count = Container::updateAllCounters(['free_quantity' => $containerFreeCountPlus], ['id' => $this->container_id]);
             if ($count != 1) {
-                throw new Exception('货位库存减少失败');
+                throw new Exception('货位库存处理失败');
             }
 
             $transaction->commit();
@@ -108,4 +142,5 @@ class ApplyOrderDetail extends \common\models\base\ActiveRecord
             throw $e;
         }
     }
+
 }

@@ -1,12 +1,15 @@
 <?php
 /** @var $this \yii\web\View */
-/** @var $applyOrder \common\models\ApplyOrder */
+/** @var $applyOrder ApplyOrder */
 /** @var $applyOrderDetails \common\models\ApplyOrderDetail[] */
+
 /** @var $resourceData array */
 
 use backend\widgets\SimpleActiveForm;
+use common\models\ApplyOrder;
 use common\models\Container;
 use common\models\Person;
+use common\models\Resource;
 use kartik\select2\Select2;
 use unclead\multipleinput\TabularColumn;
 use unclead\multipleinput\TabularInput;
@@ -14,10 +17,18 @@ use yii\helpers\Url;
 
 $form = SimpleActiveForm::begin();
 
+$resourceSearchUrl = Url::to(['/search/resource']);
+if (in_array($applyOrder->type, [ApplyOrder::TYPE_APPLY, ApplyOrder::TYPE_RETURN])) {
+    $resourceSearchUrl = Url::to(['/search/resource', 'type' => Resource::TYPE_DEVICE]);
+}
+
 echo $form->field($applyOrder, 'person_id')->dropDownList(Person::findAllIdName(true), [
     'prompt' => '请选择'
 ])->label('申请人');
 echo $form->field($applyOrder, 'reason')->textarea(['rows' => 4]);
+if ($applyOrder->type == ApplyOrder::TYPE_APPLY) {
+    echo $form->field($applyOrder, 'pick_type')->dropDownList(ApplyOrder::$pickTypeData);
+}
 
 echo TabularInput::widget([
     'models' => $applyOrderDetails,
@@ -42,9 +53,7 @@ echo TabularInput::widget([
                 'pluginOptions' => [
                     'allowClear' => true,
                     'minimumInputLength' => 1,
-                    'ajax' => [
-                        'url' => Url::to(['/search/resource']),
-                    ],
+                    'ajax' => ['url' => $resourceSearchUrl,],
                 ],
             ],
         ],
