@@ -10,7 +10,7 @@ $form = ActiveForm::begin();
 ?>
     <div class="container">
         <div class="page-header">
-            <h1 class="text-center">入库单</h1>
+            <h1 class="text-center"><?= $applyOrder->getTypeName()?>单</h1>
         </div>
         <div>
             <p><strong>申请人：</strong><?= $applyOrder->person->name ?></p>

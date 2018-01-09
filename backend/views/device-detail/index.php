@@ -14,13 +14,13 @@ $this->params['breadcrumbs'] = [
 $columns = [
     [
         'attribute' => 'device_id',
-        'value' => function (DeviceDetail $model) {
+        'value' => function (DeviceDetail $model){
             return $model->resource->name;
         }
     ],
     [
         'attribute' => 'operation',
-        'value' => function (DeviceDetail $model) {
+        'value' => function (DeviceDetail $model){
             return $model->getOperationName();
         }
     ],
