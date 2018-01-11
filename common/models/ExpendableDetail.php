@@ -120,9 +120,9 @@ class ExpendableDetail extends \common\models\base\ActiveRecord
         $transaction = Yii::$app->db->beginTransaction();
         try {
             // 修改货位库存
-            if (in_array($operation,[self::OPERATION_INPUT, self::OPERATION_RETURN])) {
+            if (in_array($operation, [self::OPERATION_INPUT, self::OPERATION_RETURN])) {
                 $resource->current_stock += $quantity;
-            } elseif (in_array($operation,[self::OPERATION_OUTPUT, self::OPERATION_APPLY])) {
+            } elseif (in_array($operation, [self::OPERATION_OUTPUT, self::OPERATION_APPLY])) {
                 $resource->current_stock -= $quantity;
             } else {
                 throw new Exception('未知的 operation');
