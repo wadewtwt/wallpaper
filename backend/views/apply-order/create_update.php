@@ -9,7 +9,6 @@ use backend\widgets\SimpleActiveForm;
 use common\models\ApplyOrder;
 use common\models\Container;
 use common\models\Person;
-use common\models\Resource;
 use kartik\select2\Select2;
 use unclead\multipleinput\TabularColumn;
 use unclead\multipleinput\TabularInput;
@@ -18,9 +17,6 @@ use yii\helpers\Url;
 $form = SimpleActiveForm::begin();
 
 $resourceSearchUrl = Url::to(['/search/resource']);
-if (in_array($applyOrder->type, [ApplyOrder::TYPE_APPLY, ApplyOrder::TYPE_RETURN])) {
-    $resourceSearchUrl = Url::to(['/search/resource', 'type' => Resource::TYPE_DEVICE]);
-}
 
 echo $form->field($applyOrder, 'person_id')->dropDownList(Person::findAllIdName(true), [
     'prompt' => '请选择'

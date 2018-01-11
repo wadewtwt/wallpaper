@@ -27,10 +27,14 @@ class ExpendableDetail extends \common\models\base\ActiveRecord
 {
     const OPERATION_INPUT = 10;
     const OPERATION_OUTPUT = 20;
+    const OPERATION_APPLY = 30;
+    const OPERATION_RETURN = 40;
 
     public static $operationData = [
         self::OPERATION_INPUT => '入库',
-        self::OPERATION_OUTPUT => '出库'
+        self::OPERATION_OUTPUT => '出库',
+        self::OPERATION_APPLY => '申领',
+        self::OPERATION_RETURN => '退还'
     ];
 
     const STATUS_NORMAL = 0;
@@ -116,9 +120,9 @@ class ExpendableDetail extends \common\models\base\ActiveRecord
         $transaction = Yii::$app->db->beginTransaction();
         try {
             // 修改货位库存
-            if ($operation == self::OPERATION_INPUT) {
+            if (in_array($operation,[self::OPERATION_INPUT, self::OPERATION_RETURN])) {
                 $resource->current_stock += $quantity;
-            } elseif ($operation == self::OPERATION_OUTPUT) {
+            } elseif (in_array($operation,[self::OPERATION_OUTPUT, self::OPERATION_APPLY])) {
                 $resource->current_stock -= $quantity;
             } else {
                 throw new Exception('未知的 operation');

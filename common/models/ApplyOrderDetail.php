@@ -106,12 +106,12 @@ class ApplyOrderDetail extends \common\models\base\ActiveRecord
                     break;
                 case ApplyOrder::TYPE_APPLY:
                     $containerFreeCountPlus = 1;
-                    $expendableOperation = false;
+                    $expendableOperation = ExpendableDetail::OPERATION_APPLY;
                     $deviceOperation = DeviceDetail::OPERATION_APPLY;
                     break;
                 case ApplyOrder::TYPE_RETURN:
                     $containerFreeCountPlus = -1;
-                    $expendableOperation = false;
+                    $expendableOperation = ExpendableDetail::OPERATION_RETURN;
                     $deviceOperation = DeviceDetail::OPERATION_RETURN;
                     break;
                 default:
@@ -121,9 +121,6 @@ class ApplyOrderDetail extends \common\models\base\ActiveRecord
             // 修改对应资源的信息
             $resource = $this->resource;
             if ($resource->type == Resource::TYPE_EXPENDABLE) {
-                if ($expendableOperation === false) {
-                    throw new Exception("applyOrderType 为 {$applyOrderType} 时，不允许操作消耗品");
-                }
                 ExpendableDetail::createOne($resource, $this->rfid, $this->quantity, $this->container_id, $expendableOperation);
             } elseif ($resource->type == Resource::TYPE_DEVICE) {
                 Device::createOne($resource, $this->rfid, $this->quantity, $this->container_id, $deviceOperation);
