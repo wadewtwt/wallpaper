@@ -34,6 +34,7 @@ class ApplyOrder extends \common\models\base\ActiveRecord
     const STATUS_APPLYING = 0; // 申请中
     const STATUS_OPERATE_PRINT = 1; // 打印，仅作状态校验
     const STATUS_OPERATE_UPDATE = 2; // 修改，仅作状态校验
+    const STATUS_OPERATE_RETURN = 3; // 退还
     const STATUS_AUDITED = 10; // 审核通过
     const STATUS_OVER = 30; // 已完成
     const STATUS_DELETE = 99; // 作废
@@ -155,6 +156,7 @@ class ApplyOrder extends \common\models\base\ActiveRecord
             case self::STATUS_OPERATE_PRINT:
             case self::STATUS_OPERATE_UPDATE:
             case self::STATUS_AUDITED:
+            case self::STATUS_OPERATE_RETURN;
                 return $this->status == self::STATUS_APPLYING;
             case self::STATUS_OVER:
                 return $this->status == self::STATUS_AUDITED;
@@ -164,4 +166,5 @@ class ApplyOrder extends \common\models\base\ActiveRecord
                 return false;
         }
     }
+
 }

@@ -1,19 +1,18 @@
 <?php
 /** @var $this \yii\web\View */
-/** @var $applyOrder \common\models\ApplyOrder */
-/** @var $applyOrderDetails \common\models\ApplyOrderDetail[] */
+/** @var $model \common\models\ApplyOrder */
+/** @var $model \common\models\ApplyOrderDetail */
+/** @var $applyOrder */
+/** @var $applyOrderDetails */
 
-use yii\widgets\ActiveForm;
-
-$form = ActiveForm::begin();
 ?>
     <div class="container">
         <div class="page-header">
-            <h1 class="text-center"><?= $applyOrder->getTypeName()?>单</h1>
+            <h1 class="text-center"><?= $applyOrder->getTypeName() ?>单</h1>
         </div>
         <div>
-            <p><strong>申请人：</strong><?= $applyOrder->person->name ?></p>
-            <p><strong>申请理由：</strong><?= $applyOrder->reason ?></p>
+            <p><strong>退还人：</strong><?= $applyOrder->person->name ?></p>
+            <p><strong>退还理由：</strong><?= $applyOrder->reason ?></p>
             <p><strong>创建时间：</strong><?= date('Y-m-d H:i:s', $applyOrder->created_at) ?></p>
         </div>
 
@@ -28,23 +27,21 @@ $form = ActiveForm::begin();
             </tr>
             </thead>
             <tbody>
+
             <?php foreach ($applyOrderDetails as $key => $applyOrderDetail): ?>
                 <tr class="text-center">
                     <td><?= ($key + 1) ?></td>
                     <td><?= $applyOrderDetail->resource->name ?></td>
                     <td><?= $applyOrderDetail->container->name ?></td>
-                    <td><?= $form->field($applyOrderDetail, "[{$key}]rfid")->label(false) ?></td>
+                    <td><?= $applyOrderDetail->rfid ?></td>
                     <td><?= $applyOrderDetail->quantity ?></td>
                 </tr>
             <?php endforeach; ?>
             </tbody>
         </table>
     </div>
-
     <div class="container">
-        <a href="javascript:history.go(-1)" class="btn btn-default">取消</a>
-        <input type="submit" value="完成" class="btn btn-primary">
+        <a href="javascript:history.go(-1)" class="btn btn-default">返回</a>
     </div>
 
-<?php
-ActiveForm::end();
+
