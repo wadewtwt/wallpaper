@@ -13,6 +13,10 @@ $this->params['breadcrumbs'] = [
     $this->title
 ];
 
+echo $this->render('_search', [
+    'model' => $searchModel
+]);
+
 $columns = [
     [
         'attribute' => 'created_at',

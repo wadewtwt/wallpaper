@@ -59,6 +59,11 @@ class ApplyOrder extends \common\models\base\ActiveRecord
         self::STATUS_DELETE => '作废',
     ];
 
+    public static $returnStatusData = [
+        self::STATUS_APPLYING => '申请中',
+        self::STATUS_OVER => '已完成'
+    ];
+
     /**
      * @inheritdoc
      */
