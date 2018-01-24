@@ -18,10 +18,12 @@ echo $this->render('_search', [
 
 $columns = [
     [
-        'attribute' => 'resource.name'
+        'attribute' => 'resource.name',
+        'label' => '设备名称'
     ],
     [
         'attribute' => 'container.name',
+        'label' => '货位名称'
     ],
     [
         'attribute' => 'operation',
