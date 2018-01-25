@@ -50,7 +50,6 @@ class ApplyOrderReturnController extends AuthWebController
         if ($request->isPost) {
             Model::loadMultiple($applyOrderDetails, $request->post());
             Model::validateMultiple($applyOrderDetails);
-
             // 过滤，当消耗品的数量为0或者空时,他的rfid可以为空，其他rfid为空的都报错
             foreach ($applyOrderDetails as $applyOrderDetail) {
                 if(empty($applyOrderDetail->rfid)){
