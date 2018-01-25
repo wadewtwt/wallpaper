@@ -10,7 +10,8 @@ class ApplyOrderSearch extends ApplyOrder
     public function rules()
     {
         return [
-            [['person_id', 'status'], 'integer'],
+            [['person_id'], 'integer'],
+            [['status'], 'safe'],
         ];
     }
 

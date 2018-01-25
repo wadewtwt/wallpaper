@@ -6,6 +6,7 @@
 /** @var $applyOrderDetails */
 
 use yii\widgets\ActiveForm;
+use common\models\Container;
 
 $form = ActiveForm::begin();
 ?>
@@ -35,7 +36,7 @@ $form = ActiveForm::begin();
                 <tr class="text-center">
                     <td><?= ($key + 1) ?></td>
                     <td><?= $applyOrderDetail->resource->name ?></td>
-                    <td><?= $applyOrderDetail->container->name ?></td>
+                    <td><?= $form->field($applyOrderDetail->container,"[{$key}]id")->dropDownList(Container::findAllIdName(true),[])->label('')?></td>
                     <td><?php echo $form->field($applyOrderDetail, "[{$key}]rfid")->label('')->textInput(['value'=>'']) ?></td>
                     <td><?php echo $form->field($applyOrderDetail, "[{$key}]quantity")->label('') ?></td>
                 </tr>

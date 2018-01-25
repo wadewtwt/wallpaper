@@ -34,23 +34,23 @@ $columns = [
     [
         'attribute' => 'status',
         'value' => function(ApplyOrder $model){
-            return $model->getStatusName();
+            return $model->getReturnStatusName();
         }
     ],
 
     [
         'class' => '\kartik\grid\ActionColumn',
         'width' => '350px',
-        'template' => '{detail} {look}',
+        'template' => '{return} {look}',
         'buttons' => [
-            'detail' => function ($url,$model) {
+            'return' => function ($url,$model) {
                 $options = [
                     'class' => 'btn btn-default',
                 ];
-                if ($model->status == ApplyOrder::STATUS_OVER){
+                if ($model->status == ApplyOrder::STATUS_RETURN_OVER){
                     return '';
                 }
-                return Html::a('明细', $url, $options);
+                return Html::a('退还', $url, $options);
             },
             'look' => function ($url) {
                 $options = [

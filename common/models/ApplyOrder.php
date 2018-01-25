@@ -37,6 +37,7 @@ class ApplyOrder extends \common\models\base\ActiveRecord
     const STATUS_OPERATE_RETURN = 3; // 退还
     const STATUS_AUDITED = 10; // 审核通过
     const STATUS_OVER = 30; // 已完成
+    const STATUS_RETURN_OVER = 40;// 已归还
     const STATUS_DELETE = 99; // 作废
 
     public static $typeData = [
@@ -60,9 +61,10 @@ class ApplyOrder extends \common\models\base\ActiveRecord
     ];
 
     public static $returnStatusData = [
-        self::STATUS_APPLYING => '申请中',
-        self::STATUS_OVER => '已完成'
+        self::STATUS_OVER => '借出中',
+        self::STATUS_RETURN_OVER => '已归还',
     ];
+
 
     /**
      * @inheritdoc
@@ -149,6 +151,15 @@ class ApplyOrder extends \common\models\base\ActiveRecord
     }
 
     /**
+     * 退还状态：已借出、以退还
+     * @return string
+     */
+    public function getReturnStatusName()
+    {
+        return $this->toName($this->status,self::$returnStatusData);
+    }
+
+    /**
      * 检查状态
      * @param $toStatus
      * @return bool
@@ -165,6 +176,8 @@ class ApplyOrder extends \common\models\base\ActiveRecord
                 return $this->status == self::STATUS_APPLYING;
             case self::STATUS_OVER:
                 return $this->status == self::STATUS_AUDITED;
+            case self::STATUS_RETURN_OVER:
+                return $this->status == self::STATUS_OVER;
             case self::STATUS_DELETE:
                 return !in_array($this->status, [self::STATUS_DELETE, self::STATUS_OVER]);
             default:
