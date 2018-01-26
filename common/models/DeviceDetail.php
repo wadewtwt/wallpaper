@@ -107,4 +107,5 @@ class DeviceDetail extends \common\models\base\ActiveRecord
             ->orderBy('created_at desc')
             ->all();
     }
+
 }
