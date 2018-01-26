@@ -3,10 +3,18 @@
 
 use backend\widgets\SimpleAjaxForm;
 
-$form = SimpleAjaxForm::begin(['header' => ($model->isNewRecord) ? '新增' : '编辑']);
+$isEdit = ($model->isNewRecord) ? 0 : 1;
+$form = SimpleAjaxForm::begin(['header' => $isEdit ? '编辑' : '新增']);
 echo $form->field($model, 'name');
 echo $form->field($model, 'min_stock');
-echo $form->field($model, 'current_stock')->textInput(['readonly'=>'true']);
-echo $form->field($model, 'scrap_cycle')->textInput(['readonly'=>'true']);
-echo $form->field($model, 'maintenance_cycle')->textInput(['readonly'=>'true']);
+if($isEdit){
+    echo $form->field($model, 'current_stock')->textInput(['readonly'=>'true']);
+    echo $form->field($model, 'scrap_cycle')->textInput(['readonly'=>'true']);
+    echo $form->field($model, 'maintenance_cycle')->textInput(['readonly'=>'true']);
+}else{
+    echo $form->field($model, 'current_stock');
+    echo $form->field($model, 'scrap_cycle');
+    echo $form->field($model, 'maintenance_cycle');
+}
+
 SimpleAjaxForm::end();
