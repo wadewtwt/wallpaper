@@ -166,7 +166,6 @@ abstract class AbstractApplyOrderController extends AuthWebController
                 }
             }
         }
-
         return $this->render('../apply-order/over', [
             'applyOrder' => $applyOrder,
             'applyOrderDetails' => $applyOrderDetails,
