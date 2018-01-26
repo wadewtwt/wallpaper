@@ -3,7 +3,6 @@
  /** @var $this \yii\web\View */
 ?>
 
-<div class="col-lg-12 col-xs-6">
     <div class="box box-info">
         <div class="box-header with-border">
             <h3 class="box-title">报警记录</h3>
@@ -47,4 +46,3 @@
             </div>
         </div>
     </div>
-</div>
