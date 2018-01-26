@@ -9,7 +9,6 @@ use Yii;
 use yii\web\NotFoundHttpException;
 use yii\base\Model;
 use backend\components\MessageAlert;
-use yii\helpers\ArrayHelper;
 use yii\base\Exception;
 use backend\exceptions\StatusNotAllowedException;
 use common\models\Resource;
@@ -72,13 +71,12 @@ class ApplyOrderReturnController extends AuthWebController
                     $applyOrderDetail->solveOrderDetail(ApplyOrder::TYPE_RETURN);
                 }
                 // 保存申请单
-                $applyOrder->status = ApplyOrder::STATUS_OVER;
+                $applyOrder->status = ApplyOrder::STATUS_RETURN_OVER;
                 $applyOrder->save(false);
 
                 $transaction->commit();
                 MessageAlert::set(['success' => '操作成功']);
-
-                return $this->actionPreviousRedirect();
+                return $this->redirect(['/apply-order-return']);
             } catch (Exception $e) {
                 $transaction->rollBack();
                 MessageAlert::set(['error' => '操作失败：' . $e->getMessage()]);

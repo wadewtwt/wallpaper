@@ -46,7 +46,7 @@ $form = ActiveForm::begin();
     </div>
     <div class="container">
         <a href="javascript:history.go(-1)" class="btn btn-default">取消</a>
-        <input type="submit" value="完成" class="btn btn-primary">
+        <input type="submit" value="退还" class="btn btn-primary">
     </div>
 
 <?php

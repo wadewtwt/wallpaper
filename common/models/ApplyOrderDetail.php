@@ -106,10 +106,12 @@ class ApplyOrderDetail extends \common\models\base\ActiveRecord
                     break;
                 case ApplyOrder::TYPE_APPLY:
                     $containerFreeCountPlus = 1;
+                    $expendableOperation = ExpendableDetail::OPERATION_OUTPUT;
                     $deviceOperation = DeviceDetail::OPERATION_APPLY;
                     break;
                 case ApplyOrder::TYPE_RETURN:
                     $containerFreeCountPlus = -1;
+                    $expendableOperation = ExpendableDetail::OPERATION_OUTPUT;
                     $deviceOperation = DeviceDetail::OPERATION_RETURN;
                     break;
                 default:

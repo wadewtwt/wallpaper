@@ -27,10 +27,14 @@ class ExpendableDetail extends \common\models\base\ActiveRecord
 {
     const OPERATION_INPUT = 10;
     const OPERATION_OUTPUT = 20;
+    const OPERATION_APPLY = 30;
+    const OPERATION_RETURN = 40;
 
     public static $operationData = [
         self::OPERATION_INPUT => '入库',
         self::OPERATION_OUTPUT => '出库',
+        self::OPERATION_APPLY => '申领',
+        self::OPERATION_RETURN => '归还',
     ];
 
     const STATUS_NORMAL = 0;
@@ -140,6 +144,19 @@ class ExpendableDetail extends \common\models\base\ActiveRecord
             $transaction->rollBack();
             throw $e;
         }
+    }
+
+    /**
+     * 根据更新时间统计消耗品的最新几个
+     * @param int $num
+     * @return array|\yii\db\ActiveRecord[]
+     */
+    public static function countList($num = 5){
+        return self::find()
+            ->where(['status' => ExpendableDetail::STATUS_NORMAL])
+            ->limit($num)
+            ->orderBy('created_at desc')
+            ->all();
     }
 
 }

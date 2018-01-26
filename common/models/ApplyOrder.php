@@ -57,14 +57,15 @@ class ApplyOrder extends \common\models\base\ActiveRecord
         self::STATUS_APPLYING => '申请中',
         self::STATUS_AUDITED => '审核通过',
         self::STATUS_OVER => '已完成',
+        self::STATUS_RETURN_OVER => '已归还',
         self::STATUS_DELETE => '作废',
     ];
 
+    // 退回的状态
     public static $returnStatusData = [
         self::STATUS_OVER => '借出中',
         self::STATUS_RETURN_OVER => '已归还',
     ];
-
 
     /**
      * @inheritdoc
@@ -183,6 +184,40 @@ class ApplyOrder extends \common\models\base\ActiveRecord
             default:
                 return false;
         }
+    }
+
+    /**
+     * 统计近七天的入库单子
+     * @return int|string
+     */
+    public static function countNear7DaysInputOrders(){
+        $agoTime = intval(time() - 7*86400);
+        return self::find()->where(['>','updated_at',$agoTime])->andWhere(['type' => self::TYPE_INPUT, 'status' => self::STATUS_OVER])->count();
+    }
+
+    /**
+     * 统计近7天出库和申领的单子
+     * @return int|string
+     */
+    public static function countNear7DaysOutputApplyOrders(){
+        $agoTime = intval(time() - 7*86400);
+        $typeOutputAndApply = [
+            self::TYPE_OUTPUT,
+            self::TYPE_APPLY,
+        ];
+        return self::find()->where(['>','updated_at',$agoTime])->andWhere(['type' => $typeOutputAndApply, 'status' => self::STATUS_OVER])->count();
+    }
+
+    /**
+     * 首页列表那边的调用
+     * @return array|\yii\db\ActiveRecord[]
+     */
+    public static function countList($num = 5){
+        $model = self::find()
+            ->limit($num)
+            ->orderBy('updated_at desc')
+            ->all();
+        return $model;
     }
 
 }

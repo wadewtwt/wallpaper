@@ -100,4 +100,12 @@ class Person extends \common\models\base\ActiveRecord
         return $model;
     }
 
+    /**
+     * 计算符合标准的总人数
+     * @return int|string
+     */
+    public static function countAllPerson(){
+        return self::find()->where(['status' => self::STATUS_NORMAL])->count();
+    }
+
 }
