@@ -4,7 +4,7 @@
 use backend\widgets\SimpleAjaxForm;
 
 $isEdit = ($model->isNewRecord) ? 0 : 1;
-$form = SimpleAjaxForm::begin(['header' => ($model->isNewRecord) ? '新增' : '编辑']);
+$form = SimpleAjaxForm::begin(['header' => $isEdit ? '编辑' : '新增']);
 echo $form->field($model, 'name');
 echo $form->field($model, 'min_stock');
 if($isEdit){
