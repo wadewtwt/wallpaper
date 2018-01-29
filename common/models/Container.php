@@ -2,6 +2,8 @@
 
 namespace common\models;
 
+use common\models\base\Enum;
+use yii\base\Exception;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -19,8 +21,9 @@ use yii\helpers\ArrayHelper;
  * @property integer $updated_at
  * @property integer $updated_by
  *
- * @property ApplyOrderDetailResource[] $applyOrderDetailResources
+ * @property ApplyOrderResource[] $applyOrderResources
  * @property Store $store
+ * @property ResourceDetail[] $resourceDetails
  */
 class Container extends \common\models\base\ActiveRecord
 {
@@ -38,7 +41,7 @@ class Container extends \common\models\base\ActiveRecord
     public function rules()
     {
         return [
-            [['store_id', 'name', 'total_quantity', 'current_quantity'], 'required'],
+            [['store_id', 'name', 'total_quantity'], 'required'],
             [['store_id', 'total_quantity', 'current_quantity', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['name', 'remark'], 'string', 'max' => 255],
             [['store_id'], 'exist', 'skipOnError' => true, 'targetClass' => Store::className(), 'targetAttribute' => ['store_id' => 'id']],
@@ -68,9 +71,9 @@ class Container extends \common\models\base\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getApplyOrderDetailResources()
+    public function getApplyOrderResources()
     {
-        return $this->hasMany(ApplyOrderDetailResource::className(), ['container_id' => 'id']);
+        return $this->hasMany(ApplyOrderResource::className(), ['container_id' => 'id']);
     }
 
     /**
@@ -87,6 +90,14 @@ class Container extends \common\models\base\ActiveRecord
     public function getResourceDetails()
     {
         return $this->hasMany(ResourceDetail::className(), ['container_id' => 'id']);
+    }
+
+    /**
+     * @return int
+     */
+    public function getFreeQuantity()
+    {
+        return $this->total_quantity - $this->current_quantity;
     }
 
     /**
@@ -119,10 +130,33 @@ class Container extends \common\models\base\ActiveRecord
     }
 
     /**
+     * 根据申请单类型更改当前库存
+     * @param $applyOrderType
+     * @param $containerId
+     * @param int $quantity
+     * @throws Exception
+     */
+    public static function updateCurrentQuantityByApplyOrderType($applyOrderType, $containerId, $quantity = 1)
+    {
+        if (in_array($applyOrderType, [Enum::APPLY_ORDER_TYPE_INPUT, Enum::APPLY_ORDER_TYPE_RETURN])) {
+            $quantity = +$quantity;
+        } else if (in_array($applyOrderType, [Enum::APPLY_ORDER_TYPE_OUTPUT, Enum::APPLY_ORDER_TYPE_APPLY])) {
+            $quantity = -$quantity;
+        } else {
+            throw new Exception('未知的 applyOrderType');
+        }
+        $count = static::updateAllCounters(['current_quantity' => $quantity], ['id' => $containerId]);
+        if ($count != 1) {
+            throw new Exception('货位库存处理失败');
+        }
+    }
+
+    /**
      * 计算总货架数
      * @return int|string
      */
-    public static function countAllContainer(){
+    public static function countAllContainer()
+    {
         return self::find()->count();
     }
 }

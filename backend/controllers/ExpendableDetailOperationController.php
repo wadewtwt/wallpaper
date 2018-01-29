@@ -4,7 +4,7 @@ namespace backend\controllers;
 
 use common\models\Resource;
 
-class ExpendableDetailController extends AbstractResourceDetailController
+class ExpendableDetailOperationController extends AbstractResourceDetailOperationController
 {
     const RESOURCE_TYPE = Resource::TYPE_EXPENDABLE;
 }

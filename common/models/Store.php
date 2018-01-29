@@ -2,7 +2,7 @@
 
 namespace common\models;
 
-use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "store".
@@ -90,5 +90,18 @@ class Store extends \common\models\base\ActiveRecord
     public function getTemperatures()
     {
         return $this->hasMany(Temperature::className(), ['store_id' => 'id']);
+    }
+
+    /**
+     * @param bool $map
+     * @return array|Store[]
+     */
+    public static function findAllIdName($map = false)
+    {
+        $models = static::find()->select(['id', 'name'])->asArray()->all();
+        if ($map) {
+            return ArrayHelper::map($models, 'id', 'name');
+        }
+        return $models;
     }
 }

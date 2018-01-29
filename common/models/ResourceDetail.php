@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use common\models\base\Enum;
 use Yii;
 use yii\base\Exception;
 
@@ -121,71 +122,89 @@ class ResourceDetail extends \common\models\base\ActiveRecord
     }
 
     /**
+     * @return string
+     */
+    public function getTypeName()
+    {
+        return $this->toName($this->type, Resource::$typeData);
+    }
+
+    /**
+     * @param $applyOrderType
+     * @throws Exception
+     */
+    protected function changeStatusByApplyOrderType($applyOrderType)
+    {
+        if ($this->type == Resource::TYPE_DEVICE) {
+            if ($applyOrderType == Enum::APPLY_ORDER_TYPE_OUTPUT) {
+                $this->status = self::STATUS_OUTPUT;
+            } elseif ($applyOrderType == Enum::APPLY_ORDER_TYPE_APPLY) {
+                $this->status = self::STATUS_PICKED;
+            } elseif (in_array($applyOrderType, [Enum::APPLY_ORDER_TYPE_RETURN, Enum::APPLY_ORDER_TYPE_INPUT])) {
+                $this->status = self::STATUS_NORMAL;
+            } else {
+                throw new Exception('未知的 applyOrderType');
+            }
+        } elseif ($this->type == Resource::TYPE_EXPENDABLE) {
+            if (in_array($applyOrderType, [Enum::APPLY_ORDER_TYPE_OUTPUT, Enum::APPLY_ORDER_TYPE_APPLY])) {
+                $this->status = self::STATUS_OUTPUT;
+            } elseif (in_array($applyOrderType, [Enum::APPLY_ORDER_TYPE_RETURN, Enum::APPLY_ORDER_TYPE_INPUT])) {
+                $this->status = self::STATUS_NORMAL;
+            } else {
+                throw new Exception('未知的 applyOrderType');
+            }
+        } else {
+            throw new Exception('未知的 type');
+        }
+    }
+
+    /**
      * 创建一次设备操作
-     * @param $resource \common\models\Resource
-     * @param $rfid
-     * @param $quantity
-     * @param $containerId
-     * @param $deviceDetailOperation
+     * @param $applyOrderType
+     * @param $applyOrderResource ApplyOrderResource
      * @throws Exception
      * @throws \yii\db\Exception
      */
-    public static function createOne($resource, $rfid, $quantity, $containerId, $deviceDetailOperation)
+    public static function operateByApplyOrderType($applyOrderType, $applyOrderResource)
     {
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            // 修改设备信息
-            if ($deviceDetailOperation == DeviceDetail::OPERATION_INPUT) {
-                $device = Device::findOne(['rfid' => $rfid, 'status' => self::STATUS_NORMAL]);
-                if ($device) {
-                    throw new Exception("RFID 为'{$rfid}'的设备已存在");
+            $model = static::findOne(['tag_passive' => $applyOrderResource->tag_passive, 'status' => static::STATUS_NORMAL]);
+            $resource = $applyOrderResource->resource;
+            // 修改资源信息
+            if ($applyOrderType == Enum::APPLY_ORDER_TYPE_INPUT) {
+                if ($model) {
+                    throw new Exception("无源标签为'{$applyOrderResource->tag_passive}'的资源已存在");
                 }
-                $device = new Device();
-                $device->resource_id = $resource->id;
-                $device->container_id = $containerId;
-                $device->rfid = $rfid;
-                $device->is_online = 0;
-                $device->online_change_at = time();
-                $device->maintenance_at = time() + ($resource->maintenance_cycle * 86400);
-                $device->scrap_at = time() + ($resource->scrap_cycle * 86400);
-                $device->quantity = $quantity;
-                $device->status = self::STATUS_NORMAL;
-                $device->save(false);
-            } elseif (in_array($deviceDetailOperation, [DeviceDetail::OPERATION_OUTPUT, DeviceDetail::OPERATION_APPLY, DeviceDetail::OPERATION_RETURN])) {
-                $device = Device::findOne([
-                    'rfid' => $rfid, 'quantity' => $quantity,
-                    'resource_id' => $resource->id, 'container_id' => $containerId,
-                    'status' => self::STATUS_NORMAL,
-                ]);
-                if (!$device) {
-                    $containerName = Container::find()->select(['name'])->where(['id' => $containerId])->scalar();
-                    throw new Exception("货位'{$containerName}'上 RFID 为'{$rfid}'，且数量为'{$quantity}'的'{$resource->name}'不存在或已出库");
+                $model = new static();
+                $model->resource_id = $resource->id;
+                $model->type = $resource->type;
+                $model->container_id = $applyOrderResource->container_id;
+                $model->tag_passive = $applyOrderResource->tag_passive;
+                $model->is_online = 0;
+                $model->online_change_at = time();
+                $model->maintenance_at = time() + ($resource->maintenance_cycle * 86400);
+                $model->scrap_at = time() + ($resource->scrap_cycle * 86400);
+                $model->quantity = $applyOrderResource->quantity;
+                $model->status = self::STATUS_NORMAL;
+                $model->save(false);
+            } elseif (in_array($applyOrderType, [
+                Enum::APPLY_ORDER_TYPE_OUTPUT, Enum::APPLY_ORDER_TYPE_APPLY, Enum::APPLY_ORDER_TYPE_RETURN
+            ])) {
+                if (!$model) {
+                    throw new Exception("无源标签为'{$applyOrderResource->tag_passive}'的资源不存在或已出库");
                 }
-                if ($deviceDetailOperation == DeviceDetail::OPERATION_OUTPUT) {
-                    $device->status = self::STATUS_OUTPUT;
-                } elseif ($deviceDetailOperation == DeviceDetail::OPERATION_APPLY) {
-                    $device->status = self::STATUS_PICKED;
-                } elseif ($deviceDetailOperation == DeviceDetail::OPERATION_RETURN) {
-                    $device->status = self::STATUS_NORMAL;
-                } else {
-                    throw new Exception('未知的 $deviceDetailOperation');
-                }
-                $device->save(false);
+                $model->changeStatusByApplyOrderType($applyOrderType);
+                $model->save(false);
             } else {
-                throw new Exception('未知的 $deviceDetailOperation');
+                throw new Exception('未知的 applyOrderType');
             }
             // 修改资源库存
-            $resource = $device->resource;
-            if (in_array($deviceDetailOperation, [DeviceDetail::OPERATION_OUTPUT, DeviceDetail::OPERATION_APPLY])) {
-                $resource->current_stock -= $device->quantity;
-            } elseif (in_array($deviceDetailOperation, [DeviceDetail::OPERATION_INPUT, DeviceDetail::OPERATION_RETURN])) {
-                $resource->current_stock += $device->quantity;
-            } else {
-                throw new Exception('未知的 operation');
-            }
-            $resource->save(false);
-            // 更新明细
-            DeviceDetail::createOne($device->id, $deviceDetailOperation);
+            Resource::updateCurrentStockByApplyOrderType($applyOrderType, $model->resource_id, $model->quantity);
+            // 修改货位库存
+            Container::updateCurrentQuantityByApplyOrderType($applyOrderType, $model->container_id);
+            // 创建操作明细
+            ResourceDetailOperation::createOne($model->id, $model->type, $applyOrderType, $applyOrderResource->remark);
             $transaction->commit();
         } catch (Exception $e) {
             $transaction->rollBack();

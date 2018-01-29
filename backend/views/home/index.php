@@ -1,6 +1,8 @@
 <?php
 /** @var $this \yii\web\View */
 
+use common\models\Resource;
+
 $this->title = '首页';
 ?>
 
@@ -10,10 +12,16 @@ $this->title = '首页';
     </div>
     <div class="row">
         <div class="col-lg-6 col-xs-6">
-            <?= $this->render('_expendable_detail') ?>
+            <?= $this->render('_resource_detail_operation', [
+                'title' => '消耗品操作',
+                'resourceType' => Resource::TYPE_EXPENDABLE,
+            ]) ?>
         </div>
         <div class="col-lg-6 col-xs-6">
-            <?= $this->render('_device_detail') ?>
+            <?= $this->render('_resource_detail_operation', [
+                'title' => '设备操作',
+                'resourceType' => Resource::TYPE_DEVICE,
+            ]) ?>
         </div>
     </div>
     <div class="row">

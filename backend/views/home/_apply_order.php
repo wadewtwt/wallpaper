@@ -1,9 +1,12 @@
 <?php
 /** 出入库监控 */
 /** @var $this \yii\web\View */
+
 use common\models\ApplyOrder;
 
-$countApplyOrders = ApplyOrder::countList();
+$models = ApplyOrder::find()->limit(5)
+    ->orderBy(['created_at' => SORT_DESC])
+    ->all();
 ?>
 
     <div class="box box-info">
@@ -31,14 +34,14 @@ $countApplyOrders = ApplyOrder::countList();
                     </tr>
                     </thead>
                     <tbody>
-                    <?php foreach ($countApplyOrders as $val) { ?>
+                    <?php foreach ($models as $model) { ?>
                         <tr>
-                            <td><span class="label label-info"><?= $val->typeName ?></span></td>
-                            <td><?= $val->person->name ?></td>
-                            <td><?= date('Y-m-d H:i:s', $val->updated_at) ?></td>
-                            <td class="text-primary"><?= $val->reason ?></td>
+                            <td><span class="label label-info"><?= $model->typeName ?></span></td>
+                            <td><?= $model->person->name ?></td>
+                            <td><?= date('Y-m-d H:i:s', $model->updated_at) ?></td>
+                            <td class="text-primary"><?= $model->reason ?></td>
                             <td>
-                                <span class="label label-default"><?= $val->statusName ?></span>
+                                <span class="label label-default"><?= $model->statusName ?></span>
                             </td>
                         </tr>
                     <?php } ?>

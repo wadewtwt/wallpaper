@@ -1,14 +1,18 @@
 <?php
 /** @var $this yii\web\View */
 /** @var $dataProvider common\components\ActiveDataProvider */
-/** @var $searchModel backend\models\ResDeviceSearch */
+/** @var $searchModel backend\models\ResourceSearch */
 
+use backend\models\ResourceDetailSearch;
 use backend\widgets\SimpleDynaGrid;
 use yii\helpers\Html;
 
-$this->title = '设备列表';
+$typeName = $searchModel->getTypeName();
+$controllerId = $this->context->id;
+
+$this->title = $typeName . '列表';
 $this->params['breadcrumbs'] = [
-    '设备',
+    $typeName . '管理',
     $this->title,
 ];
 
@@ -43,19 +47,19 @@ $columns = [
                 ];
                 return Html::a('更新', $url, $options);
             },
-            'delete' => function ($url) {
+            'delete' => function ($url) use ($typeName) {
                 $options = [
                     'class' => 'btn btn-danger',
                     'data-method' => 'post',
-                    'data-confirm' => '确定删除该设备？'
+                    'data-confirm' => '确定删除该' . $typeName . '？'
                 ];
                 return Html::a('删除', $url, $options);
             },
-            'detail' => function ($url, $model) {
+            'detail' => function ($url, $model) use ($controllerId) {
                 $options = [
                     'class' => 'btn btn-default',
                 ];
-                return Html::a('物品明细', ['/device', 'resource_id' => $model->id], $options);
+                return Html::a('明细', ["/{$controllerId}-detail", Html::getInputName(new ResourceDetailSearch(), 'resource_id') => $model->id], $options);
             },
         ],
     ],

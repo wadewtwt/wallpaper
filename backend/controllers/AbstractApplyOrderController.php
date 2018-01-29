@@ -9,17 +9,19 @@ use backend\models\ApplyOrderSearch;
 use common\components\Tools;
 use common\models\ApplyOrder;
 use common\models\ApplyOrderDetail;
+use common\models\ApplyOrderResource;
+use common\models\base\Enum;
+use common\models\ResourceDetail;
 use Yii;
 use yii\base\Exception;
 use yii\base\Model;
-use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
 
 abstract class AbstractApplyOrderController extends AuthWebController
 {
-    const APPLY_ORDER_TYPE = ApplyOrder::TYPE_INPUT;
+    const APPLY_ORDER_TYPE = Enum::APPLY_ORDER_TYPE_INPUT;
 
     // 列表
     public function actionIndex()
@@ -31,7 +33,7 @@ abstract class AbstractApplyOrderController extends AuthWebController
         ]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        return $this->render('../apply-order/index', [
+        return $this->render('@view/apply-order/index', [
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
         ]);
@@ -66,7 +68,7 @@ abstract class AbstractApplyOrderController extends AuthWebController
     {
         $model = $this->findModel($id);
 
-        return $this->render('../apply-order/detail', [
+        return $this->render('@view/apply-order/detail', [
             'model' => $model,
         ]);
     }
@@ -81,7 +83,7 @@ abstract class AbstractApplyOrderController extends AuthWebController
             throw new StatusNotAllowedException();
         }
 
-        return $this->render('../apply-order/print', [
+        return $this->render('@view/apply-order/print', [
             'model' => $model,
         ]);
     }
@@ -120,7 +122,7 @@ abstract class AbstractApplyOrderController extends AuthWebController
             return $this->actionPreviousRedirect();
         }
 
-        return $this->renderAjax('../apply-order/_delete', [
+        return $this->renderAjax('@view/apply-order/_delete', [
             'model' => $model
         ]);
     }
@@ -129,46 +131,17 @@ abstract class AbstractApplyOrderController extends AuthWebController
     public function actionOver($id)
     {
         $applyOrder = $this->findModel($id);
-        $applyOrderDetails = $applyOrder->applyOrderDetails;
 
         if (!$applyOrder->checkStatus(ApplyOrder::STATUS_OVER)) {
             throw new StatusNotAllowedException();
         }
 
-        $request = Yii::$app->request;
-        if ($request->isPost) {
-            Model::loadMultiple($applyOrderDetails, $request->post());
-            Model::validateMultiple($applyOrderDetails);
-            $rfids = ArrayHelper::getColumn($applyOrderDetails, 'rfid');
-            if (in_array('', $rfids)) {
-                MessageAlert::set(['error' => '操作失败：RFID 必须填写']);
-            } else {
-                $transaction = Yii::$app->db->beginTransaction();
-                try {
-                    // 数据验证正确后真正的业务
-                    foreach ($applyOrderDetails as $applyOrderDetail) {
-                        // 保存申请单明细
-                        $applyOrderDetail->save(false);
-                        // 将明细导入到对应的资源明细表
-                        $applyOrderDetail->solveOrderDetail(static::APPLY_ORDER_TYPE);
-                    }
-                    // 保存申请单
-                    $applyOrder->status = ApplyOrder::STATUS_OVER;
-                    $applyOrder->save(false);
-
-                    $transaction->commit();
-                    MessageAlert::set(['success' => '操作成功']);
-                    return $this->actionPreviousRedirect();
-                } catch (Exception $e) {
-                    $transaction->rollBack();
-                    MessageAlert::set(['error' => '操作失败：' . $e->getMessage()]);
-                }
-            }
+        if (static::APPLY_ORDER_TYPE == Enum::APPLY_ORDER_TYPE_INPUT) {
+            return $this->handleOverInput($applyOrder);
+        } elseif (in_array(static::APPLY_ORDER_TYPE, [Enum::APPLY_ORDER_TYPE_OUTPUT, Enum::APPLY_ORDER_TYPE_APPLY])) {
+            return $this->handleOverOutputApply($applyOrder);
         }
-        return $this->render('../apply-order/over', [
-            'applyOrder' => $applyOrder,
-            'applyOrderDetails' => $applyOrderDetails,
-        ]);
+        throw new Exception('不支持的 APPLY_ORDER_TYPE 类型');
     }
 
     /**
@@ -186,6 +159,7 @@ abstract class AbstractApplyOrderController extends AuthWebController
     }
 
     /**
+     * 创建和修改申请单
      * @param $applyOrder ApplyOrder
      * @param $applyOrderDetails ApplyOrderDetail[]
      * @return array|string|Response
@@ -225,9 +199,115 @@ abstract class AbstractApplyOrderController extends AuthWebController
             }
         }
 
-        return $this->render('../apply-order/create_update', [
+        return $this->render('@view/apply-order/create_update', [
             'applyOrder' => $applyOrder,
             'applyOrderDetails' => $applyOrderDetails,
+        ]);
+    }
+
+    /**
+     * 入库完成操作
+     * @param $applyOrder ApplyOrder
+     * @return array|string|Response
+     * @throws \yii\db\Exception
+     */
+    protected function handleOverInput($applyOrder)
+    {
+        $request = Yii::$app->getRequest();
+        $applyOrderResources = [new ApplyOrderResource()];
+
+        // TODO 检查数量
+
+        if ($request->isPost) {
+            $applyOrderResources = [];
+            $data = $request->post('ApplyOrderResource', []);
+            foreach (array_keys($data) as $index) {
+                $applyOrderResources[$index] = new ApplyOrderResource();
+            }
+            Model::loadMultiple($applyOrderResources, $request->post());
+            if ($request->post('ajax') !== null) {
+                // models 数据的 ajax 验证
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                $result = ActiveForm::validateMultiple($applyOrderResources);
+                return $result;
+            }
+            // 处理业务
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                // 保存资源信息
+                foreach ($applyOrderResources as $applyOrderResource) {
+                    /** @var $detail ApplyOrderResource */
+                    $applyOrderResource->apply_order_id = $applyOrder->id;
+                    $applyOrderResource->save(false);
+                    ResourceDetail::operateByApplyOrderType(static::APPLY_ORDER_TYPE, $applyOrderResource);
+                }
+                // 修改该申请单为已完成
+                $applyOrder->status = ApplyOrder::STATUS_OVER;
+                $applyOrder->save(false);
+
+                $transaction->commit();
+                MessageAlert::set(['success' => '操作成功']);
+                return $this->actionPreviousRedirect();
+            } catch (Exception $e) {
+                $transaction->rollBack();
+                MessageAlert::set(['error' => '操作失败：' . $e->getMessage()]);
+            }
+        }
+
+        return $this->render('@view/apply-order/over-input', [
+            'applyOrder' => $applyOrder,
+            'applyOrderResources' => $applyOrderResources,
+        ]);
+    }
+
+    /**
+     * 出库和申领完成
+     * @param $applyOrder ApplyOrder
+     * @return array|string|Response
+     * @throws \yii\db\Exception
+     */
+    protected function handleOverOutputApply($applyOrder)
+    {
+        $request = Yii::$app->getRequest();
+
+        // TODO 检查数量
+
+        if ($request->isPost) {
+            $applyOrderResources = [];
+            $data = $request->post('ApplyOrderResource', []);
+            foreach (array_keys($data) as $index) {
+                $applyOrderResources[$index] = new ApplyOrderResource();
+            }
+            Model::loadMultiple($applyOrderResources, $request->post());
+            // 处理业务
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                // 保存资源信息
+                foreach ($applyOrderResources as $applyOrderResource) {
+                    /** @var $detail ApplyOrderResource */
+                    $applyOrderResource->apply_order_id = $applyOrder->id;
+                    $applyOrderResource->save(false);
+                    ResourceDetail::operateByApplyOrderType(static::APPLY_ORDER_TYPE, $applyOrderResource);
+                }
+                // 修改该申请单为已完成
+                $applyOrder->status = ApplyOrder::STATUS_OVER;
+                $applyOrder->save(false);
+
+                $transaction->commit();
+                MessageAlert::set(['success' => '操作成功']);
+                return $this->actionPreviousRedirect();
+            } catch (Exception $e) {
+                $transaction->rollBack();
+                if (!YII_DEBUG) {
+                    MessageAlert::set(['error' => '操作失败：' . $e->getMessage()]);
+                } else {
+                    throw new Exception($e);
+                }
+            }
+        }
+
+        return $this->render('@view/apply-order/over-output-apply', [
+            'applyOrder' => $applyOrder,
         ]);
     }
 

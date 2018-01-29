@@ -20,21 +20,21 @@ $menu = [
         ]
     ],
     [
-        'label' => '消耗品管理', 'icon' => 'list', 'url' => '#',
+        'label' => '设备管理', 'icon' => 'list', 'url' => '#',
         'items' => [
-            ['label' => '消耗品列表', 'icon' => 'circle-o', 'url' => [$baseUrl . '/res-expendable']],
-            ['label' => '消耗品详细', 'icon' => 'circle-o', 'url' => [$baseUrl . '/expendable-detail']],
+            ['label' => '设备列表', 'icon' => 'circle-o', 'url' => [$baseUrl . '/device']],
+            ['label' => '设备明细', 'icon' => 'circle-o', 'url' => [$baseUrl . '/device-detail']],
+            ['label' => '设备操作记录', 'icon' => 'circle-o', 'url' => [$baseUrl . '/device-detail-operation']],
         ]
     ],
     [
-        'label' => '设备管理', 'icon' => 'list', 'url' => '#',
+        'label' => '消耗品管理', 'icon' => 'list', 'url' => '#',
         'items' => [
-            ['label' => '设备列表', 'icon' => 'circle-o', 'url' => [$baseUrl . '/res-device']],
-            ['label' => '设备详细', 'icon' => 'circle-o', 'url' => [$baseUrl . '/device']],
-            ['label' => '设备使用明细', 'icon' => 'circle-o', 'url' => [$baseUrl . '/device-detail']],
+            ['label' => '消耗品列表', 'icon' => 'circle-o', 'url' => [$baseUrl . '/expendable']],
+            ['label' => '消耗品明细', 'icon' => 'circle-o', 'url' => [$baseUrl . '/expendable-detail']],
+            ['label' => '消耗品操作记录', 'icon' => 'circle-o', 'url' => [$baseUrl . '/expendable-detail-operation']],
         ]
     ],
-
     ['label' => '货区管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/container']],
     ['label' => '入库管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-input']],
     ['label' => '出库管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-output']],

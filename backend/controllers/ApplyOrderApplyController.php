@@ -2,10 +2,9 @@
 
 namespace backend\controllers;
 
-use common\models\ApplyOrder;
+use common\models\base\Enum;
 
-// 一般是用来使用的借出
 class ApplyOrderApplyController extends AbstractApplyOrderController
 {
-    const APPLY_ORDER_TYPE = ApplyOrder::TYPE_APPLY;
+    const APPLY_ORDER_TYPE = Enum::APPLY_ORDER_TYPE_APPLY;
 }

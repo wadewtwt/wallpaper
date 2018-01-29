@@ -1,14 +1,22 @@
 <?php
 /** 消耗品详细 监控 */
 /** @var $this \yii\web\View */
+/** @var $resourceType integer */
+/** @var $title string */
 
-use common\models\ExpendableDetail;
+use common\models\ResourceDetailOperation;
 
-$countExpendableDetails = ExpendableDetail::countList();
+$models = ResourceDetailOperation::find()
+    ->alias('a')
+    ->joinWith('resourceDetail b')
+    ->where(['b.type' => $resourceType])
+    ->orderBy(['created_at' => SORT_DESC])
+    ->limit(5)
+    ->all();
 ?>
 <div class="box box-info">
     <div class="box-header with-border">
-        <h3 class="box-title">消耗品详细 监控</h3>
+        <h3 class="box-title"><?= $title ?></h3>
 
         <div class="box-tools pull-right">
             <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -29,16 +37,16 @@ $countExpendableDetails = ExpendableDetail::countList();
                 </tr>
                 </thead>
                 <tbody>
-                <?php foreach ($countExpendableDetails as $val){?>
+                <?php foreach ($models as $model) { ?>
                     <tr>
                         <td>
-                            <span class="description-header"><?= date('Y-m-d H:i:s', $val->created_at) ?></span>
+                            <span class="description-header"><?= date('Y-m-d H:i:s', $model->created_at) ?></span>
                         </td>
-                        <td class="text-primary"><?= $val->resource->name?></td>
-                        <td class="text-primary"><?= $val->quantity?></td>
-                        <td><span class="label label-default"><?= $val->OperationName?></span></td>
+                        <td class="text-primary"><?= $model->resourceDetail->resource->name ?></td>
+                        <td class="text-primary"><?= $model->quantity ?></td>
+                        <td><span class="label label-default"><?= $model->getOperationName() ?></span></td>
                     </tr>
-                <?php }?>
+                <?php } ?>
                 </tbody>
             </table>
         </div>

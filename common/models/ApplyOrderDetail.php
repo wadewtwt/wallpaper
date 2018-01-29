@@ -2,9 +2,6 @@
 
 namespace common\models;
 
-use Yii;
-use yii\base\Exception;
-
 /**
  * This is the model class for table "apply_order_detail".
  *
@@ -15,7 +12,6 @@ use yii\base\Exception;
  *
  * @property \common\models\Resource $resource
  * @property ApplyOrder $applyOrder
- * @property ApplyOrderDetailResource[] $applyOrderDetailResources
  */
 class ApplyOrderDetail extends \common\models\base\ActiveRecord
 {
@@ -67,71 +63,6 @@ class ApplyOrderDetail extends \common\models\base\ActiveRecord
     public function getApplyOrder()
     {
         return $this->hasOne(ApplyOrder::className(), ['id' => 'apply_order_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getApplyOrderDetailResources()
-    {
-        return $this->hasMany(ApplyOrderDetailResource::className(), ['apply_order_detail_id' => 'id']);
-    }
-
-    /**
-     * 处理明细操作
-     * @param $applyOrderType
-     * @throws Exception
-     * @throws \yii\db\Exception
-     */
-    public function solveOrderDetail($applyOrderType)
-    {
-        $transaction = Yii::$app->db->beginTransaction();
-        try {
-            switch ($applyOrderType) {
-                case ApplyOrder::TYPE_INPUT:
-                    $containerFreeCountPlus = -1; // 货位空闲数增加数
-                    $expendableOperation = ExpendableDetail::OPERATION_INPUT; // 消耗品操作
-                    $deviceOperation = DeviceDetail::OPERATION_INPUT; // 设备明细操作
-                    break;
-                case ApplyOrder::TYPE_OUTPUT:
-                    $containerFreeCountPlus = 1;
-                    $expendableOperation = ExpendableDetail::OPERATION_OUTPUT;
-                    $deviceOperation = DeviceDetail::OPERATION_OUTPUT;
-                    break;
-                case ApplyOrder::TYPE_APPLY:
-                    $containerFreeCountPlus = 1;
-                    $expendableOperation = ExpendableDetail::OPERATION_OUTPUT;
-                    $deviceOperation = DeviceDetail::OPERATION_APPLY;
-                    break;
-                case ApplyOrder::TYPE_RETURN:
-                    $containerFreeCountPlus = -1;
-                    $expendableOperation = ExpendableDetail::OPERATION_OUTPUT;
-                    $deviceOperation = DeviceDetail::OPERATION_RETURN;
-                    break;
-                default:
-                    throw new Exception('未知的 $applyOrderType');
-            }
-
-            // 修改对应资源的信息
-            $resource = $this->resource;
-            if ($resource->type == Resource::TYPE_EXPENDABLE) {
-                ExpendableDetail::createOne($resource, $this->rfid, $this->quantity, $this->container_id, $expendableOperation);
-            } elseif ($resource->type == Resource::TYPE_DEVICE) {
-                Device::createOne($resource, $this->rfid, $this->quantity, $this->container_id, $deviceOperation);
-            } else {
-                throw new Exception('未知的 type');
-            }
-            // 处理货位信息
-            $count = Container::updateAllCounters(['free_quantity' => $containerFreeCountPlus], ['id' => $this->container_id]);
-            if ($count != 1) {
-                throw new Exception('货位库存处理失败');
-            }
-
-            $transaction->commit();
-        } catch (Exception $e) {
-            $transaction->rollBack();
-            throw $e;
-        }
     }
 
 }

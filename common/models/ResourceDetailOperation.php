@@ -2,13 +2,12 @@
 
 namespace common\models;
 
-use Yii;
-
 /**
  * This is the model class for table "resource_detail_operation".
  *
  * @property integer $id
  * @property integer $resource_detail_id
+ * @property integer $type
  * @property integer $operation
  * @property string $remark
  * @property integer $status
@@ -45,8 +44,8 @@ class ResourceDetailOperation extends \common\models\base\ActiveRecord
     public function rules()
     {
         return [
-            [['resource_detail_id', 'operation'], 'required'],
-            [['resource_detail_id', 'operation', 'status', 'created_at', 'created_by'], 'integer'],
+            [['resource_detail_id', 'type', 'operation'], 'required'],
+            [['resource_detail_id', 'type', 'operation', 'status', 'created_at', 'created_by'], 'integer'],
             [['remark'], 'string', 'max' => 255],
             [['resource_detail_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResourceDetail::className(), 'targetAttribute' => ['resource_detail_id' => 'id']],
         ];
@@ -60,6 +59,7 @@ class ResourceDetailOperation extends \common\models\base\ActiveRecord
         return [
             'id' => 'ID',
             'resource_detail_id' => '设备 ID',
+            'type' => '类型',
             'operation' => '操作',
             'remark' => '备注',
             'status' => '状态',
@@ -81,19 +81,29 @@ class ResourceDetailOperation extends \common\models\base\ActiveRecord
      */
     public function getOperationName()
     {
-        return $this->toName($this->operation, self::$operationData);
+        return $this->toName($this->operation, static::$operationData);
     }
 
     /**
-     * @param $deviceId
-     * @param $operation
+     * @return string
+     */
+    public function getTypeName()
+    {
+        return $this->toName($this->type, Resource::$typeData);
+    }
+
+    /**
+     * @param $resourceDetailId
+     * @param $type
+     * @param $applyOrderType
      * @param $remark
      */
-    public static function createOne($deviceId, $operation, $remark = null)
+    public static function createOne($resourceDetailId, $type, $applyOrderType, $remark = null)
     {
         $model = new static();
-        $model->resource_detail_id = $deviceId;
-        $model->operation = $operation;
+        $model->resource_detail_id = $resourceDetailId;
+        $model->type = $type;
+        $model->operation = $applyOrderType;
         $model->remark = $remark;
         $model->save(false);
     }

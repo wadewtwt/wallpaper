@@ -5,6 +5,7 @@ namespace backend\controllers;
 use backend\components\AuthWebController;
 use backend\models\ApplyOrderSearch;
 use common\models\ApplyOrder;
+use common\models\base\Enum;
 use Yii;
 use yii\web\NotFoundHttpException;
 use yii\base\Model;
@@ -20,6 +21,7 @@ class ApplyOrderReturnController extends AuthWebController
         $this->rememberUrl();
         // 筛选“借出中”和“已退还”的订单
         $searchModel = new ApplyOrderSearch([
+            'type' => Enum::APPLY_ORDER_TYPE_APPLY,
             'status' => [
                 ApplyOrder::STATUS_OVER,
                 ApplyOrder::STATUS_RETURN_OVER,
@@ -68,7 +70,7 @@ class ApplyOrderReturnController extends AuthWebController
                     // 保存申请单明细
                     $applyOrderDetail->save(false);
                     // 将明细导入到对应的资源明细表
-                    $applyOrderDetail->solveOrderDetail(ApplyOrder::TYPE_RETURN);
+                    $applyOrderDetail->solveOrderDetail(Enum::APPLY_ORDER_TYPE_RETURN);
                 }
                 // 保存申请单
                 $applyOrder->status = ApplyOrder::STATUS_RETURN_OVER;

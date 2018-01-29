@@ -1,9 +1,11 @@
 <?php
 /** @var $this yii\web\View */
 /** @var $dataProvider common\components\ActiveDataProvider */
+
 /** @var $searchModel backend\models\ContainerSearch */
 
 use backend\widgets\SimpleDynaGrid;
+use common\models\Container;
 use yii\helpers\Html;
 
 $this->title = '货位管理列表';
@@ -24,7 +26,10 @@ $columns = [
         'attribute' => 'total_quantity',
     ],
     [
-        'attribute' => 'free_quantity',
+        'label' => '空闲',
+        'value' => function (Container $model) {
+            return $model->getFreeQuantity();
+        }
     ],
     [
         'class' => '\kartik\grid\ActionColumn',

@@ -45,7 +45,7 @@ class m171228_090822_first extends Migration
             'store_id' => $this->integer()->notNull()->comment('仓库 ID'),
             'name' => $this->string()->notNull()->comment('名称'),
             'total_quantity' => $this->integer()->notNull()->comment('货位数量'),
-            'current_quantity' => $this->integer()->notNull()->comment('当前数量'),
+            'current_quantity' => $this->integer()->notNull()->defaultValue(0)->comment('当前数量'),
             'remark' => $this->string()->comment('备注'),
         ], $this->commonColumns([
             'status', 'created_at', 'created_by', 'updated_at', 'updated_by'
@@ -88,13 +88,14 @@ class m171228_090822_first extends Migration
         $this->createTable('resource_detail_operation', array_merge([
             'id' => $this->primaryKey(),
             'resource_detail_id' => $this->integer()->notNull()->comment('设备 ID'),
+            'type' => $this->integer()->notNull()->comment('类型:消耗品、设备'),
             'operation' => $this->smallInteger(1)->notNull()->comment('操作'),
             'remark' => $this->string()->comment('备注'),
         ], $this->commonColumns([
             'status', 'created_at', 'created_by'
         ])
         ), $this->setTableComment('资源使用明细表'));
-        $this->addForeignKey('fk-resource_detail_operation-device', 'resource_detail_operation', 'resource_detail_id', 'resource_detail', 'id');
+        $this->addForeignKey('fk-resource_detail_operation-resource_detail', 'resource_detail_operation', 'resource_detail_id', 'resource_detail', 'id');
 
         $this->createTable('apply_order', array_merge([
             'id' => $this->primaryKey(),
@@ -114,21 +115,22 @@ class m171228_090822_first extends Migration
             'apply_order_id' => $this->integer()->notNull()->comment('申请单 ID'),
             'resource_id' => $this->integer()->notNull()->comment('资源 ID'),
             'quantity' => $this->integer()->notNull()->defaultValue(0)->comment('数量'),
-        ], $this->setTableComment('申请单详情表'));
+        ], $this->setTableComment('申请单明细表'));
         $this->addForeignKey('fk-apply_order_detail-apply_order', 'apply_order_detail', 'apply_order_id', 'apply_order', 'id');
         $this->addForeignKey('fk-apply_order_detail-resource', 'apply_order_detail', 'resource_id', 'resource', 'id');
 
-        $this->createTable('apply_order_detail_resource', [
+        $this->createTable('apply_order_resource', [
             'id' => $this->primaryKey(),
-            'apply_order_detail_id' => $this->integer()->notNull()->comment('申请单明细 ID'),
+            'apply_order_id' => $this->integer()->notNull()->comment('申请单 ID'),
             'resource_id' => $this->integer()->notNull()->comment('资源 ID'),
             'container_id' => $this->integer()->notNull()->comment('货位 ID'),
             'tag_passive' => $this->string()->comment('无源标签'),
             'quantity' => $this->integer()->notNull()->defaultValue(0)->comment('数量'),
-        ], $this->setTableComment('申请单明细的资源表'));
-        $this->addForeignKey('fk-apply_order_detail_resource-apply_order_detail', 'apply_order_detail_resource', 'apply_order_detail_id', 'apply_order_detail', 'id');
-        $this->addForeignKey('fk-apply_order_detail_resource-resource', 'apply_order_detail_resource', 'resource_id', 'resource', 'id');
-        $this->addForeignKey('fk-apply_order_detail_resource-container', 'apply_order_detail_resource', 'container_id', 'container', 'id');
+            'remark' => $this->string()->comment('备注'),
+        ], $this->setTableComment('申请单资源明细表'));
+        $this->addForeignKey('fk-apply_order_resource-apply_order', 'apply_order_resource', 'apply_order_id', 'apply_order', 'id');
+        $this->addForeignKey('fk-apply_order_resource-resource', 'apply_order_resource', 'resource_id', 'resource', 'id');
+        $this->addForeignKey('fk-apply_order_resource-container', 'apply_order_resource', 'container_id', 'container', 'id');
 
     }
 

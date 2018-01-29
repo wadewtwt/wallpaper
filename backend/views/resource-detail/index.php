@@ -1,16 +1,18 @@
 <?php
 /** @var $this yii\web\View */
 /** @var $dataProvider common\components\ActiveDataProvider */
-
-/** @var $searchModel backend\models\DeviceSearch */
+/** @var $searchModel backend\models\ResourceDetailSearch */
 
 use backend\widgets\SimpleDynaGrid;
-use common\models\Device;
+use common\models\ResourceDetail;
 use yii\helpers\Html;
 
-$this->title = '设备详细列表';
+$typeName = $searchModel->getTypeName();
+$controllerId = $this->context->id;
+
+$this->title = $typeName . '明细列表';
 $this->params['breadcrumbs'] = [
-    '设备管理',
+    $typeName . '管理',
     $this->title,
 ];
 
@@ -24,10 +26,11 @@ $columns = [
     ],
     [
         'attribute' => 'container.name',
+        'label' => '货位'
     ],
     [
         'attribute' => 'is_online',
-        'value' => function (Device $model) {
+        'value' => function (ResourceDetail $model) {
             return $model->is_online ? '在线' : '离线';
         }
     ],
@@ -48,7 +51,7 @@ $columns = [
     ],
     [
         'attribute' => 'status',
-        'value' => function (Device $model) {
+        'value' => function (ResourceDetail $model) {
             return $model->getStatusName();
         }
     ],
@@ -57,18 +60,18 @@ $columns = [
         'width' => '150px',
         'template' => '{detail}',
         'buttons' => [
-            'detail' => function ($url,$model) {
+            'detail' => function ($url, $model) use ($controllerId) {
                 $options = [
                     'class' => 'btn btn-default',
                 ];
-                return Html::a('使用明细', ['/device-detail','device_id' => $model->id], $options);
+                return Html::a('操作记录', ["/{$controllerId}-operation", 'device_id' => $model->id], $options);
             },
         ],
     ],
 ];
 
 $simpleDynaGrid = new SimpleDynaGrid([
-    'dynaGridId' => 'dynagrid-device-index',
+    'dynaGridId' => 'dynagrid-resource-detail-index',
     'columns' => $columns,
     'dataProvider' => $dataProvider,
 ]);

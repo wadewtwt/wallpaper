@@ -3,21 +3,20 @@
 namespace backend\models;
 
 use common\components\ActiveDataProvider;
-use common\models\DeviceDetail;
+use common\models\Resource;
 
-class DeviceDetailSearch extends DeviceDetail
+class ResourceSearch extends Resource
 {
     public function rules()
     {
         return [
-            [['device_id'], 'integer'],
+            [['name'], 'string'],
         ];
     }
 
     public function search($params)
     {
-
-        $query = DeviceDetail::find();
+        $query = Resource::find()->andWhere(['status' => Resource::STATUS_NORMAL]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -36,8 +35,9 @@ class DeviceDetailSearch extends DeviceDetail
         }
 
         $query->andFilterWhere([
-            'device_id' => $this->device_id,
+            'type' => $this->type,
         ]);
+        $query->andFilterWhere(['like', 'name', $this->name]);
 
         return $dataProvider;
     }

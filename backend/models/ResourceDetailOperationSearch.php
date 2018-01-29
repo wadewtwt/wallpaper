@@ -3,21 +3,20 @@
 namespace backend\models;
 
 use common\components\ActiveDataProvider;
-use common\models\ExpendableDetail;
+use common\models\ResourceDetailOperation;
 
-class ExpendableDetailSearch extends ExpendableDetail
+class ResourceDetailOperationSearch extends ResourceDetailOperation
 {
     public function rules()
     {
         return [
-            [['operation','resource_id'], 'integer'],
+            [['resource_detail_id'], 'integer'],
         ];
     }
 
     public function search($params)
     {
-
-        $query = ExpendableDetail::find()->andWhere(['status' => ExpendableDetail::STATUS_NORMAL]);
+        $query = static::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -36,8 +35,8 @@ class ExpendableDetailSearch extends ExpendableDetail
         }
 
         $query->andFilterWhere([
-            'operation' => $this->operation,
-            'resource_id' => $this->resource_id
+            'type' => $this->type,
+            'resource_detail_id' => $this->resource_detail_id,
         ]);
 
         return $dataProvider;

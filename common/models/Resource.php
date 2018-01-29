@@ -2,6 +2,8 @@
 
 namespace common\models;
 
+use common\models\base\Enum;
+use yii\base\Exception;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -21,7 +23,7 @@ use yii\helpers\ArrayHelper;
  * @property integer $updated_by
  *
  * @property ApplyOrderDetail[] $applyOrderDetails
- * @property ApplyOrderDetailResource[] $applyOrderDetailResources
+ * @property ApplyOrderResource[] $applyOrderResources
  * @property ResourceDetail[] $resourceDetails
  */
 class Resource extends \common\models\base\ActiveRecord
@@ -89,9 +91,9 @@ class Resource extends \common\models\base\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getApplyOrderDetailResources()
+    public function getApplyOrderResources()
     {
-        return $this->hasMany(ApplyOrderDetailResource::className(), ['resource_id' => 'id']);
+        return $this->hasMany(ApplyOrderResource::className(), ['resource_id' => 'id']);
     }
 
     /**
@@ -108,6 +110,28 @@ class Resource extends \common\models\base\ActiveRecord
     public function getTypeName()
     {
         return $this->toName($this->type, self::$typeData);
+    }
+
+    /**
+     * @param $applyOrderType
+     * @param $resourceId
+     * @param $quantity
+     * @throws Exception
+     */
+    public static function updateCurrentStockByApplyOrderType($applyOrderType, $resourceId, $quantity)
+    {
+        if (in_array($applyOrderType, [Enum::APPLY_ORDER_TYPE_OUTPUT, Enum::APPLY_ORDER_TYPE_APPLY])) {
+            $quantity = -$quantity;
+        } elseif (in_array($applyOrderType, [Enum::APPLY_ORDER_TYPE_INPUT, Enum::APPLY_ORDER_TYPE_RETURN])) {
+            $quantity = +$quantity;
+        } else {
+            throw new Exception('未知的 operation');
+        }
+        $totalCount = count((array)$resourceId);
+        $successCount = static::updateAllCounters(['current_stock' => $quantity], ['id' => $resourceId]);
+        if ($successCount != $totalCount) {
+            throw new Exception('资源库存更新失败');
+        }
     }
 
     /**

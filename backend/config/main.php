@@ -16,6 +16,9 @@ return [
     'bootstrap' => ['log'],
     // 网站维护，打开以下注释
     //'catchAll' => ['site/offline'],
+    'aliases' => [
+        '@view' => '@app/views',
+    ],
     'modules' => [
         'gridview' => [
             'class' => '\kartik\grid\Module',

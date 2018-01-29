@@ -2,26 +2,9 @@
 
 namespace backend\controllers;
 
-use backend\components\AuthWebController;
-use backend\models\DeviceSearch;
-use Yii;
+use common\models\Resource;
 
-class DeviceController extends AuthWebController
+class DeviceController extends AbstractResourceController
 {
-    // 列表
-    public function actionIndex($resource_id = '')
-    {
-        $this->rememberUrl();
-
-        $searchModel = new DeviceSearch([
-            'resource_id' => $resource_id
-        ]);
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        return $this->render('index', [
-            'dataProvider' => $dataProvider,
-            'searchModel' => $searchModel,
-        ]);
-    }
-
+    const RESOURCE_TYPE = Resource::TYPE_DEVICE;
 }

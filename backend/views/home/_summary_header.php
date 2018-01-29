@@ -1,14 +1,15 @@
 <?php
 
 use common\models\ApplyOrder;
+use common\models\base\Enum;
 use common\models\Container;
 use common\models\Person;
 use yii\helpers\Url;
 
 $countAllPerson = Person::countAllPerson(); // 统计总人数
 $countAllContainer = Container::countAllContainer(); // 统计总货架
-$countInput = ApplyOrder::countNear7DaysInputOrders(); // 图库数量
-$countOutput = ApplyOrder::countNear7DaysOutputApplyOrders(); // 出库单子数量
+$countInput = ApplyOrder::summaryNearCount(7, Enum::APPLY_ORDER_TYPE_INPUT, ApplyOrder::STATUS_OVER); // 入库数量
+$countOutput = ApplyOrder::summaryNearCount(7, Enum::APPLY_ORDER_TYPE_OUTPUT, ApplyOrder::STATUS_OVER); // 出库数量
 ?>
 
 <div class="row">

@@ -2,9 +2,9 @@
 
 namespace backend\controllers;
 
-use common\models\ApplyOrder;
+use common\models\base\Enum;
 
 class ApplyOrderInputController extends AbstractApplyOrderController
 {
-    const APPLY_ORDER_TYPE = ApplyOrder::TYPE_INPUT;
+    const APPLY_ORDER_TYPE = Enum::APPLY_ORDER_TYPE_INPUT;
 }

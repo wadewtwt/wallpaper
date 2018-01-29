@@ -4,8 +4,9 @@
 /** @var $searchModel backend\models\ApplyOrderSearch */
 
 use backend\widgets\SimpleDynaGrid;
-use yii\helpers\Html;
 use common\models\ApplyOrder;
+use common\models\base\Enum;
+use yii\helpers\Html;
 
 $typeName = $searchModel->getTypeName();
 
@@ -45,7 +46,7 @@ $columns = [
     ],
 ];
 
-if (in_array($searchModel->type, [ApplyOrder::TYPE_APPLY, ApplyOrder::TYPE_RETURN])) {
+if (in_array($searchModel->type, [Enum::APPLY_ORDER_TYPE_APPLY, Enum::APPLY_ORDER_TYPE_RETURN])) {
     $columns = array_merge($columns, [
         [
             'attribute' => 'pick_type',

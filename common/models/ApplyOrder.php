@@ -1,6 +1,7 @@
 <?php
 
 namespace common\models;
+use common\models\base\Enum;
 
 /**
  * This is the model class for table "apply_order".
@@ -19,14 +20,10 @@ namespace common\models;
  *
  * @property Person $person
  * @property ApplyOrderDetail[] $applyOrderDetails
+ * @property ApplyOrderResource[] $applyOrderResources
  */
 class ApplyOrder extends \common\models\base\ActiveRecord
 {
-    const TYPE_INPUT = 10;
-    const TYPE_OUTPUT = 20;
-    const TYPE_APPLY = 30;
-    const TYPE_RETURN = 40;
-
     const PICK_TYPE_USE = 10;
     const PICK_TYPE_MAINTENANCE = 20;
     const PICK_TYPE_SEAL_OFF = 30;
@@ -39,13 +36,6 @@ class ApplyOrder extends \common\models\base\ActiveRecord
     const STATUS_OVER = 30; // 已完成
     const STATUS_RETURN_OVER = 40;// 已归还
     const STATUS_DELETE = 99; // 作废
-
-    public static $typeData = [
-        self::TYPE_INPUT => '入库',
-        self::TYPE_OUTPUT => '出库',
-        self::TYPE_APPLY => '申领',
-        self::TYPE_RETURN => '归还'
-    ];
 
     public static $pickTypeData = [
         self::PICK_TYPE_USE => '使用',
@@ -125,12 +115,20 @@ class ApplyOrder extends \common\models\base\ActiveRecord
     }
 
     /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getApplyOrderResources()
+    {
+        return $this->hasMany(ApplyOrderResource::className(), ['apply_order_id' => 'id']);
+    }
+
+    /**
      * 类别操作：入库、出库、申领、归还
      * @return string
      */
     public function getTypeName()
     {
-        return $this->toName($this->type, self::$typeData);
+        return $this->toName($this->type, Enum::$applyOrderTypeData);
     }
 
     /**
@@ -157,7 +155,7 @@ class ApplyOrder extends \common\models\base\ActiveRecord
      */
     public function getReturnStatusName()
     {
-        return $this->toName($this->status,self::$returnStatusData);
+        return $this->toName($this->status, self::$returnStatusData);
     }
 
     /**
@@ -187,37 +185,21 @@ class ApplyOrder extends \common\models\base\ActiveRecord
     }
 
     /**
-     * 统计近七天的入库单子
-     * @return int|string
+     * 统计最近 N 天的单子数
+     * @param int $dayAgo
+     * @param null $type
+     * @param null $status
+     * @return int
      */
-    public static function countNear7DaysInputOrders(){
-        $agoTime = intval(time() - 7*86400);
-        return self::find()->where(['>','updated_at',$agoTime])->andWhere(['type' => self::TYPE_INPUT, 'status' => self::STATUS_OVER])->count();
-    }
-
-    /**
-     * 统计近7天出库和申领的单子
-     * @return int|string
-     */
-    public static function countNear7DaysOutputApplyOrders(){
-        $agoTime = intval(time() - 7*86400);
-        $typeOutputAndApply = [
-            self::TYPE_OUTPUT,
-            self::TYPE_APPLY,
-        ];
-        return self::find()->where(['>','updated_at',$agoTime])->andWhere(['type' => $typeOutputAndApply, 'status' => self::STATUS_OVER])->count();
-    }
-
-    /**
-     * 首页列表那边的调用
-     * @return array|\yii\db\ActiveRecord[]
-     */
-    public static function countList($num = 5){
-        $model = self::find()
-            ->limit($num)
-            ->orderBy('updated_at desc')
-            ->all();
-        return $model;
+    public static function summaryNearCount($dayAgo = 7, $type = null, $status = null)
+    {
+        $agoTime = intval(time() - $dayAgo * 86400);
+        $count = static::find()
+            ->where(['>', 'created_at', $agoTime])
+            ->andFilterWhere(['type' => $type])
+            ->andFilterWhere(['status' => $status])
+            ->count();
+        return $count ?: 0;
     }
 
 }
