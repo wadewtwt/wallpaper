@@ -15,8 +15,8 @@ $menu = [
     [
         'label' => '人员管理', 'icon' => 'list', 'url' => '#',
         'items' => [
-            ['label' => '人员管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/person']],
             ['label' => '职称管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/position']],
+            ['label' => '人员管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/person']],
         ]
     ],
     [
@@ -35,12 +35,36 @@ $menu = [
             ['label' => '消耗品操作记录', 'icon' => 'circle-o', 'url' => [$baseUrl . '/expendable-detail-operation']],
         ]
     ],
-    ['label' => '货区管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/container']],
-    ['label' => '入库管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-input']],
-    ['label' => '出库管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-output']],
-    ['label' => '申领管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-apply']],
-    ['label' => '退还管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-return']],
-    ['label' => '用户管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/user']],
+    [
+        'label' => '仓库货位管理', 'icon' => 'list', 'url' => '#',
+        'items' => [
+            ['label' => '仓库管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/store']],
+            ['label' => '货区管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/container']],
+        ]
+    ],
+    [
+        'label' => '出入库管理', 'icon' => 'list', 'url' => '#',
+        'items' => [
+            ['label' => '入库管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-input']],
+            ['label' => '出库管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-output']],
+        ]
+    ],
+    [
+        'label' => '调度管理', 'icon' => 'list', 'url' => '#',
+        'items' => [
+            ['label' => '申领管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-apply']],
+            ['label' => '退还管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-return']],
+        ]
+    ],
+    [
+        'label' => '监控设备管理', 'icon' => 'list', 'url' => '#',
+        'items' => [
+            ['label' => '温湿度设备管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/temperature']],
+            ['label' => '摄像头设备管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/camera']],
+            ['label' => '联动设置', 'icon' => 'circle-o', 'url' => [$baseUrl . '/alarm-config']],
+        ]
+    ],
+    ['label' => '报警记录管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/alarm-record']],
     ['label' => '管理员管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/admin']],
     [
         'label' => '权限管理', 'icon' => 'list', 'url' => '#', 'visible' => AuthValidate::has([Auth::PERMISSION_VIEW, Auth::ROLE_VIEW]),
