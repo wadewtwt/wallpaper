@@ -41,3 +41,6 @@ $isPrint = isset($isPrint) ? $isPrint : false;
         </tbody>
     </table>
 </div>
+<div class="container">
+    <a href="javascript:history.go(-1)" class="btn btn-default">返回</a>
+</div>
