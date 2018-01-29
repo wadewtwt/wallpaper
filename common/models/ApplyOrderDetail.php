@@ -11,13 +11,11 @@ use yii\base\Exception;
  * @property integer $id
  * @property integer $apply_order_id
  * @property integer $resource_id
- * @property integer $container_id
- * @property string $rfid
  * @property integer $quantity
  *
- * @property Container $container
  * @property \common\models\Resource $resource
  * @property ApplyOrder $applyOrder
+ * @property ApplyOrderDetailResource[] $applyOrderDetailResources
  */
 class ApplyOrderDetail extends \common\models\base\ActiveRecord
 {
@@ -35,12 +33,10 @@ class ApplyOrderDetail extends \common\models\base\ActiveRecord
     public function rules()
     {
         return [
-            [['apply_order_id', 'resource_id', 'container_id'], 'required'],
-            [['apply_order_id', 'resource_id', 'container_id', 'quantity'], 'integer'],
-            [['rfid'], 'string', 'max' => 255],
-            [['container_id'], 'exist', 'skipOnError' => true, 'targetClass' => Container::className(), 'targetAttribute' => ['container_id' => 'id']],
-            [['apply_order_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplyOrder::className(), 'targetAttribute' => ['apply_order_id' => 'id']],
+            [['apply_order_id', 'resource_id'], 'required'],
+            [['apply_order_id', 'resource_id', 'quantity'], 'integer'],
             [['resource_id'], 'exist', 'skipOnError' => true, 'targetClass' => Resource::className(), 'targetAttribute' => ['resource_id' => 'id']],
+            [['apply_order_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplyOrder::className(), 'targetAttribute' => ['apply_order_id' => 'id']],
         ];
     }
 
@@ -51,20 +47,10 @@ class ApplyOrderDetail extends \common\models\base\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'apply_order_id' => '入库单 ID',
+            'apply_order_id' => '申请单 ID',
             'resource_id' => '资源 ID',
-            'container_id' => '货位 ID',
-            'rfid' => 'RFID',
             'quantity' => '数量',
         ];
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getContainer()
-    {
-        return $this->hasOne(Container::className(), ['id' => 'container_id']);
     }
 
     /**
@@ -81,6 +67,14 @@ class ApplyOrderDetail extends \common\models\base\ActiveRecord
     public function getApplyOrder()
     {
         return $this->hasOne(ApplyOrder::className(), ['id' => 'apply_order_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getApplyOrderDetailResources()
+    {
+        return $this->hasMany(ApplyOrderDetailResource::className(), ['apply_order_detail_id' => 'id']);
     }
 
     /**

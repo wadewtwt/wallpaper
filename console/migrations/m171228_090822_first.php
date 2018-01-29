@@ -29,17 +29,29 @@ class m171228_090822_first extends Migration
             'status', 'created_at', 'created_by', 'updated_at', 'updated_by'
         ])
         ), $this->setTableComment('人员表'));
-        $this->addForeignKey('fx-person-position', 'person', 'position_id', 'position', 'id');
+        $this->addForeignKey('fk-person-position', 'person', 'position_id', 'position', 'id');
+
+        $this->createTable('store', array_merge([
+            'id' => $this->primaryKey(),
+            'name' => $this->string()->notNull()->comment('名称'),
+            'remark' => $this->string()->comment('备注'),
+        ], $this->commonColumns([
+            'status', 'created_at', 'created_by', 'updated_at', 'updated_by'
+        ])
+        ), $this->setTableComment('仓库表'));
 
         $this->createTable('container', array_merge([
             'id' => $this->primaryKey(),
+            'store_id' => $this->integer()->notNull()->comment('仓库 ID'),
             'name' => $this->string()->notNull()->comment('名称'),
             'total_quantity' => $this->integer()->notNull()->comment('货位数量'),
-            'free_quantity' => $this->integer()->notNull()->comment('空闲数量'),
+            'current_quantity' => $this->integer()->notNull()->comment('当前数量'),
+            'remark' => $this->string()->comment('备注'),
         ], $this->commonColumns([
             'status', 'created_at', 'created_by', 'updated_at', 'updated_by'
         ])
         ), $this->setTableComment('货位表'));
+        $this->addForeignKey('fk-container-store', 'container', 'store_id', 'store', 'id');
 
         $this->createTable('resource', array_merge([
             'id' => $this->primaryKey(),
@@ -54,27 +66,13 @@ class m171228_090822_first extends Migration
         ])
         ), $this->setTableComment('设备资源表'));
 
-        $this->createTable('expendable_detail', array_merge([
+        $this->createTable('resource_detail', array_merge([
             'id' => $this->primaryKey(),
             'resource_id' => $this->integer()->notNull()->comment('资源 ID'),
+            'type' => $this->integer()->notNull()->comment('类型:消耗品、设备'),
             'container_id' => $this->integer()->notNull()->comment('货位 ID'),
-            'rfid' => $this->string()->notNull()->comment('RFID'),
-            'operation' => $this->integer()->notNull()->comment('操作:出库、入库'),
-            'quantity' => $this->integer()->notNull()->comment('数量'),
-            'remark' => $this->string()->comment('说明'),
-            'scrap_at' => $this->integer()->notNull()->comment('报废时间'),
-        ], $this->commonColumns([
-            'status', 'created_at', 'created_by',
-        ])
-        ), $this->setTableComment('消耗品明细表'));
-        $this->addForeignKey('fx-expendable_detail-resource', 'expendable_detail', 'resource_id', 'resource', 'id');
-        $this->addForeignKey('fx-expendable_detail-container', 'expendable_detail', 'container_id', 'container', 'id');
-
-        $this->createTable('device', array_merge([
-            'id' => $this->primaryKey(),
-            'resource_id' => $this->integer()->notNull()->comment('资源 ID'),
-            'container_id' => $this->integer()->notNull()->comment('货位 ID'),
-            'rfid' => $this->string()->notNull()->comment('RFID'),
+            'tag_active' => $this->string()->notNull()->comment('有源标签'),
+            'tag_passive' => $this->string()->notNull()->comment('无源标签'),
             'is_online' => $this->boolean()->notNull()->defaultValue(false)->comment('是否在线'),
             'online_change_at' => $this->integer()->notNull()->comment('在线离线时间'),
             'maintenance_at' => $this->integer()->notNull()->comment('最近维护时间'),
@@ -83,20 +81,20 @@ class m171228_090822_first extends Migration
         ], $this->commonColumns([
             'status', 'created_at', 'created_by', 'updated_at', 'updated_by'
         ])
-        ), $this->setTableComment('设备明细表'));
-        $this->addForeignKey('fx-device-resource', 'device', 'resource_id', 'resource', 'id');
-        $this->addForeignKey('fx-device-container', 'device', 'container_id', 'container', 'id');
+        ), $this->setTableComment('资源明细表'));
+        $this->addForeignKey('fk-resource_detail-resource', 'resource_detail', 'resource_id', 'resource', 'id');
+        $this->addForeignKey('fk-resource_detail-container', 'resource_detail', 'container_id', 'container', 'id');
 
-        $this->createTable('device_detail', array_merge([
+        $this->createTable('resource_detail_operation', array_merge([
             'id' => $this->primaryKey(),
-            'device_id' => $this->integer()->notNull()->comment('设备 ID'),
+            'resource_detail_id' => $this->integer()->notNull()->comment('设备 ID'),
             'operation' => $this->smallInteger(1)->notNull()->comment('操作'),
-            'remark' => $this->string()->comment('说明'),
+            'remark' => $this->string()->comment('备注'),
         ], $this->commonColumns([
             'status', 'created_at', 'created_by'
         ])
-        ), $this->setTableComment('设备使用明细表'));
-        $this->addForeignKey('fx-device_detail-device', 'device_detail', 'device_id', 'device', 'id');
+        ), $this->setTableComment('资源使用明细表'));
+        $this->addForeignKey('fk-resource_detail_operation-device', 'resource_detail_operation', 'resource_detail_id', 'resource_detail', 'id');
 
         $this->createTable('apply_order', array_merge([
             'id' => $this->primaryKey(),
@@ -109,19 +107,28 @@ class m171228_090822_first extends Migration
             'status', 'created_at', 'created_by', 'updated_at', 'updated_by'
         ])
         ), $this->setTableComment('申请单表'));
-        $this->addForeignKey('fx-apply_order-person', 'apply_order', 'person_id', 'person', 'id');
+        $this->addForeignKey('fk-apply_order-person', 'apply_order', 'person_id', 'person', 'id');
 
         $this->createTable('apply_order_detail', [
             'id' => $this->primaryKey(),
-            'apply_order_id' => $this->integer()->notNull()->comment('入库单 ID'),
+            'apply_order_id' => $this->integer()->notNull()->comment('申请单 ID'),
             'resource_id' => $this->integer()->notNull()->comment('资源 ID'),
-            'container_id' => $this->integer()->notNull()->comment('货位 ID'),
-            'rfid' => $this->string()->comment('RFID'),
             'quantity' => $this->integer()->notNull()->defaultValue(0)->comment('数量'),
         ], $this->setTableComment('申请单详情表'));
-        $this->addForeignKey('fx-apply_order_detail-apply_order', 'apply_order_detail', 'apply_order_id', 'apply_order', 'id');
-        $this->addForeignKey('fx-apply_order_detail-resource', 'apply_order_detail', 'resource_id', 'resource', 'id');
-        $this->addForeignKey('fx-apply_order_detail-container', 'apply_order_detail', 'container_id', 'container', 'id');
+        $this->addForeignKey('fk-apply_order_detail-apply_order', 'apply_order_detail', 'apply_order_id', 'apply_order', 'id');
+        $this->addForeignKey('fk-apply_order_detail-resource', 'apply_order_detail', 'resource_id', 'resource', 'id');
+
+        $this->createTable('apply_order_detail_resource', [
+            'id' => $this->primaryKey(),
+            'apply_order_detail_id' => $this->integer()->notNull()->comment('申请单明细 ID'),
+            'resource_id' => $this->integer()->notNull()->comment('资源 ID'),
+            'container_id' => $this->integer()->notNull()->comment('货位 ID'),
+            'tag_passive' => $this->string()->comment('无源标签'),
+            'quantity' => $this->integer()->notNull()->defaultValue(0)->comment('数量'),
+        ], $this->setTableComment('申请单明细的资源表'));
+        $this->addForeignKey('fk-apply_order_detail_resource-apply_order_detail', 'apply_order_detail_resource', 'apply_order_detail_id', 'apply_order_detail', 'id');
+        $this->addForeignKey('fk-apply_order_detail_resource-resource', 'apply_order_detail_resource', 'resource_id', 'resource', 'id');
+        $this->addForeignKey('fk-apply_order_detail_resource-container', 'apply_order_detail_resource', 'container_id', 'container', 'id');
 
     }
 

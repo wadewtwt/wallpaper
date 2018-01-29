@@ -21,8 +21,8 @@ use yii\helpers\ArrayHelper;
  * @property integer $updated_by
  *
  * @property ApplyOrderDetail[] $applyOrderDetails
- * @property Device[] $devices
- * @property ExpendableDetail[] $expendableDetails
+ * @property ApplyOrderDetailResource[] $applyOrderDetailResources
+ * @property ResourceDetail[] $resourceDetails
  */
 class Resource extends \common\models\base\ActiveRecord
 {
@@ -51,7 +51,6 @@ class Resource extends \common\models\base\ActiveRecord
     public function rules()
     {
         return [
-            [['name'], 'unique'],
             [['type', 'name'], 'required'],
             [['type', 'min_stock', 'current_stock', 'scrap_cycle', 'maintenance_cycle', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['name'], 'string', 'max' => 255],
@@ -90,17 +89,17 @@ class Resource extends \common\models\base\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getDevices()
+    public function getApplyOrderDetailResources()
     {
-        return $this->hasMany(Device::className(), ['resource_id' => 'id']);
+        return $this->hasMany(ApplyOrderDetailResource::className(), ['resource_id' => 'id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getExpendableDetails()
+    public function getResourceDetails()
     {
-        return $this->hasMany(ExpendableDetail::className(), ['resource_id' => 'id']);
+        return $this->hasMany(ResourceDetail::className(), ['resource_id' => 'id']);
     }
 
     /**

@@ -23,6 +23,7 @@ use yii\web\IdentityInterface;
  * @property integer $updated_by
  * @property string $auth_role
  *
+ * @property AlarmRecord[] $alarmRecords
  * @property string $statusName
  */
 class Admin extends ActiveRecord implements IdentityInterface
@@ -88,6 +89,14 @@ class Admin extends ActiveRecord implements IdentityInterface
             'updated_by' => '修改人',
             'auth_role' => 'Auth Role',
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAlarmRecords()
+    {
+        return $this->hasMany(AlarmRecord::className(), ['solve_id' => 'id']);
     }
 
     /**

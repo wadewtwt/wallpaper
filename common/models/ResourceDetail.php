@@ -6,12 +6,14 @@ use Yii;
 use yii\base\Exception;
 
 /**
- * This is the model class for table "device".
+ * This is the model class for table "resource_detail".
  *
  * @property integer $id
  * @property integer $resource_id
+ * @property integer $type
  * @property integer $container_id
- * @property string $rfid
+ * @property string $tag_active
+ * @property string $tag_passive
  * @property integer $is_online
  * @property integer $online_change_at
  * @property integer $maintenance_at
@@ -24,10 +26,10 @@ use yii\base\Exception;
  * @property integer $updated_by
  *
  * @property Container $container
- * @property \common\models\Resource $resource
- * @property DeviceDetail[] $deviceDetails
+ * @property Resource $resource
+ * @property ResourceDetailOperation[] $resourceDetailOperations
  */
-class Device extends \common\models\base\ActiveRecord
+class ResourceDetail extends \common\models\base\ActiveRecord
 {
     const STATUS_NORMAL = 0; // 正常在库
     const STATUS_OUTPUT = 10; // 已出库
@@ -44,7 +46,7 @@ class Device extends \common\models\base\ActiveRecord
      */
     public static function tableName()
     {
-        return 'device';
+        return 'resource_detail';
     }
 
     /**
@@ -53,9 +55,9 @@ class Device extends \common\models\base\ActiveRecord
     public function rules()
     {
         return [
-            [['resource_id', 'container_id', 'rfid', 'online_change_at', 'maintenance_at', 'scrap_at', 'quantity'], 'required'],
-            [['resource_id', 'container_id', 'is_online', 'online_change_at', 'maintenance_at', 'scrap_at', 'quantity', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
-            [['rfid'], 'string', 'max' => 255],
+            [['resource_id', 'type', 'container_id', 'tag_active', 'tag_passive', 'online_change_at', 'maintenance_at', 'scrap_at', 'quantity'], 'required'],
+            [['resource_id', 'type', 'container_id', 'is_online', 'online_change_at', 'maintenance_at', 'scrap_at', 'quantity', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [['tag_active', 'tag_passive'], 'string', 'max' => 255],
             [['container_id'], 'exist', 'skipOnError' => true, 'targetClass' => Container::className(), 'targetAttribute' => ['container_id' => 'id']],
             [['resource_id'], 'exist', 'skipOnError' => true, 'targetClass' => Resource::className(), 'targetAttribute' => ['resource_id' => 'id']],
         ];
@@ -69,8 +71,10 @@ class Device extends \common\models\base\ActiveRecord
         return [
             'id' => 'ID',
             'resource_id' => '资源 ID',
+            'type' => '类型:消耗品、设备',
             'container_id' => '货位 ID',
-            'rfid' => 'RFID',
+            'tag_active' => '有源标签',
+            'tag_passive' => '无源标签',
             'is_online' => '是否在线',
             'online_change_at' => '在线离线时间',
             'maintenance_at' => '最近维护时间',
@@ -103,9 +107,9 @@ class Device extends \common\models\base\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getDeviceDetails()
+    public function getResourceDetailOperations()
     {
-        return $this->hasMany(DeviceDetail::className(), ['device_id' => 'id']);
+        return $this->hasMany(ResourceDetailOperation::className(), ['resource_detail_id' => 'id']);
     }
 
     /**
@@ -188,5 +192,4 @@ class Device extends \common\models\base\ActiveRecord
             throw $e;
         }
     }
-
 }

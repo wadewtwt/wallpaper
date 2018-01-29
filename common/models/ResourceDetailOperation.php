@@ -2,20 +2,22 @@
 
 namespace common\models;
 
+use Yii;
+
 /**
- * This is the model class for table "device_detail".
+ * This is the model class for table "resource_detail_operation".
  *
  * @property integer $id
- * @property integer $device_id
+ * @property integer $resource_detail_id
  * @property integer $operation
  * @property string $remark
  * @property integer $status
  * @property integer $created_at
  * @property integer $created_by
  *
- * @property Device $device
+ * @property ResourceDetail $resourceDetail
  */
-class DeviceDetail extends \common\models\base\ActiveRecord
+class ResourceDetailOperation extends \common\models\base\ActiveRecord
 {
     const OPERATION_INPUT = 10;
     const OPERATION_OUTPUT = 20;
@@ -34,7 +36,7 @@ class DeviceDetail extends \common\models\base\ActiveRecord
      */
     public static function tableName()
     {
-        return 'device_detail';
+        return 'resource_detail_operation';
     }
 
     /**
@@ -43,10 +45,10 @@ class DeviceDetail extends \common\models\base\ActiveRecord
     public function rules()
     {
         return [
-            [['device_id', 'operation'], 'required'],
-            [['device_id', 'operation', 'status', 'created_at', 'created_by'], 'integer'],
+            [['resource_detail_id', 'operation'], 'required'],
+            [['resource_detail_id', 'operation', 'status', 'created_at', 'created_by'], 'integer'],
             [['remark'], 'string', 'max' => 255],
-            [['device_id'], 'exist', 'skipOnError' => true, 'targetClass' => Device::className(), 'targetAttribute' => ['device_id' => 'id']],
+            [['resource_detail_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResourceDetail::className(), 'targetAttribute' => ['resource_detail_id' => 'id']],
         ];
     }
 
@@ -57,9 +59,9 @@ class DeviceDetail extends \common\models\base\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'device_id' => '设备 ID',
+            'resource_detail_id' => '设备 ID',
             'operation' => '操作',
-            'remark' => '说明',
+            'remark' => '备注',
             'status' => '状态',
             'created_at' => '创建时间',
             'created_by' => '创建人',
@@ -69,9 +71,9 @@ class DeviceDetail extends \common\models\base\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getDevice()
+    public function getResourceDetail()
     {
-        return $this->hasOne(Device::className(), ['id' => 'device_id']);
+        return $this->hasOne(ResourceDetail::className(), ['id' => 'resource_detail_id']);
     }
 
     /**
@@ -89,23 +91,10 @@ class DeviceDetail extends \common\models\base\ActiveRecord
      */
     public static function createOne($deviceId, $operation, $remark = null)
     {
-        $model = new DeviceDetail();
-        $model->device_id = $deviceId;
+        $model = new static();
+        $model->resource_detail_id = $deviceId;
         $model->operation = $operation;
         $model->remark = $remark;
         $model->save(false);
     }
-
-    public function getResource(){
-        return $this->hasOne(Resource::className(),['id' => 'resource_id'])
-            ->viaTable('device',['id' => 'device_id']);
-    }
-
-    public static function countList($num = 5){
-        return self::find()
-            ->limit($num)
-            ->orderBy('created_at desc')
-            ->all();
-    }
-
 }
