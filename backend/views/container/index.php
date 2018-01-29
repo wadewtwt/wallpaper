@@ -28,14 +28,16 @@ $columns = [
     ],
     [
         'class' => '\kartik\grid\ActionColumn',
-        'width' => '150px',
-        'template' => '{detail}',
+        'width' => '300px',
+        'template' => '{delete}',
         'buttons' => [
-            'detail' => function ($url) {
+            'delete' => function ($url) {
                 $options = [
-                    'class' => 'btn btn-default',
+                    'class' => 'btn btn-danger',
+                    'data-method' => 'post',
+                    'data-confirm' => '确定删除该货架？'
                 ];
-                return Html::a('查看货物', $url, $options);
+                return Html::a('删除货架', $url, $options);
             },
         ],
     ],
@@ -45,5 +47,10 @@ $simpleDynaGrid = new SimpleDynaGrid([
     'dynaGridId' => 'dynagrid-container-index',
     'columns' => $columns,
     'dataProvider' => $dataProvider,
+    'extraToolbar' => [
+        [
+            'content' => Html::a('新增', ['create'], ['class' => 'btn btn-default show_ajax_modal'])
+        ],
+    ]
 ]);
 $simpleDynaGrid->renderDynaGrid();
