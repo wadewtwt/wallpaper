@@ -11,7 +11,7 @@ $form = SimpleSearchForm::begin(['action' => ['index']]);
 echo $form->field($model, 'operation')->dropDownList(ExpendableDetail::$operationData, [
     'prompt' => '全部'
 ]);
-echo $form->field($model, 'resource_id')->dropDownList(Resource::findExpendableDevice(true), [
+echo $form->field($model, 'resource_id')->dropDownList(Resource::findAllIdName(Resource::TYPE_EXPENDABLE, true), [
     'prompt' => '全部'
 ])->label('消耗品名称');
 
