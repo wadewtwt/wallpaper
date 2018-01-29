@@ -2,22 +2,18 @@
 
 namespace backend\controllers;
 
-use backend\components\AuthWebController;
 use backend\models\ResourceDetailOperationSearch;
-use common\models\Resource;
 use Yii;
 
-abstract class AbstractResourceDetailOperationController extends AuthWebController
+class ResourceDetailOperationController extends AbstractResourceController
 {
-    const RESOURCE_TYPE = Resource::TYPE_DEVICE;
-
     // 列表
     public function actionIndex()
     {
         $this->rememberUrl();
 
         $searchModel = new ResourceDetailOperationSearch([
-            'type' => static::RESOURCE_TYPE,
+            'type' => $this->resourceType,
         ]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 

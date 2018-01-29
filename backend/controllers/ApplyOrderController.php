@@ -19,9 +19,18 @@ use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
 
-abstract class AbstractApplyOrderController extends AuthWebController
+class ApplyOrderController extends AuthWebController
 {
-    const APPLY_ORDER_TYPE = Enum::APPLY_ORDER_TYPE_INPUT;
+    public $applyOrderType;
+
+    public function init()
+    {
+        parent::init();
+        $allows = [Enum::APPLY_ORDER_TYPE_INPUT, Enum::APPLY_ORDER_TYPE_OUTPUT, Enum::APPLY_ORDER_TYPE_APPLY];
+        if (!in_array($this->applyOrderType, $allows)) {
+            throw new Exception('applyOrderType 必须配置，且为 ' . implode(',', $allows) . '中的一个');
+        }
+    }
 
     // 列表
     public function actionIndex()
@@ -29,7 +38,7 @@ abstract class AbstractApplyOrderController extends AuthWebController
         $this->rememberUrl();
 
         $searchModel = new ApplyOrderSearch([
-            'type' => static::APPLY_ORDER_TYPE,
+            'type' => $this->applyOrderType,
         ]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
@@ -43,7 +52,7 @@ abstract class AbstractApplyOrderController extends AuthWebController
     public function actionCreate()
     {
         $applyOrder = new ApplyOrder([
-            'type' => static::APPLY_ORDER_TYPE
+            'type' => $this->applyOrderType
         ]);
         $applyOrderDetails = [new ApplyOrderDetail()];
 
@@ -136,9 +145,9 @@ abstract class AbstractApplyOrderController extends AuthWebController
             throw new StatusNotAllowedException();
         }
 
-        if (static::APPLY_ORDER_TYPE == Enum::APPLY_ORDER_TYPE_INPUT) {
+        if ($this->applyOrderType == Enum::APPLY_ORDER_TYPE_INPUT) {
             return $this->handleOverInput($applyOrder);
-        } elseif (in_array(static::APPLY_ORDER_TYPE, [Enum::APPLY_ORDER_TYPE_OUTPUT, Enum::APPLY_ORDER_TYPE_APPLY])) {
+        } elseif (in_array($this->applyOrderType, [Enum::APPLY_ORDER_TYPE_OUTPUT, Enum::APPLY_ORDER_TYPE_APPLY])) {
             return $this->handleOverOutputApply($applyOrder);
         }
         throw new Exception('不支持的 APPLY_ORDER_TYPE 类型');
@@ -151,7 +160,7 @@ abstract class AbstractApplyOrderController extends AuthWebController
      */
     protected function findModel($id)
     {
-        $model = ApplyOrder::findOne(['id' => $id, 'type' => static::APPLY_ORDER_TYPE]);
+        $model = ApplyOrder::findOne(['id' => $id, 'type' => $this->applyOrderType]);
         if (!$model) {
             throw new NotFoundHttpException();
         }
@@ -239,7 +248,7 @@ abstract class AbstractApplyOrderController extends AuthWebController
                     /** @var $detail ApplyOrderResource */
                     $applyOrderResource->apply_order_id = $applyOrder->id;
                     $applyOrderResource->save(false);
-                    ResourceDetail::operateByApplyOrderType(static::APPLY_ORDER_TYPE, $applyOrderResource);
+                    ResourceDetail::operateByApplyOrderType($this->applyOrderType, $applyOrderResource);
                 }
                 // 修改该申请单为已完成
                 $applyOrder->status = ApplyOrder::STATUS_OVER;
@@ -287,7 +296,7 @@ abstract class AbstractApplyOrderController extends AuthWebController
                     /** @var $detail ApplyOrderResource */
                     $applyOrderResource->apply_order_id = $applyOrder->id;
                     $applyOrderResource->save(false);
-                    ResourceDetail::operateByApplyOrderType(static::APPLY_ORDER_TYPE, $applyOrderResource);
+                    ResourceDetail::operateByApplyOrderType($this->applyOrderType, $applyOrderResource);
                 }
                 // 修改该申请单为已完成
                 $applyOrder->status = ApplyOrder::STATUS_OVER;

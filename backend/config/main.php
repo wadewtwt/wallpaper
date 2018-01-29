@@ -1,7 +1,13 @@
 <?php
 
+use backend\controllers\ApplyOrderController;
+use backend\controllers\ResourceController;
+use backend\controllers\ResourceDetailController;
+use backend\controllers\ResourceDetailOperationController;
 use common\models\Admin;
 use common\models\base\ConfigString;
+use common\models\base\Enum;
+use common\models\Resource;
 use \kartik\datecontrol\Module as DateControlModule;
 
 $params = array_merge(
@@ -18,6 +24,44 @@ return [
     //'catchAll' => ['site/offline'],
     'aliases' => [
         '@view' => '@app/views',
+    ],
+    'controllerMap' => [
+        'device' => [
+            'class' => ResourceController::className(),
+            'resourceType' => Resource::TYPE_DEVICE
+        ],
+        'device-detail' => [
+            'class' => ResourceDetailController::className(),
+            'resourceType' => Resource::TYPE_DEVICE
+        ],
+        'device-detail-operation' => [
+            'class' => ResourceDetailOperationController::className(),
+            'resourceType' => Resource::TYPE_DEVICE
+        ],
+        'expendable' => [
+            'class' => ResourceController::className(),
+            'resourceType' => Resource::TYPE_EXPENDABLE
+        ],
+        'expendable-detail' => [
+            'class' => ResourceDetailController::className(),
+            'resourceType' => Resource::TYPE_EXPENDABLE
+        ],
+        'expendable-detail-operation' => [
+            'class' => ResourceDetailOperationController::className(),
+            'resourceType' => Resource::TYPE_EXPENDABLE
+        ],
+        'apply-order-input' => [
+            'class' => ApplyOrderController::className(),
+            'applyOrderType' => Enum::APPLY_ORDER_TYPE_INPUT
+        ],
+        'apply-order-output' => [
+            'class' => ApplyOrderController::className(),
+            'applyOrderType' => Enum::APPLY_ORDER_TYPE_OUTPUT
+        ],
+        'apply-order-apply' => [
+            'class' => ApplyOrderController::className(),
+            'applyOrderType' => Enum::APPLY_ORDER_TYPE_APPLY
+        ],
     ],
     'modules' => [
         'gridview' => [
