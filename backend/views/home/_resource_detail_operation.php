@@ -7,9 +7,7 @@
 use common\models\ResourceDetailOperation;
 
 $models = ResourceDetailOperation::find()
-    ->alias('a')
-    ->joinWith('resourceDetail b')
-    ->where(['b.type' => $resourceType])
+    ->where(['type' => $resourceType])
     ->orderBy(['created_at' => SORT_DESC])
     ->limit(5)
     ->all();
@@ -43,7 +41,7 @@ $models = ResourceDetailOperation::find()
                             <span class="description-header"><?= date('Y-m-d H:i:s', $model->created_at) ?></span>
                         </td>
                         <td class="text-primary"><?= $model->resourceDetail->resource->name ?></td>
-                        <td class="text-primary"><?= $model->quantity ?></td>
+                        <td class="text-primary"><?= $model->resourceDetail->quantity ?></td>
                         <td><span class="label label-default"><?= $model->getOperationName() ?></span></td>
                     </tr>
                 <?php } ?>
