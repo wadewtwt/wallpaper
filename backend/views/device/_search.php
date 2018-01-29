@@ -7,7 +7,7 @@ use common\models\Resource;
 
 $form = SimpleSearchForm::begin(['action' => ['index']]);
 
-echo $form->field($model, 'resource_id')->dropDownList(Resource::findExpendableDevice(false),[
+echo $form->field($model, 'resource_id')->dropDownList(Resource::findAllIdName(Resource::TYPE_DEVICE, true),[
     'prompt' => '请选择设备'
 ])->label('设备名称');
 echo $form->renderFooterButtons();

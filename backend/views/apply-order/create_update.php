@@ -3,20 +3,18 @@
 /** @var $applyOrder ApplyOrder */
 /** @var $applyOrderDetails \common\models\ApplyOrderDetail[] */
 
-/** @var $resourceData array */
-
 use backend\widgets\SimpleActiveForm;
+use backend\widgets\SimpleSelect2;
 use common\models\ApplyOrder;
 use common\models\Container;
 use common\models\Person;
-use kartik\select2\Select2;
-use unclead\multipleinput\TabularColumn;
+use common\models\Resource;
 use unclead\multipleinput\TabularInput;
-use yii\helpers\Url;
+
+$resourceData = Resource::findAllIdName(null, true);
+$containerData = Container::findAllIdName(true, true);
 
 $form = SimpleActiveForm::begin();
-
-$resourceSearchUrl = Url::to(['/search/resource']);
 
 echo $form->field($applyOrder, 'person_id')->dropDownList(Person::findAllIdName(true), [
     'prompt' => '请选择'
@@ -40,27 +38,18 @@ echo TabularInput::widget([
             'name' => 'resource_id',
             'title' => '资源名',
             'enableError' => true,
-            'type' => Select2::className(),
+            'type' => SimpleSelect2::className(),
             'options' => [
                 'data' => $resourceData,
-                'options' => ['placeholder' => '请输入资源名称'],
-                'language' => 'zh-CN',
-                'theme' => 'default',
-                'pluginOptions' => [
-                    'allowClear' => true,
-                    'minimumInputLength' => 1,
-                    'ajax' => ['url' => $resourceSearchUrl,],
-                ],
             ],
         ],
         [
             'name' => 'container_id',
             'title' => '货位',
             'enableError' => true,
-            'type' => TabularColumn::TYPE_DROPDOWN,
-            'items' => Container::findAllIdName(true, true),
+            'type' => SimpleSelect2::className(),
             'options' => [
-                'prompt' => '请选择'
+                'data' => $containerData
             ]
         ],
         [

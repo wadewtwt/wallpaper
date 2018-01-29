@@ -9,7 +9,6 @@ use backend\models\ApplyOrderSearch;
 use common\components\Tools;
 use common\models\ApplyOrder;
 use common\models\ApplyOrderDetail;
-use common\models\Resource;
 use Yii;
 use yii\base\Exception;
 use yii\base\Model;
@@ -226,31 +225,10 @@ abstract class AbstractApplyOrderController extends AuthWebController
             }
         }
 
-        // 获取明细资源信息，用于更新或者新增验证未通过时恢复数据
-        $resourceData = $this->getResourceData(ArrayHelper::getColumn($applyOrderDetails, 'resource_id'));
-
         return $this->render('../apply-order/create_update', [
             'applyOrder' => $applyOrder,
             'applyOrderDetails' => $applyOrderDetails,
-            'resourceData' => $resourceData
         ]);
-    }
-
-    /**
-     * 获取资源的 id 和 name 信息
-     * @param $resourceIds
-     * @return array
-     */
-    protected function getResourceData($resourceIds)
-    {
-        return ArrayHelper::map(ArrayHelper::toArray(Resource::find()->select(['id', 'name', 'type'])->where(['id' => $resourceIds])->all(), [
-            Resource::className() => [
-                'id',
-                'nameType' => function (\common\models\Resource $model) {
-                    return $model->name . '(' . $model->getTypeName() . ')';
-                }
-            ]
-        ]), 'id', 'nameType');
     }
 
 }

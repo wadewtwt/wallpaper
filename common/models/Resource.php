@@ -111,14 +111,21 @@ class Resource extends \common\models\base\ActiveRecord
         return $this->toName($this->type, self::$typeData);
     }
 
-    public static function findExpendableDevice($isExpendable = true)
+    /**
+     * @param null $type
+     * @param bool $map
+     * @return array|Resource[]
+     */
+    public static function findAllIdName($type = null, $map = true)
     {
-        if ($isExpendable) {
-            $type = Resource::TYPE_EXPENDABLE;
-        } else {
-            $type = Resource::TYPE_DEVICE;
+        $query = static::find()->select(['id', 'name']);
+        if ($type !== null) {
+            $query->andWhere(['type' => $type]);
         }
-        $model = self::find()->select(['id', 'name'])->andWhere(['type' => $type])->asArray()->all();
-        return ArrayHelper::map($model, 'id', 'name');
+        $model = $query->asArray()->all();
+        if ($map) {
+            return ArrayHelper::map($model, 'id', 'name');
+        }
+        return $model;
     }
 }
