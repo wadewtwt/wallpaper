@@ -38,7 +38,7 @@ class TemperatureController extends AuthWebController
             }
             return $this->actionPreviousRedirect();
         }
-        return $this->render('_create_update', [
+        return $this->render('create_update', [
             'model' => $model
         ]);
     }
@@ -55,7 +55,7 @@ class TemperatureController extends AuthWebController
             }
             return $this->actionPreviousRedirect();
         }
-        return $this->render('_create_update', [
+        return $this->render('create_update', [
             'model' => $model
         ]);
     }
