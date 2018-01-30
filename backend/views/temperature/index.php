@@ -5,6 +5,7 @@
 
 use backend\widgets\SimpleDynaGrid;
 use yii\helpers\Html;
+use common\models\Temperature;
 
 $this->title = '仓库列表';
 $this->params['breadcrumbs'] = [
@@ -19,6 +20,9 @@ echo $this->render('_search', [
 $columns = [
     [
         'attribute' => 'store_id',
+        'value' => function (Temperature $model) {
+            return $model->store->name;
+        }
     ],
     [
         'attribute' => 'ip',
