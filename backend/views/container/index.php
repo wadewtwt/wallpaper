@@ -34,8 +34,14 @@ $columns = [
     [
         'class' => '\kartik\grid\ActionColumn',
         'width' => '300px',
-        'template' => '{delete}',
+        'template' => '{update} {delete}',
         'buttons' => [
+            'update' => function ($url) {
+                $options = [
+                    'class' => 'btn btn-default show_ajax_modal',
+                ];
+                return Html::a('更新', $url, $options);
+            },
             'delete' => function ($url) {
                 $options = [
                     'class' => 'btn btn-danger',

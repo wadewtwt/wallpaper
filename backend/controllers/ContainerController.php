@@ -44,6 +44,23 @@ class ContainerController extends AuthWebController
         ]);
     }
 
+    // 修改
+    public function actionUpdate($id)
+    {
+        $model = $this->findModel($id);
+        if($model->load(Yii::$app->request->post())){
+            if($model->validate() && $model->save(false)){
+                MessageAlert::set(['success' => '修改成功']);
+            }else{
+                MessageAlert::set(['error' => '修改失败：'.Tools::formatModelErrors2String($model->errors)]);
+            }
+            return $this->actionPreviousRedirect();
+        }
+        return $this->renderAjax('_create_update',[
+            'model' => $model
+        ]);
+    }
+
     // 删除
     public function actionDelete($id)
     {
@@ -58,9 +75,10 @@ class ContainerController extends AuthWebController
         return $this->actionPreviousRedirect();
     }
 
-    public function findModel($id){
+    public function findModel($id)
+    {
         $model = Container::findOne($id);
-        if(!$model){
+        if (!$model) {
             throw new NotFoundHttpException();
         }
         return $model;
