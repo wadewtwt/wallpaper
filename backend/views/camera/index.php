@@ -1,7 +1,7 @@
 <?php
 /** @var $this yii\web\View */
 /** @var $dataProvider common\components\ActiveDataProvider */
-/** @var $searchModel backend\models\TemperatureSearch */
+/** @var $searchModel backend\models\CameraSearch */
 
 use backend\widgets\SimpleDynaGrid;
 use yii\helpers\Html;
@@ -27,19 +27,13 @@ $columns = [
         'attribute' => 'port',
     ],
     [
+        'attribute' => 'username',
+    ],
+    [
+        'attribute' => 'name',
+    ],
+    [
         'attribute' => 'device_no',
-    ],
-    [
-        'attribute' => 'down_limit',
-    ],
-    [
-        'attribute' => 'up_limit',
-    ],
-    [
-        'attribute' => 'current',
-    ],
-    [
-        'attribute' => 'current_updated_at',
     ],
     [
         'attribute' => 'remark',
@@ -62,7 +56,7 @@ $columns = [
                 $options = [
                     'class' => 'btn btn-danger',
                     'data-method' => 'post',
-                    'data-confirm' => '确定删除该温湿度设备？'
+                    'data-confirm' => '确定删除该摄像头设备？'
                 ];
                 return Html::a('删除', $url, $options);
             },
@@ -71,7 +65,7 @@ $columns = [
 ];
 
 $simpleDynaGrid = new SimpleDynaGrid([
-    'dynaGridId' => 'dynagrid-temperature-index',
+    'dynaGridId' => 'dynagrid-camera-index',
     'columns' => $columns,
     'dataProvider' => $dataProvider,
     'extraToolbar' => [
