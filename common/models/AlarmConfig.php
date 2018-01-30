@@ -2,8 +2,6 @@
 
 namespace common\models;
 
-use Yii;
-
 /**
  * This is the model class for table "alarm_config".
  *
@@ -24,6 +22,13 @@ use Yii;
  */
 class AlarmConfig extends \common\models\base\ActiveRecord
 {
+    const TYPE_TEMPERATURE = 10;
+    const TYPE_ILLEGAL_OUTPUT = 20;
+
+    public static $typeData = [
+        self::TYPE_TEMPERATURE => '温湿度警报',
+        self::TYPE_ILLEGAL_OUTPUT => '非法出库警报'
+    ];
     /**
      * @inheritdoc
      */
@@ -93,5 +98,9 @@ class AlarmConfig extends \common\models\base\ActiveRecord
     public function getAlarmRecords()
     {
         return $this->hasMany(AlarmRecord::className(), ['alarm_config_id' => 'id']);
+    }
+
+    public function getAlarmType(){
+        return $this->toName($this->type,self::$typeData);
     }
 }

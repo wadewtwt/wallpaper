@@ -2,7 +2,7 @@
 
 namespace common\models;
 
-use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "camera".
@@ -86,5 +86,18 @@ class Camera extends \common\models\base\ActiveRecord
     public function getStore()
     {
         return $this->hasOne(Store::className(), ['id' => 'store_id']);
+    }
+
+    /**
+     * @param bool $map
+     * @return array|\yii\db\ActiveRecord[]|Camera
+     */
+    public static function findAllIdName($map = false)
+    {
+        $models = static::find()->select(['id', 'name'])->asArray()->all();
+        if ($map) {
+            return ArrayHelper::map($models, 'id', 'name');
+        }
+        return $models;
     }
 }
