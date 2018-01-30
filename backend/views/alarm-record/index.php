@@ -5,6 +5,7 @@
 
 use backend\widgets\SimpleDynaGrid;
 use yii\helpers\Html;
+use common\models\AlarmRecord;
 
 $this->title = '仓库列表';
 $this->params['breadcrumbs'] = [
@@ -22,27 +23,42 @@ $columns = [
     ],
     [
         'attribute' => 'alarm_at',
+        'format' => ['datetime', 'php:Y-m-d H:i:s']
     ],
     [
         'attribute' => 'description',
     ],
     [
         'attribute' => 'solve_id',
+        'value' => function (AlarmRecord $model) {
+            return $model->solve->name;
+        }
+
     ],
     [
         'attribute' => 'solve_at',
+        'format' => ['datetime', 'php:Y-m-d H:i:s']
     ],
     [
         'attribute' => 'solve_description',
     ],
     [
         'attribute' => 'store_id',
+        'value' => function (AlarmRecord $model) {
+            return $model->store->name;
+        }
     ],
     [
         'attribute' => 'camera_id',
+        'value' => function (AlarmRecord $model) {
+            return $model->camera->name;
+        }
     ],
     [
         'attribute' => 'type',
+        'value' => function (AlarmRecord $model) {
+            return $model->alarmType;
+        }
     ],
     [
         'attribute' => 'status',

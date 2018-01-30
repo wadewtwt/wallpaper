@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use common\models\AlarmConfig;
 
 /**
  * This is the model class for table "alarm_record".
@@ -84,5 +85,23 @@ class AlarmRecord extends \common\models\base\ActiveRecord
     public function getAlarmConfig()
     {
         return $this->hasOne(AlarmConfig::className(), ['id' => 'alarm_config_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery|Store
+     */
+    public function getStore(){
+        return $this->hasOne(Store::className(),['id' => 'store_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery|Camera
+     */
+    public function getCamera(){
+        return $this->hasOne(Camera::className(),['id' => 'camera_id']);
+    }
+
+    public function getAlarmType(){
+        return $this->toname($this->type, AlarmConfig::$typeData);
     }
 }
