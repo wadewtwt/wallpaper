@@ -62,7 +62,7 @@ $columns = [
                 $options = [
                     'class' => 'btn btn-default',
                     'data-method' => 'post',
-                    'data-confirm' => '确定删除该货架？'
+                    'data-confirm' => '确定删除该温湿度设备？'
                 ];
                 return Html::a('删除', $url, $options);
             },
