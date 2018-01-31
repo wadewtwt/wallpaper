@@ -32,23 +32,48 @@ $columns = [
     ],
     [
         'attribute' => 'type',
-        'value' => function(AlarmConfig $model){
+        'value' => function (AlarmConfig $model) {
             return $model->getAlarmType();
         }
     ],
     [
         'attribute' => 'status',
+        'value' => function (AlarmConfig $model) {
+            return $model->getAlarmStatus();
+        }
     ],
     [
         'class' => '\kartik\grid\ActionColumn',
-        'width' => '150px',
-        'template' => '{update} {delete}',
+        'width' => '300px',
+        'template' => '{update} {normal} {stop} {delete}',
         'buttons' => [
             'update' => function ($url) {
                 $options = [
                     'class' => 'btn btn-default show_ajax_modal',
                 ];
                 return Html::a('更新', $url, $options);
+            },
+            'normal' => function ($url, $model) {
+                $options = [
+                    'class' => 'btn btn-success',
+                    'data-method' => 'post',
+                    'data-confirm' => '确定启用该联动？'
+                ];
+                if ($model->status == AlarmConfig::STATUS_NORMAL) {
+                    return '';
+                }
+                return Html::a('启用', $url, $options);
+            },
+            'stop' => function ($url, $model) {
+                $options = [
+                    'class' => 'btn btn-warning',
+                    'data-method' => 'post',
+                    'data-confirm' => '确定停用该联动？'
+                ];
+                if ($model->status == AlarmConfig::STATUS_STOP) {
+                    return '';
+                }
+                return Html::a('停用', $url, $options);
             },
             'delete' => function ($url) {
                 $options = [

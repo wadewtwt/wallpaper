@@ -9,6 +9,7 @@ use Yii;
 use backend\components\MessageAlert;
 use yii\web\NotFoundHttpException;
 use common\components\Tools;
+use yii\base\Exception;
 
 class AlarmConfigController extends AuthWebController
 {
@@ -17,7 +18,12 @@ class AlarmConfigController extends AuthWebController
     {
         $this->rememberUrl();
 
-        $searchModel = new AlarmConfigSearch();
+        $searchModel = new AlarmConfigSearch([
+            'status' => [
+                AlarmConfig::STATUS_NORMAL,
+                AlarmConfig::STATUS_STOP
+            ]
+        ]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -64,11 +70,48 @@ class AlarmConfigController extends AuthWebController
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-        $isDelete = $model->delete();
+        $model->status = AlarmConfig::STATUS_DELETE;
+        $isDelete = $model->save();
         if ($isDelete) {
             MessageAlert::set(['success' => '删除成功']);
         } else {
             MessageAlert::set(['success' => '删除失败：' . Tools::formatModelErrors2String($model->errors)]);
+        }
+        return $this->actionPreviousRedirect();
+    }
+
+    // 启用
+    public function actionNormal($id)
+    {
+        $model = $this->findModel($id);
+        if ($model->status == AlarmConfig::STATUS_NORMAL) {
+            throw new Exception('请确定该设备的状态');
+        }
+
+        $model->status = AlarmConfig::STATUS_NORMAL;
+        $isNormal = $model->save();
+        if ($isNormal) {
+            MessageAlert::set(['success' => '启用成功']);
+        } else {
+            MessageAlert::set(['success' => '启用失败：' . Tools::formatModelErrors2String($model->errors)]);
+        }
+        return $this->actionPreviousRedirect();
+    }
+
+    // 停用
+    public function actionStop($id)
+    {
+        $model = $this->findModel($id);
+        if ($model->status == AlarmConfig::STATUS_STOP) {
+            throw new Exception('请确定该设备的状态');
+        }
+
+        $model->status = AlarmConfig::STATUS_STOP;
+        $isNormal = $model->save();
+        if ($isNormal) {
+            MessageAlert::set(['success' => '停用成功']);
+        } else {
+            MessageAlert::set(['success' => '停用失败：' . Tools::formatModelErrors2String($model->errors)]);
         }
         return $this->actionPreviousRedirect();
     }

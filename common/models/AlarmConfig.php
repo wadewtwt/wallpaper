@@ -2,6 +2,8 @@
 
 namespace common\models;
 
+use function Qiniu\setWithoutEmpty;
+
 /**
  * This is the model class for table "alarm_config".
  *
@@ -29,6 +31,16 @@ class AlarmConfig extends \common\models\base\ActiveRecord
         self::TYPE_TEMPERATURE => '温湿度警报',
         self::TYPE_ILLEGAL_OUTPUT => '非法出库警报'
     ];
+
+    const STATUS_NORMAL = 0;
+    const STATUS_STOP = 10;
+    const STATUS_DELETE = 99;
+
+    public static $statusData = [
+        self::STATUS_NORMAL => '正常',
+        self::STATUS_STOP => '停用'
+    ];
+
     /**
      * @inheritdoc
      */
@@ -100,7 +112,19 @@ class AlarmConfig extends \common\models\base\ActiveRecord
         return $this->hasMany(AlarmRecord::className(), ['alarm_config_id' => 'id']);
     }
 
-    public function getAlarmType(){
-        return $this->toName($this->type,self::$typeData);
+    /**
+     * @return string
+     */
+    public function getAlarmType()
+    {
+        return $this->toName($this->type, self::$typeData);
+    }
+
+    /**
+     * @return string
+     */
+    public function getAlarmStatus()
+    {
+        return $this->toName($this->status, self::$statusData);
     }
 }

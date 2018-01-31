@@ -11,6 +11,7 @@ class AlarmConfigSearch extends AlarmConfig
     {
         return [
             [['store_id', 'camera_id', 'type'], 'integer'],
+            [['status'], 'safe']
         ];
     }
 
@@ -38,6 +39,7 @@ class AlarmConfigSearch extends AlarmConfig
             'store_id' => $this->store_id,
             'camera_id' => $this->camera_id,
             'type' => $this->type,
+            'status' => $this->status
         ]);
 
         return $dataProvider;
