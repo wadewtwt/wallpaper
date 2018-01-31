@@ -69,6 +69,11 @@ class StoreController extends AuthWebController
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
+        $isHaveContainer = \common\models\Container::findOne(['store_id' => $model->id]);
+        if($isHaveContainer){
+            MessageAlert::set(['error' => '该仓库已关联货架，不能删除']);
+            return $this->actionPreviousRedirect();
+        }
         $isDelete = $model->delete();
         if ($isDelete) {
             MessageAlert::set(['success' => '删除成功']);
