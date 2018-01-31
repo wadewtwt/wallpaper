@@ -6,6 +6,7 @@ use common\models\base\ActiveRecord;
 use common\components\Tools;
 use yii\base\NotSupportedException;
 use yii\web\IdentityInterface;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "admin".
@@ -172,5 +173,18 @@ class Admin extends ActiveRecord implements IdentityInterface
     public function validatePassword($password)
     {
         return Tools::validatePassword($password, $this->password_hash);
+    }
+
+    /**
+     * @param bool $map
+     * @return array|Store[]
+     */
+    public static function findAllIdName($map = false)
+    {
+        $models = static::find()->select(['id', 'name'])->asArray()->all();
+        if ($map) {
+            return ArrayHelper::map($models, 'id', 'name');
+        }
+        return $models;
     }
 }

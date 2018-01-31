@@ -5,12 +5,6 @@
 use backend\widgets\SimpleAjaxForm;
 use common\models\Store;
 
-$this->title = $model->isNewRecord ? '新增' : '编辑';
-$this->params['breadcrumbs'] = [
-    '摄像头设备管理',
-    $this->title
-];
-
 $form = SimpleAjaxForm::begin(['header' => ($model->isNewRecord) ? '新增' : '编辑']);
 echo $form->field($model, 'store_id')->dropDownList(Store::findAllIdName(true), ['prompt' => '选择仓库']);
 echo $form->field($model, 'ip');

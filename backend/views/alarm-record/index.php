@@ -46,7 +46,8 @@ $columns = [
         'attribute' => 'store_id',
         'value' => function (AlarmRecord $model) {
             return $model->store->name;
-        }
+        },
+        'label' => '所属仓库'
     ],
     [
         'attribute' => 'camera_id',
@@ -66,20 +67,15 @@ $columns = [
     [
         'class' => '\kartik\grid\ActionColumn',
         'width' => '150px',
-        'template' => '{update} {delete}',
+        'template' => '{handle}',
         'buttons' => [
-            'update' => function ($url) {
+            'handle' => function ($url) {
                 $options = [
-                    'class' => 'btn btn-default',
+                    'class' => 'btn btn-default show_ajax_modal',
                 ];
-                return Html::a('更新', $url, $options);
+                return Html::a('处理', $url, $options);
             },
-            'delete' => function ($url) {
-                $options = [
-                    'class' => 'btn btn-default',
-                ];
-                return Html::a('删除', $url, $options);
-            },
+
         ],
     ],
 ];
@@ -88,10 +84,6 @@ $simpleDynaGrid = new SimpleDynaGrid([
     'dynaGridId' => 'dynagrid-alarm-record-index',
     'columns' => $columns,
     'dataProvider' => $dataProvider,
-    'extraToolbar' => [
-        [
-            'content' => Html::a('新增', ['create'], ['class' => 'btn btn-default'])
-        ]
-    ]
+
 ]);
 $simpleDynaGrid->renderDynaGrid();
