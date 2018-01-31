@@ -17,7 +17,12 @@ class TemperatureController extends AuthWebController
     {
         $this->rememberUrl();
 
-        $searchModel = new TemperatureSearch();
+        $searchModel = new TemperatureSearch([
+            'status' => [
+                Temperature::STATUS_NORMAL,
+                Temperature::STATUS_STOP
+            ]
+        ]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -38,7 +43,7 @@ class TemperatureController extends AuthWebController
             }
             return $this->actionPreviousRedirect();
         }
-        return $this->render('create_update', [
+        return $this->renderAjax('_create_update', [
             'model' => $model
         ]);
     }
@@ -55,7 +60,7 @@ class TemperatureController extends AuthWebController
             }
             return $this->actionPreviousRedirect();
         }
-        return $this->render('create_update', [
+        return $this->renderAjax('_create_update', [
             'model' => $model
         ]);
     }
@@ -64,7 +69,8 @@ class TemperatureController extends AuthWebController
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-        $isDelete = $model->delete();
+        $model->status = Temperature::STATUS_DELETE;
+        $isDelete = $model->save();
         if ($isDelete) {
             MessageAlert::set(['success' => '删除成功']);
         } else {
