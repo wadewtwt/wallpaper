@@ -23,6 +23,13 @@ $columns = [
         'attribute' => 'name',
     ],
     [
+        'attribute' => 'store_id',
+        'value' => function(Container $model){
+            return $model->store->name;
+        },
+        'label' => '所属仓库'
+    ],
+    [
         'attribute' => 'total_quantity',
     ],
     [
