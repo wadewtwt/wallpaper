@@ -38,7 +38,7 @@ class CameraController extends AuthWebController
             }
             return $this->actionPreviousRedirect();
         }
-        return $this->render('create_update', [
+        return $this->renderAjax('_create_update', [
             'model' => $model
         ]);
     }
@@ -55,7 +55,7 @@ class CameraController extends AuthWebController
             }
             return $this->actionPreviousRedirect();
         }
-        return $this->render('create_update', [
+        return $this->renderAjax('_create_update', [
             'model' => $model
         ]);
     }

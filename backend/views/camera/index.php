@@ -22,7 +22,8 @@ $columns = [
         'attribute' => 'store_id',
         'value' => function (Camera $model) {
             return $model->store->name;
-        }
+        },
+        'label' => '所属仓库'
     ],
     [
         'attribute' => 'ip',
@@ -44,6 +45,9 @@ $columns = [
     ],
     [
         'attribute' => 'status',
+        'value' => function(Camera $model){
+            return $model->getStatusName();
+        }
     ],
     [
         'class' => '\kartik\grid\ActionColumn',
@@ -52,7 +56,7 @@ $columns = [
         'buttons' => [
             'update' => function ($url) {
                 $options = [
-                    'class' => 'btn btn-default',
+                    'class' => 'btn btn-default show_ajax_modal',
                 ];
                 return Html::a('更新', $url, $options);
             },
@@ -74,7 +78,7 @@ $simpleDynaGrid = new SimpleDynaGrid([
     'dataProvider' => $dataProvider,
     'extraToolbar' => [
         [
-            'content' => Html::a('新增', ['create'], ['class' => 'btn btn-default'])
+            'content' => Html::a('新增', ['create'], ['class' => 'btn btn-default show_ajax_modal'])
         ]
     ]
 ]);

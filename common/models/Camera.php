@@ -27,6 +27,15 @@ use yii\helpers\ArrayHelper;
  */
 class Camera extends \common\models\base\ActiveRecord
 {
+    const STATUS_NORMAL = 0;
+    const STATUS_STOP = 10;
+    const STATUS_DELETE = 99;// 删除
+
+    public static $statusData = [
+        self::STATUS_NORMAL => '正常',
+        self::STATUS_STOP => '停用'
+    ];
+
     /**
      * @inheritdoc
      */
@@ -100,4 +109,28 @@ class Camera extends \common\models\base\ActiveRecord
         }
         return $models;
     }
+
+    /**
+     * @return string
+     */
+    public function getStatusName(){
+        return $this->toName($this->status,self::$statusData);
+    }
+
+    /**
+     * @return bool
+     */
+    public function beforeDelete()
+    {
+        if(!parent::beforeDelete()){
+            return false;
+        }
+        $hasAlarmConfig = AlarmConfig::find()->select(['id'])->where(['camera_id' => $this->id])->limit(1)->one();
+        if($hasAlarmConfig){
+            $this->addError('id','该摄像头已配置到联动设备');
+            return false;
+        }
+        return true;
+    }
+
 }
