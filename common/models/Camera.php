@@ -28,13 +28,7 @@ use yii\helpers\ArrayHelper;
 class Camera extends \common\models\base\ActiveRecord
 {
     const STATUS_NORMAL = 0;
-    const STATUS_STOP = 10;
     const STATUS_DELETE = 99;// 删除
-
-    public static $statusData = [
-        self::STATUS_NORMAL => '正常',
-        self::STATUS_STOP => '停用'
-    ];
 
     /**
      * @inheritdoc
@@ -108,13 +102,6 @@ class Camera extends \common\models\base\ActiveRecord
             return ArrayHelper::map($models, 'id', 'name');
         }
         return $models;
-    }
-
-    /**
-     * @return string
-     */
-    public function getStatusName(){
-        return $this->toName($this->status,self::$statusData);
     }
 
     /**

@@ -9,6 +9,7 @@ use Yii;
 use backend\components\MessageAlert;
 use yii\web\NotFoundHttpException;
 use common\components\Tools;
+use common\models\AlarmConfig;
 
 class CameraController extends AuthWebController
 {
@@ -17,7 +18,9 @@ class CameraController extends AuthWebController
     {
         $this->rememberUrl();
 
-        $searchModel = new CameraSearch();
+        $searchModel = new CameraSearch([
+            'status' => Camera::STATUS_NORMAL
+        ]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -64,7 +67,15 @@ class CameraController extends AuthWebController
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-        $isDelete = $model->delete();
+
+        $hasAlarmConfig = AlarmConfig::find()->select(['id'])->where(['camera_id' => $id])->limit(1)->one();
+        if(!$hasAlarmConfig){
+            $isDelete = $model->delete();
+        }else{
+            $model->status = AlarmConfig::STATUS_DELETE;
+            $isDelete = $model->save();
+        }
+
         if ($isDelete) {
             MessageAlert::set(['success' => '删除成功']);
         } else {
