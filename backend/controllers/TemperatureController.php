@@ -17,12 +17,7 @@ class TemperatureController extends AuthWebController
     {
         $this->rememberUrl();
 
-        $searchModel = new TemperatureSearch([
-            'status' => [
-                Temperature::STATUS_NORMAL,
-                Temperature::STATUS_STOP
-            ]
-        ]);
+        $searchModel = new TemperatureSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -69,8 +64,8 @@ class TemperatureController extends AuthWebController
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-        $model->status = Temperature::STATUS_DELETE;
-        $isDelete = $model->save();
+
+        $isDelete = $model->delete();
         if ($isDelete) {
             MessageAlert::set(['success' => '删除成功']);
         } else {

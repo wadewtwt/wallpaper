@@ -19,6 +19,9 @@ echo $this->render('_search', [
 
 $columns = [
     [
+        'attribute' => 'id'
+    ],
+    [
         'attribute' => 'store_id',
         'value' => function (Temperature $model) {
             return $model->store->name;
@@ -36,8 +39,8 @@ $columns = [
     ],
     [
         'label' => '阀值',
-        'value' => function(Temperature $model){
-            return $model->down_limit.'~'.$model->up_limit;
+        'value' => function (Temperature $model) {
+            return $model->down_limit . '~' . $model->up_limit;
         }
     ],
     [
@@ -45,22 +48,16 @@ $columns = [
     ],
     [
         'attribute' => 'current_updated_at',
-        'value' => function(Temperature $model){
-            if($model->current_updated_at == 0){
+        'value' => function (Temperature $model) {
+            if ($model->current_updated_at == 0) {
                 return '未接入';
-            }else{
+            } else {
                 return date('Y-m-d H:i:s', $model->current_updated_at);
             }
         }
     ],
     [
         'attribute' => 'remark',
-    ],
-    [
-        'attribute' => 'status',
-        'value' => function(Temperature $model){
-            return $model->getStatusName();
-        }
     ],
     [
         'class' => '\kartik\grid\ActionColumn',
