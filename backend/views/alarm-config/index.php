@@ -29,9 +29,6 @@ $columns = [
     ],
     [
         'attribute' => 'camera_id',
-        'value' => function (AlarmConfig $model) {
-            return $model->camera->name;
-        }
     ],
     [
         'attribute' => 'type',
