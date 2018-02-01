@@ -51,9 +51,6 @@ $columns = [
     ],
     [
         'attribute' => 'camera_id',
-        'value' => function (AlarmRecord $model) {
-            return $model->camera->name;
-        }
     ],
     [
         'attribute' => 'type',
@@ -63,19 +60,24 @@ $columns = [
     ],
     [
         'attribute' => 'status',
+        'value' => function(AlarmRecord $model){
+            return $model->getAlarmStatus();
+        }
     ],
     [
         'class' => '\kartik\grid\ActionColumn',
         'width' => '150px',
         'template' => '{handle}',
         'buttons' => [
-            'handle' => function ($url) {
-                $options = [
-                    'class' => 'btn btn-default show_ajax_modal',
-                ];
-                return Html::a('处理', $url, $options);
+            'handle' => function ($url, $model) {
+                    $options = [
+                        'class' => 'btn btn-default show_ajax_modal',
+                    ];
+                    if($model->status == AlarmRecord::STATUS_OVER){
+                        return '';
+                    }
+                    return Html::a('处理', $url, $options);
             },
-
         ],
     ],
 ];
