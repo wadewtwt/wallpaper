@@ -1,7 +1,6 @@
 <?php
 /** @var $this \yii\web\View */
 /** @var $applyOrder ApplyOrder */
-
 /** @var $applyOrderDetails \common\models\ApplyOrderDetail[] */
 
 use backend\widgets\SimpleActiveForm;

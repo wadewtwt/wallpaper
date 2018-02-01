@@ -126,7 +126,7 @@ $simpleDynaGrid = new SimpleDynaGrid([
     'dataProvider' => $dataProvider,
     'extraToolbar' => [
         [
-            'content' => Html::a("新增{$typeName}单", ['create'], ['class' => 'btn btn-default'])
+            'content' => Html::a("新增{$typeName}单", ['create'], ['class' => 'btn btn-primary'])
         ]
     ]
 ]);

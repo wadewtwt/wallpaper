@@ -24,6 +24,8 @@ use common\models\base\Enum;
  */
 class ApplyOrder extends \common\models\base\ActiveRecord
 {
+    const SCENARIO_DELETE = 'delete'; // 作废
+
     const PICK_TYPE_USE = 10;
     const PICK_TYPE_MAINTENANCE = 20;
     const PICK_TYPE_SEAL_OFF = 30;
@@ -75,6 +77,7 @@ class ApplyOrder extends \common\models\base\ActiveRecord
             [['type', 'person_id', 'pick_type', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['reason', 'delete_reason'], 'string', 'max' => 255],
             [['person_id'], 'exist', 'skipOnError' => true, 'targetClass' => Person::className(), 'targetAttribute' => ['person_id' => 'id']],
+            [['delete_reason'], 'required', 'on' => static::SCENARIO_DELETE],
         ];
     }
 
@@ -182,6 +185,10 @@ class ApplyOrder extends \common\models\base\ActiveRecord
             default:
                 return false;
         }
+    }
+
+    public function resourceOver() {
+
     }
 
     /**

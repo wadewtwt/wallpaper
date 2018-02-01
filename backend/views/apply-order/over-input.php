@@ -3,49 +3,35 @@
 /** @var $applyOrder \common\models\ApplyOrder */
 /** @var $applyOrderResources \common\models\ApplyOrderResource[] */
 
+use backend\widgets\SimpleReadTagInput;
 use backend\widgets\SimpleSelect2;
 use common\models\Container;
 use common\models\Resource;
 use unclead\multipleinput\TabularInput;
+use yii\helpers\ArrayHelper;
 use yii\widgets\ActiveForm;
 
-$resourceData = Resource::findAllIdName(null, true);
+$applyOrderDetails = $applyOrder->applyOrderDetails;
+$resourceData = Resource::findAllIdName(null, true, ArrayHelper::getColumn($applyOrderDetails, 'resource_id'));
 $containerData = Container::findAllIdName(true, true);
 
-$form = ActiveForm::begin();
+$form = ActiveForm::begin([
+    'id' => 'over-input'
+]);
 ?>
-<div class="box">
-    <div class="box-body container">
+<div class="invoice">
+    <div class="container">
         <div class="page-header">
             <h1 class="text-center"><?= $applyOrder->getTypeName() ?>单</h1>
         </div>
-        <div>
-            <p><strong>申请人：</strong><?= $applyOrder->person->name ?></p>
-            <p><strong>申请理由：</strong><?= $applyOrder->reason ?></p>
-            <p><strong>创建时间：</strong><?= date('Y-m-d H:i:s', $applyOrder->created_at) ?></p>
-        </div>
+        <?= $this->render('_apply_order', [
+            'model' => $applyOrder,
+        ]) ?>
+        <?= $this->render('_apply_order_detail', [
+            'models' => $applyOrderDetails,
+        ]) ?>
 
-        <p>汇总</p>
-        <table class="table table-bordered">
-            <thead>
-            <tr>
-                <th class="text-center">序号</th>
-                <th class="text-center">资源名</th>
-                <th class="text-center">数量</th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php foreach ($applyOrder->applyOrderDetails as $key => $applyOrderDetail): ?>
-                <tr class="text-center">
-                    <td><?= ($key + 1) ?></td>
-                    <td><?= $applyOrderDetail->resource->name ?></td>
-                    <td><?= $applyOrderDetail->quantity ?></td>
-                </tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
-
-        <p>详情</p>
+        <p class="lead">详情</p>
         <div class="form-group">
             <div class="col-sm-12">
                 <?= TabularInput::widget([
@@ -77,9 +63,16 @@ $form = ActiveForm::begin();
                             ],
                         ],
                         [
+                            'name' => 'tag_active',
+                            'title' => '有源标签',
+                            'enableError' => true,
+                            'type' => SimpleReadTagInput::className(),
+                        ],
+                        [
                             'name' => 'tag_passive',
                             'title' => '无源标签',
                             'enableError' => true,
+                            'type' => SimpleReadTagInput::className(),
                         ],
                         [
                             'name' => 'quantity',

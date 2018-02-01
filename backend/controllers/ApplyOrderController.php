@@ -15,6 +15,7 @@ use common\models\ResourceDetail;
 use Yii;
 use yii\base\Exception;
 use yii\base\Model;
+use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
@@ -116,6 +117,7 @@ class ApplyOrderController extends AuthWebController
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
+        $model->scenario = ApplyOrder::SCENARIO_DELETE;
 
         if (!$model->checkStatus(ApplyOrder::STATUS_DELETE)) {
             throw new StatusNotAllowedException();
@@ -190,8 +192,16 @@ class ApplyOrderController extends AuthWebController
                 $result = ActiveForm::validateMultiple($applyOrderDetails);
                 return $result;
             }
-            // 装载数据，处理业务
-            if ($applyOrder->load($request->post())) {
+            $applyOrder->load($request->post());
+            // 检查是否每种资源只有一条记录，确保是汇总数据
+            $hasError = false;
+            $resourceIds = ArrayHelper::getColumn($applyOrderDetails, 'resource_id');
+            if (count($resourceIds) !== count(array_unique($resourceIds))) {
+                MessageAlert::set(['error' => '每种资源仅可以添加一条记录']);
+                $hasError = true;
+            }
+            if (!$hasError) {
+                // 处理业务
                 // 保存申请单
                 $applyOrder->save(false);
                 // 删除原来的申请单明细
@@ -223,15 +233,18 @@ class ApplyOrderController extends AuthWebController
     protected function handleOverInput($applyOrder)
     {
         $request = Yii::$app->getRequest();
-        $applyOrderResources = [new ApplyOrderResource()];
-
-        // TODO 检查数量
+        $applyOrderResources = [new ApplyOrderResource([
+            'scenario' => ApplyOrderResource::SCENARIO_INPUT,
+        ])];
 
         if ($request->isPost) {
+            /** @var ApplyOrderResource[] $applyOrderResources */
             $applyOrderResources = [];
             $data = $request->post('ApplyOrderResource', []);
             foreach (array_keys($data) as $index) {
-                $applyOrderResources[$index] = new ApplyOrderResource();
+                $applyOrderResources[$index] = new ApplyOrderResource([
+                    'scenario' => ApplyOrderResource::SCENARIO_INPUT,
+                ]);
             }
             Model::loadMultiple($applyOrderResources, $request->post());
             if ($request->post('ajax') !== null) {
@@ -240,26 +253,45 @@ class ApplyOrderController extends AuthWebController
                 $result = ActiveForm::validateMultiple($applyOrderResources);
                 return $result;
             }
-            // 处理业务
-            $transaction = Yii::$app->db->beginTransaction();
-            try {
-                // 保存资源信息
-                foreach ($applyOrderResources as $applyOrderResource) {
-                    /** @var $detail ApplyOrderResource */
-                    $applyOrderResource->apply_order_id = $applyOrder->id;
-                    $applyOrderResource->save(false);
-                    ResourceDetail::operateByApplyOrderType($this->applyOrderType, $applyOrderResource);
+            // 检查入库的数量和申请单的数量是否匹配
+            $sourceCountArr = [];
+            foreach ($applyOrderResources as $applyOrderResource) {
+                if (!isset($sourceCountArr[$applyOrderResource->resource_id])) {
+                    $sourceCountArr[$applyOrderResource->resource_id] = 1;
+                } else {
+                    $sourceCountArr[$applyOrderResource->resource_id] += 1;
                 }
-                // 修改该申请单为已完成
-                $applyOrder->status = ApplyOrder::STATUS_OVER;
-                $applyOrder->save(false);
+            }
+            $hasError = false;
+            foreach ($applyOrder->applyOrderDetails as $applyOrderDetail) {
+                if ($applyOrderDetail->quantity != $sourceCountArr[$applyOrderDetail->resource_id]) {
+                    $hasError = true;
+                    MessageAlert::set(['error' => '资源：' . $applyOrderDetail->resource->name . '，入库的数量和申请单的数量不匹配']);
+                    break;
+                }
+            }
+            if (!$hasError) {
+                // 处理业务
+                $transaction = Yii::$app->db->beginTransaction();
+                try {
+                    // 保存资源信息
+                    foreach ($applyOrderResources as $applyOrderResource) {
+                        /** @var $detail ApplyOrderResource */
+                        $applyOrderResource->apply_order_id = $applyOrder->id;
+                        $applyOrderResource->save(false);
+                        ResourceDetail::operateByApplyOrderType($this->applyOrderType, $applyOrderResource);
+                    }
+                    // 修改该申请单为已完成
+                    $applyOrder->status = ApplyOrder::STATUS_OVER;
+                    $applyOrder->save(false);
 
-                $transaction->commit();
-                MessageAlert::set(['success' => '操作成功']);
-                return $this->actionPreviousRedirect();
-            } catch (Exception $e) {
-                $transaction->rollBack();
-                MessageAlert::set(['error' => '操作失败：' . $e->getMessage()]);
+                    $transaction->commit();
+                    MessageAlert::set(['success' => '操作成功']);
+                    return $this->actionPreviousRedirect();
+                } catch (Exception $e) {
+                    $transaction->rollBack();
+                    MessageAlert::set(['error' => '操作失败：' . $e->getMessage()]);
+                }
             }
         }
 

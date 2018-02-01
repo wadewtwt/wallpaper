@@ -20,6 +20,13 @@ $menu = [
         ]
     ],
     [
+        'label' => '仓库货位管理', 'icon' => 'list', 'url' => '#',
+        'items' => [
+            ['label' => '仓库管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/store']],
+            ['label' => '货区管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/container']],
+        ]
+    ],
+    [
         'label' => '设备管理', 'icon' => 'list', 'url' => '#',
         'items' => [
             ['label' => '设备列表', 'icon' => 'circle-o', 'url' => [$baseUrl . '/device']],
@@ -33,13 +40,6 @@ $menu = [
             ['label' => '消耗品列表', 'icon' => 'circle-o', 'url' => [$baseUrl . '/expendable']],
             ['label' => '消耗品明细', 'icon' => 'circle-o', 'url' => [$baseUrl . '/expendable-detail']],
             ['label' => '消耗品操作记录', 'icon' => 'circle-o', 'url' => [$baseUrl . '/expendable-detail-operation']],
-        ]
-    ],
-    [
-        'label' => '仓库货位管理', 'icon' => 'list', 'url' => '#',
-        'items' => [
-            ['label' => '仓库管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/store']],
-            ['label' => '货区管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/container']],
         ]
     ],
     [
@@ -84,10 +84,6 @@ $menu = [
         </div>
 
         <?= dmstr\widgets\Menu::widget([
-            'options' => [
-                'class' => 'sidebar-menu',
-                'data-widget' => 'tree'
-            ],
             'items' => array_merge([
                 ['label' => '菜单', 'options' => ['class' => 'header']],
             ], $menu),

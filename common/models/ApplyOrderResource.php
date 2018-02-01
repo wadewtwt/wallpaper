@@ -9,6 +9,7 @@ namespace common\models;
  * @property integer $apply_order_id
  * @property integer $resource_id
  * @property integer $container_id
+ * @property string $tag_active
  * @property string $tag_passive
  * @property integer $quantity
  * @property string $remark
@@ -19,6 +20,8 @@ namespace common\models;
  */
 class ApplyOrderResource extends \common\models\base\ActiveRecord
 {
+    const SCENARIO_INPUT = 'input'; // 入库
+
     /**
      * @inheritdoc
      */
@@ -35,10 +38,11 @@ class ApplyOrderResource extends \common\models\base\ActiveRecord
         return [
             [['apply_order_id', 'resource_id', 'container_id'], 'required'],
             [['apply_order_id', 'resource_id', 'container_id', 'quantity'], 'integer'],
-            [['tag_passive', 'remark'], 'string', 'max' => 255],
+            [['tag_active', 'tag_passive', 'remark'], 'string', 'max' => 255],
             [['apply_order_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplyOrder::className(), 'targetAttribute' => ['apply_order_id' => 'id']],
             [['container_id'], 'exist', 'skipOnError' => true, 'targetClass' => Container::className(), 'targetAttribute' => ['container_id' => 'id']],
             [['resource_id'], 'exist', 'skipOnError' => true, 'targetClass' => Resource::className(), 'targetAttribute' => ['resource_id' => 'id']],
+            [['tag_active', 'tag_passive'], 'required', 'on' => static::SCENARIO_INPUT],
         ];
     }
 
@@ -52,6 +56,7 @@ class ApplyOrderResource extends \common\models\base\ActiveRecord
             'apply_order_id' => '申请单 ID',
             'resource_id' => '资源 ID',
             'container_id' => '货位 ID',
+            'tag_active' => '有源标签',
             'tag_passive' => '无源标签',
             'quantity' => '数量',
             'remark' => '备注',

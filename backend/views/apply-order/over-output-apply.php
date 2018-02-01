@@ -9,38 +9,19 @@ use yii\widgets\ActiveForm;
 
 $form = ActiveForm::begin();
 ?>
-    <div class="box">
-        <div class="box-body container">
+    <div class="invoice">
+        <div class="container">
             <div class="page-header">
                 <h1 class="text-center"><?= $applyOrder->getTypeName() ?>单</h1>
             </div>
-            <div>
-                <p><strong>申请人：</strong><?= $applyOrder->person->name ?></p>
-                <p><strong>申请理由：</strong><?= $applyOrder->reason ?></p>
-                <p><strong>创建时间：</strong><?= date('Y-m-d H:i:s', $applyOrder->created_at) ?></p>
-            </div>
+            <?= $this->render('_apply_order', [
+                'model' => $applyOrder,
+            ]) ?>
+            <?= $this->render('_apply_order_detail', [
+                'models' => $applyOrder->applyOrderDetails,
+            ]) ?>
 
-            <p>汇总</p>
-            <table class="table table-bordered">
-                <thead>
-                <tr>
-                    <th class="text-center">序号</th>
-                    <th class="text-center">资源名</th>
-                    <th class="text-center">数量</th>
-                </tr>
-                </thead>
-                <tbody>
-                <?php foreach ($applyOrder->applyOrderDetails as $key => $applyOrderDetail): ?>
-                    <tr class="text-center">
-                        <td><?= ($key + 1) ?></td>
-                        <td><?= $applyOrderDetail->resource->name ?></td>
-                        <td><?= $applyOrderDetail->quantity ?></td>
-                    </tr>
-                <?php endforeach; ?>
-                </tbody>
-            </table>
-
-            <p>详情</p>
+            <p class="lead">详情</p>
             <table class="table table-bordered">
                 <thead>
                 <tr>

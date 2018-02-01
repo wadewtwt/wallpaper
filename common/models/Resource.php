@@ -137,13 +137,17 @@ class Resource extends \common\models\base\ActiveRecord
     /**
      * @param null $type
      * @param bool $map
+     * @param null|array $ids
      * @return array|Resource[]
      */
-    public static function findAllIdName($type = null, $map = true)
+    public static function findAllIdName($type = null, $map = true, $ids = null)
     {
         $query = static::find()->select(['id', 'name']);
         if ($type !== null) {
             $query->andWhere(['type' => $type]);
+        }
+        if ($ids !== null) {
+            $query->andWhere(['id' => $ids]);
         }
         $model = $query->asArray()->all();
         if ($map) {

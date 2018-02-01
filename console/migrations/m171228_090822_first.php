@@ -124,6 +124,7 @@ class m171228_090822_first extends Migration
             'apply_order_id' => $this->integer()->notNull()->comment('申请单 ID'),
             'resource_id' => $this->integer()->notNull()->comment('资源 ID'),
             'container_id' => $this->integer()->notNull()->comment('货位 ID'),
+            'tag_active' => $this->string()->comment('有源标签'),
             'tag_passive' => $this->string()->comment('无源标签'),
             'quantity' => $this->integer()->notNull()->defaultValue(0)->comment('数量'),
             'remark' => $this->string()->comment('备注'),
