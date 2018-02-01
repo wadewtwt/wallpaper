@@ -81,6 +81,22 @@ class AlarmConfig extends \common\models\base\ActiveRecord
     }
 
     /**
+     * @return bool
+     */
+    public function beforeDelete()
+    {
+        if(!parent::beforeDelete()){
+            return false;
+        }
+        $hasAlarmRecord = AlarmRecord::find()->select(['id'])->where(['alarm_config_id' => $this->id])->limit(1)->one();
+        if($hasAlarmRecord){
+            $this->addError('id','该配置已在报警记录中存在');
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * @return \yii\db\ActiveQuery
      */
     public function getAlarmCalls()
