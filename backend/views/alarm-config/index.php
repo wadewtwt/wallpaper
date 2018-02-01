@@ -19,6 +19,9 @@ echo $this->render('_search', [
 
 $columns = [
     [
+        'attribute' => 'id'
+    ],
+    [
         'attribute' => 'store_id',
         'value' => function (AlarmConfig $model) {
             return $model->store->name;
@@ -26,9 +29,6 @@ $columns = [
     ],
     [
         'attribute' => 'camera_id',
-        'value' => function (AlarmConfig $model) {
-            return $model->camera->name;
-        }
     ],
     [
         'attribute' => 'type',

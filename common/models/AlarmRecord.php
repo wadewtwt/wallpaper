@@ -27,6 +27,14 @@ use common\models\AlarmConfig;
  */
 class AlarmRecord extends \common\models\base\ActiveRecord
 {
+    const STATUS_OVER = 0;
+    const STATUS_PENDING = 10;
+
+    public static $statusData = [
+        self::STATUS_OVER => '已完成',
+        self::STATUS_PENDING => '待处理'
+    ];
+
     /**
      * @inheritdoc
      */
@@ -101,7 +109,14 @@ class AlarmRecord extends \common\models\base\ActiveRecord
         return $this->hasOne(Camera::className(),['id' => 'camera_id']);
     }
 
+    /**
+     * @return string
+     */
     public function getAlarmType(){
         return $this->toname($this->type, AlarmConfig::$typeData);
+    }
+
+    public function getAlarmStatus(){
+        return $this->toName($this->status, self::$statusData);
     }
 }

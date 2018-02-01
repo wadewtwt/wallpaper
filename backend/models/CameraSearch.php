@@ -12,6 +12,7 @@ class CameraSearch extends Camera
         return [
             [['store_id'], 'integer'],
             [['ip', 'port', 'device_no'], 'string'],
+            [['status'],'safe']
         ];
     }
 
@@ -37,6 +38,7 @@ class CameraSearch extends Camera
 
         $query->andFilterWhere([
             'store_id' => $this->store_id,
+            'status' => $this->status
         ]);
 
         $query->andFilterWhere(['like', 'ip', $this->ip])

@@ -10,6 +10,7 @@ use backend\components\MessageAlert;
 use yii\web\NotFoundHttpException;
 use common\components\Tools;
 use yii\base\Exception;
+use common\models\AlarmRecord;
 
 class AlarmConfigController extends AuthWebController
 {
@@ -70,8 +71,15 @@ class AlarmConfigController extends AuthWebController
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-        $model->status = AlarmConfig::STATUS_DELETE;
-        $isDelete = $model->save();
+
+        $hasAlarmRecord = AlarmRecord::find()->select(['id'])->where(['alarm_config_id' => $id])->limit(1)->one();
+        // 在不在报警记录里面，如果不在，硬删除，如果在，软删除
+        if(!$hasAlarmRecord){
+            $isDelete = $model->delete();
+        }else{
+            $model->status = AlarmConfig::STATUS_DELETE;
+            $isDelete = $model->save();
+        }
         if ($isDelete) {
             MessageAlert::set(['success' => '删除成功']);
         } else {

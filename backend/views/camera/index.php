@@ -19,6 +19,9 @@ echo $this->render('_search', [
 
 $columns = [
     [
+        'attribute' => 'id'
+    ],
+    [
         'attribute' => 'store_id',
         'value' => function (Camera $model) {
             return $model->store->name;
@@ -42,12 +45,6 @@ $columns = [
     ],
     [
         'attribute' => 'remark',
-    ],
-    [
-        'attribute' => 'status',
-        'value' => function(Camera $model){
-            return $model->getStatusName();
-        }
     ],
     [
         'class' => '\kartik\grid\ActionColumn',

@@ -30,6 +30,7 @@ class AlarmRecordController extends AuthWebController
     {
         $model = $this->findModel($id);
         if ($model->load(Yii::$app->request->post())) {
+            $model->status = AlarmRecord::STATUS_OVER;
             if ($model->validate() && $model->save(false)) {
                 MessageAlert::set(['success' => '修改成功']);
             } else {
