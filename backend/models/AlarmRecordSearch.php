@@ -10,7 +10,7 @@ class AlarmRecordSearch extends AlarmRecord
     public function rules()
     {
         return [
-            [['alarm_config_id', 'store_id', 'camera_id', 'type'], 'integer'],
+            [['alarm_config_id', 'store_id', 'camera_id', 'type', 'status'], 'integer'],
         ];
     }
 
@@ -38,6 +38,7 @@ class AlarmRecordSearch extends AlarmRecord
             'store_id' => $this->store_id,
             'camera_id' => $this->camera_id,
             'type' => $this->type,
+            'status' => $this->status,
         ]);
 
         return $dataProvider;

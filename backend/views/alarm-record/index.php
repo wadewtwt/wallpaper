@@ -1,6 +1,7 @@
 <?php
 /** @var $this yii\web\View */
 /** @var $dataProvider common\components\ActiveDataProvider */
+
 /** @var $searchModel backend\models\AlarmRecordSearch */
 
 use backend\widgets\SimpleDynaGrid;
@@ -26,23 +27,6 @@ $columns = [
         'format' => ['datetime', 'php:Y-m-d H:i:s']
     ],
     [
-        'attribute' => 'description',
-    ],
-    [
-        'attribute' => 'solve_id',
-        'value' => function (AlarmRecord $model) {
-            return $model->solve->name;
-        }
-
-    ],
-    [
-        'attribute' => 'solve_at',
-        'format' => ['datetime', 'php:Y-m-d H:i:s']
-    ],
-    [
-        'attribute' => 'solve_description',
-    ],
-    [
         'attribute' => 'store_id',
         'value' => function (AlarmRecord $model) {
             return $model->store->name;
@@ -55,28 +39,49 @@ $columns = [
     [
         'attribute' => 'type',
         'value' => function (AlarmRecord $model) {
-            return $model->alarmType;
+            return $model->getTypeName();
         }
     ],
     [
+        'attribute' => 'solve_id',
+        'value' => function (AlarmRecord $model) {
+            if ($model->solve_id) {
+                return $model->solve->name;
+            }
+            return '';
+        }
+    ],
+    [
+        'attribute' => 'solve_at',
+        'value' => function (AlarmRecord $model) {
+            if ($model->solve_at) {
+                return date('Y-m-d H:i:s', $model->solve_at);
+            }
+            return '';
+        }
+    ],
+    [
+        'attribute' => 'solve_description',
+    ],
+    [
         'attribute' => 'status',
-        'value' => function(AlarmRecord $model){
-            return $model->getAlarmStatus();
+        'value' => function (AlarmRecord $model) {
+            return $model->getStatusName();
         }
     ],
     [
         'class' => '\kartik\grid\ActionColumn',
         'width' => '150px',
-        'template' => '{handle}',
+        'template' => '{solve}',
         'buttons' => [
-            'handle' => function ($url, $model) {
-                    $options = [
-                        'class' => 'btn btn-default show_ajax_modal',
-                    ];
-                    if($model->status == AlarmRecord::STATUS_OVER){
-                        return '';
-                    }
-                    return Html::a('处理', $url, $options);
+            'solve' => function ($url, $model) {
+                if ($model->status == AlarmRecord::STATUS_SOLVED) {
+                    return '';
+                }
+                $options = [
+                    'class' => 'btn btn-default show_ajax_modal',
+                ];
+                return Html::a('处理', $url, $options);
             },
         ],
     ],

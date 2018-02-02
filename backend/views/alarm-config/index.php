@@ -1,6 +1,7 @@
 <?php
 /** @var $this yii\web\View */
 /** @var $dataProvider common\components\ActiveDataProvider */
+
 /** @var $searchModel backend\models\AlarmConfigSearch */
 
 use backend\widgets\SimpleDynaGrid;
@@ -45,35 +46,22 @@ $columns = [
     [
         'class' => '\kartik\grid\ActionColumn',
         'width' => '300px',
-        'template' => '{update} {normal} {stop} {delete}',
+        'template' => '{change-status} {delete}',
         'buttons' => [
-            'update' => function ($url) {
-                $options = [
-                    'class' => 'btn btn-default show_ajax_modal',
-                ];
-                return Html::a('更新', $url, $options);
-            },
-            'normal' => function ($url, $model) {
-                $options = [
-                    'class' => 'btn btn-success',
-                    'data-method' => 'post',
-                    'data-confirm' => '确定启用该联动？'
-                ];
+            'change-status' => function ($url, $model) {
                 if ($model->status == AlarmConfig::STATUS_NORMAL) {
-                    return '';
+                    $msg = '停用';
+                    $optionsClass = 'btn btn-danger';
+                } else {
+                    $msg = '启用';
+                    $optionsClass = 'btn btn-success';
                 }
-                return Html::a('启用', $url, $options);
-            },
-            'stop' => function ($url, $model) {
                 $options = [
-                    'class' => 'btn btn-warning',
+                    'class' => $optionsClass,
                     'data-method' => 'post',
-                    'data-confirm' => '确定停用该联动？'
+                    'data-confirm' => '确认' . $msg . '？'
                 ];
-                if ($model->status == AlarmConfig::STATUS_STOP) {
-                    return '';
-                }
-                return Html::a('停用', $url, $options);
+                return Html::a($msg, $url, $options);
             },
             'delete' => function ($url) {
                 $options = [

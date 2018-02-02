@@ -3,7 +3,7 @@
 namespace common\models;
 
 use Yii;
-use common\models\AlarmConfig;
+use yii\base\Exception;
 
 /**
  * This is the model class for table "alarm_record".
@@ -24,15 +24,19 @@ use common\models\AlarmConfig;
  *
  * @property Admin $solve
  * @property AlarmConfig $alarmConfig
+ * @property Camera $camera
+ * @property Store $store
  */
 class AlarmRecord extends \common\models\base\ActiveRecord
 {
-    const STATUS_OVER = 0;
-    const STATUS_PENDING = 10;
+    const SCENARIO_SOLVE = 'solve';
+
+    const STATUS_NORMAL = 0;
+    const STATUS_SOLVED = 10;
 
     public static $statusData = [
-        self::STATUS_OVER => '已完成',
-        self::STATUS_PENDING => '待处理'
+        self::STATUS_NORMAL => '待处理',
+        self::STATUS_SOLVED => '已解决'
     ];
 
     /**
@@ -49,11 +53,12 @@ class AlarmRecord extends \common\models\base\ActiveRecord
     public function rules()
     {
         return [
-            [['alarm_config_id', 'alarm_at', 'description', 'store_id', 'camera_id', 'type'], 'required'],
+            [['alarm_config_id', 'alarm_at', 'store_id', 'camera_id', 'type'], 'required'],
             [['alarm_config_id', 'alarm_at', 'solve_id', 'solve_at', 'store_id', 'camera_id', 'type', 'status', 'updated_at', 'updated_by'], 'integer'],
             [['description', 'solve_description'], 'string', 'max' => 255],
             [['solve_id'], 'exist', 'skipOnError' => true, 'targetClass' => Admin::className(), 'targetAttribute' => ['solve_id' => 'id']],
             [['alarm_config_id'], 'exist', 'skipOnError' => true, 'targetClass' => AlarmConfig::className(), 'targetAttribute' => ['alarm_config_id' => 'id']],
+            [['solve_id', 'solve_description'], 'required', 'on' => static::SCENARIO_SOLVE],
         ];
     }
 
@@ -98,25 +103,66 @@ class AlarmRecord extends \common\models\base\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery|Store
      */
-    public function getStore(){
-        return $this->hasOne(Store::className(),['id' => 'store_id']);
+    public function getStore()
+    {
+        return $this->hasOne(Store::className(), ['id' => 'store_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery|Camera
      */
-    public function getCamera(){
-        return $this->hasOne(Camera::className(),['id' => 'camera_id']);
+    public function getCamera()
+    {
+        return $this->hasOne(Camera::className(), ['id' => 'camera_id']);
     }
 
     /**
      * @return string
      */
-    public function getAlarmType(){
-        return $this->toname($this->type, AlarmConfig::$typeData);
+    public function getTypeName()
+    {
+        return $this->toName($this->type, AlarmConfig::$typeData);
     }
 
-    public function getAlarmStatus(){
+    /**
+     * @return string
+     */
+    public function getStatusName()
+    {
         return $this->toName($this->status, self::$statusData);
+    }
+
+    /**
+     * @param $alarmConfig AlarmConfig
+     * @param null $remark
+     * @param bool $checkExist
+     */
+    public static function createOne($alarmConfig, $remark = null, $checkExist = true)
+    {
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            if ($checkExist) {
+                $model = static::findOne(['alarm_config_id' => $alarmConfig->id, 'status' => static::STATUS_NORMAL]);
+            } else {
+                $model = null;
+            }
+            if (!$model) {
+                $model = new static();
+                $model->alarm_config_id = $alarmConfig->id;
+                $model->alarm_at = time();
+                $model->description = $remark;
+                $model->store_id = $alarmConfig->store_id;
+                $model->camera_id = $alarmConfig->camera_id;
+                $model->type = $alarmConfig->type;
+                $model->save(false);
+            }
+            AlarmCall::createOne($model, $remark);
+
+            $transaction->commit();
+        } catch (Exception $e) {
+            $transaction->rollBack();
+            Yii::error('创建报警记录异常');
+            Yii::error($e);
+        }
     }
 }

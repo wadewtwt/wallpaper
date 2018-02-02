@@ -17,7 +17,7 @@ class AlarmConfigSearch extends AlarmConfig
 
     public function search($params)
     {
-        $query = AlarmConfig::find();
+        $query = AlarmConfig::find()->andWhere(['!=', 'status', AlarmConfig::STATUS_DELETE]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

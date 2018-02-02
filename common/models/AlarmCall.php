@@ -2,8 +2,6 @@
 
 namespace common\models;
 
-use Yii;
-
 /**
  * This is the model class for table "alarm_call".
  *
@@ -25,6 +23,9 @@ use Yii;
  */
 class AlarmCall extends \common\models\base\ActiveRecord
 {
+    const STATUS_NORMAL = 0; // 待处理
+    const STATUS_SOLVED = 10; // 已解决
+
     /**
      * @inheritdoc
      */
@@ -75,5 +76,29 @@ class AlarmCall extends \common\models\base\ActiveRecord
     public function getAlarmConfig()
     {
         return $this->hasOne(AlarmConfig::className(), ['id' => 'alarm_config_id']);
+    }
+
+    /**
+     * @param $alarmRecord AlarmRecord
+     * @param null $remark
+     */
+    public static function createOne($alarmRecord, $remark = null)
+    {
+        $model = static::findOne(['alarm_config_id' => $alarmRecord->alarm_config_id, 'status' => static::STATUS_NORMAL]);
+        if (!$model) {
+            $model = new static();
+            $camera = $alarmRecord->camera;
+            $model->alarm_config_id = $alarmRecord->alarm_config_id;
+            $model->camera_id = $camera->id;
+            $model->store_id = $camera->store_id;
+            $model->ip = $camera->ip;
+            $model->port = $camera->port;
+            $model->username = $camera->username;
+            $model->password = $camera->password;
+            $model->name = $camera->name;
+            $model->device_no = $camera->device_no;
+            $model->remark = $remark;
+            $model->save(false);
+        }
     }
 }

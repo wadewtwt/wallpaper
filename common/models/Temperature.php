@@ -2,9 +2,6 @@
 
 namespace common\models;
 
-use Yii;
-use common\models\Store;
-
 /**
  * This is the model class for table "temperature".
  *
@@ -50,6 +47,7 @@ class Temperature extends \common\models\base\ActiveRecord
             [['ip', 'device_no', 'remark'], 'string', 'max' => 255],
             [['port'], 'string', 'max' => 10],
             [['store_id'], 'exist', 'skipOnError' => true, 'targetClass' => Store::className(), 'targetAttribute' => ['store_id' => 'id']],
+            ['up_limit', 'compare', 'compareAttribute' => 'down_limit', 'operator' => '>', 'type' => 'number']
         ];
     }
 
@@ -78,11 +76,38 @@ class Temperature extends \common\models\base\ActiveRecord
     }
 
     /**
+     * @inheritdoc
+     */
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+        $this->triggerAlarm();
+    }
+
+    /**
      * @return \yii\db\ActiveQuery
      */
     public function getStore()
     {
         return $this->hasOne(Store::className(), ['id' => 'store_id']);
+    }
+
+    /**
+     * 触发报警
+     */
+    public function triggerAlarm()
+    {
+        if ($this->current_updated_at != 0 && $this->current < $this->down_limit || $this->current > $this->up_limit) {
+            $alarmConfig = AlarmConfig::findOne([
+                'status' => AlarmConfig::STATUS_NORMAL,
+                'type' => AlarmConfig::TYPE_TEMPERATURE,
+                'store_id' => $this->store_id,
+            ]);
+            if ($alarmConfig) {
+                $msg = '当前温度' . $this->current . '，超过阀值' . $this->down_limit . '~' . $this->up_limit;
+                AlarmRecord::createOne($alarmConfig, $msg, true);
+            }
+        }
     }
 
 }

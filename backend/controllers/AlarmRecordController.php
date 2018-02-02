@@ -3,11 +3,11 @@
 namespace backend\controllers;
 
 use backend\components\AuthWebController;
+use backend\components\MessageAlert;
 use backend\models\AlarmRecordSearch;
+use common\components\Tools;
 use common\models\AlarmRecord;
 use Yii;
-use yii\web\NotFoundHttpException;
-use backend\components\MessageAlert;
 
 class AlarmRecordController extends AuthWebController
 {
@@ -25,31 +25,23 @@ class AlarmRecordController extends AuthWebController
         ]);
     }
 
-    // 新增
-    public function actionHandle($id)
+    // 处理
+    public function actionSolve($id)
     {
-        $model = $this->findModel($id);
+        $model = AlarmRecord::findOne(['id' => $id, 'status' => AlarmRecord::STATUS_NORMAL]);
+        $model->scenario = AlarmRecord::SCENARIO_SOLVE;
         if ($model->load(Yii::$app->request->post())) {
-            $model->status = AlarmRecord::STATUS_OVER;
+            $model->status = AlarmRecord::STATUS_SOLVED;
             if ($model->validate() && $model->save(false)) {
-                MessageAlert::set(['success' => '修改成功']);
+                MessageAlert::set(['success' => '处理成功']);
             } else {
-                MessageAlert::set(['error' => '修改失败：' . Tools::formatModelErrors2String($model->errors)]);
+                MessageAlert::set(['error' => '处理失败：' . Tools::formatModelErrors2String($model->errors)]);
             }
             return $this->actionPreviousRedirect();
         }
-        return $this->renderAjax('_create_update', [
+        return $this->renderAjax('_solve', [
             'model' => $model
         ]);
-    }
-
-    public function findModel($id)
-    {
-        $model = AlarmRecord::findOne($id);
-        if (!$model) {
-            throw new NotFoundHttpException();
-        }
-        return $model;
     }
 
 }

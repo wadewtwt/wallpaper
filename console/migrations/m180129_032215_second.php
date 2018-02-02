@@ -61,7 +61,7 @@ class m180129_032215_second extends Migration
             'id' => $this->primaryKey(),
             'alarm_config_id' => $this->integer()->notNull()->comment('报警配置 ID'),
             'alarm_at' => $this->integer()->notNull()->comment('报警时间'),
-            'description' => $this->string()->notNull()->comment('报警描述'),
+            'description' => $this->string()->comment('报警描述'),
             'solve_id' => $this->integer()->comment('处理人'),
             'solve_at' => $this->integer()->comment('处理时间'),
             'solve_description' => $this->string()->comment('处理描述'),

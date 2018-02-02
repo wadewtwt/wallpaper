@@ -130,6 +130,22 @@ class ResourceDetail extends \common\models\base\ActiveRecord
     }
 
     /**
+     * 触发报警
+     */
+    public function triggerAlarm()
+    {
+        $alarmConfig = AlarmConfig::findOne([
+            'status' => AlarmConfig::STATUS_NORMAL,
+            'type' => AlarmConfig::TYPE_ILLEGAL_OUTPUT,
+            'store_id' => $this->container->store_id,
+        ]);
+        if ($alarmConfig) {
+            $msg = '无源标签为' . $this->tag_passive . '的资源非法出入库';
+            AlarmRecord::createOne($alarmConfig, $msg, false);
+        }
+    }
+
+    /**
      * @param $applyOrderType
      * @throws Exception
      */

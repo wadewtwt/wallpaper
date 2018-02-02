@@ -19,12 +19,7 @@ class AlarmConfigController extends AuthWebController
     {
         $this->rememberUrl();
 
-        $searchModel = new AlarmConfigSearch([
-            'status' => [
-                AlarmConfig::STATUS_NORMAL,
-                AlarmConfig::STATUS_STOP
-            ]
-        ]);
+        $searchModel = new AlarmConfigSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -45,24 +40,7 @@ class AlarmConfigController extends AuthWebController
             }
             return $this->actionPreviousRedirect();
         }
-        return $this->renderAjax('_create_update', [
-            'model' => $model
-        ]);
-    }
-
-    // 更新
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-        if ($model->load(Yii::$app->request->post())) {
-            if ($model->validate() && $model->save(false)) {
-                MessageAlert::set(['success' => '修改成功']);
-            } else {
-                MessageAlert::set(['error' => '修改失败：' . Tools::formatModelErrors2String($model->errors)]);
-            }
-            return $this->actionPreviousRedirect();
-        }
-        return $this->renderAjax('_create_update', [
+        return $this->renderAjax('_create', [
             'model' => $model
         ]);
     }
@@ -74,9 +52,9 @@ class AlarmConfigController extends AuthWebController
 
         $hasAlarmRecord = AlarmRecord::find()->select(['id'])->where(['alarm_config_id' => $id])->limit(1)->one();
         // 在不在报警记录里面，如果不在，硬删除，如果在，软删除
-        if(!$hasAlarmRecord){
+        if (!$hasAlarmRecord) {
             $isDelete = $model->delete();
-        }else{
+        } else {
             $model->status = AlarmConfig::STATUS_DELETE;
             $isDelete = $model->save();
         }
@@ -88,42 +66,30 @@ class AlarmConfigController extends AuthWebController
         return $this->actionPreviousRedirect();
     }
 
-    // 启用
-    public function actionNormal($id)
+    // 启用、停用
+    public function actionChangeStatus($id)
     {
         $model = $this->findModel($id);
         if ($model->status == AlarmConfig::STATUS_NORMAL) {
-            throw new Exception('请确定该设备的状态');
-        }
-
-        $model->status = AlarmConfig::STATUS_NORMAL;
-        $isNormal = $model->save();
-        if ($isNormal) {
-            MessageAlert::set(['success' => '启用成功']);
+            $model->status = AlarmConfig::STATUS_STOP;
+        } elseif ($model->status == AlarmConfig::STATUS_STOP) {
+            $model->status = AlarmConfig::STATUS_NORMAL;
         } else {
-            MessageAlert::set(['success' => '启用失败：' . Tools::formatModelErrors2String($model->errors)]);
+            throw new Exception('状态不可修改');
+        }
+        if ($model->save(false)) {
+            MessageAlert::set(['success' => '操作成功']);
+        } else {
+            MessageAlert::set(['success' => '操作失败：' . Tools::formatModelErrors2String($model->errors)]);
         }
         return $this->actionPreviousRedirect();
     }
 
-    // 停用
-    public function actionStop($id)
-    {
-        $model = $this->findModel($id);
-        if ($model->status == AlarmConfig::STATUS_STOP) {
-            throw new Exception('请确定该设备的状态');
-        }
-
-        $model->status = AlarmConfig::STATUS_STOP;
-        $isNormal = $model->save();
-        if ($isNormal) {
-            MessageAlert::set(['success' => '停用成功']);
-        } else {
-            MessageAlert::set(['success' => '停用失败：' . Tools::formatModelErrors2String($model->errors)]);
-        }
-        return $this->actionPreviousRedirect();
-    }
-
+    /**
+     * @param $id
+     * @return AlarmConfig
+     * @throws NotFoundHttpException
+     */
     public function findModel($id)
     {
         $model = AlarmConfig::findOne(['id' => $id]);
