@@ -115,6 +115,7 @@ class m171228_090822_first extends Migration
             'apply_order_id' => $this->integer()->notNull()->comment('申请单 ID'),
             'resource_id' => $this->integer()->notNull()->comment('资源 ID'),
             'quantity' => $this->integer()->notNull()->defaultValue(0)->comment('数量'),
+            'quantity_real' => $this->integer()->comment('实际数量'),
         ], $this->setTableComment('申请单明细表'));
         $this->addForeignKey('fk-apply_order_detail-apply_order', 'apply_order_detail', 'apply_order_id', 'apply_order', 'id');
         $this->addForeignKey('fk-apply_order_detail-resource', 'apply_order_detail', 'resource_id', 'resource', 'id');

@@ -21,6 +21,7 @@ namespace common\models;
 class ApplyOrderResource extends \common\models\base\ActiveRecord
 {
     const SCENARIO_INPUT = 'input'; // 入库
+    const SCENARIO_OUTPUT_APPLY = 'output_apply'; // 出库和申领
 
     /**
      * @inheritdoc
@@ -42,7 +43,8 @@ class ApplyOrderResource extends \common\models\base\ActiveRecord
             [['apply_order_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplyOrder::className(), 'targetAttribute' => ['apply_order_id' => 'id']],
             [['container_id'], 'exist', 'skipOnError' => true, 'targetClass' => Container::className(), 'targetAttribute' => ['container_id' => 'id']],
             [['resource_id'], 'exist', 'skipOnError' => true, 'targetClass' => Resource::className(), 'targetAttribute' => ['resource_id' => 'id']],
-            [['tag_active', 'tag_passive'], 'required', 'on' => static::SCENARIO_INPUT],
+            [['tag_active', 'tag_passive', 'quantity'], 'required', 'on' => static::SCENARIO_INPUT],
+            [['tag_passive', 'quantity'], 'required', 'on' => static::SCENARIO_OUTPUT_APPLY],
         ];
     }
 

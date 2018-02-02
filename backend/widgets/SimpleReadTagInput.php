@@ -2,6 +2,9 @@
 
 namespace backend\widgets;
 
+use backend\assets\TagReadAsset;
+use common\models\base\ConfigString;
+use Yii;
 use yii\helpers\Html;
 use yii\widgets\InputWidget;
 
@@ -17,7 +20,7 @@ class SimpleReadTagInput extends InputWidget
 <div class="input-group">
     {$input}
     <span class="input-group-btn">
-      <button type="button" class="btn btn-primary read-tag">读取</button>
+      <button type="button" class="btn btn-primary read_tag">读取</button>
     </span>
 </div>
 HTML;
@@ -26,10 +29,11 @@ HTML;
 
     protected function registerAssets()
     {
+        TagReadAsset::register($this->view);
+
+        $baseUrl = Yii::$app->params[ConfigString::PARAMS_TAG_READ_URL];
         $js = <<<JS
-        $('body').on('click', '.read-tag', function() {
-          $(this).parents('.input-group').find('input').val('等待处理');
-        });
+          tagRead.baseUrl = '{$baseUrl}';
 JS;
         $this->view->registerJs($js);
     }

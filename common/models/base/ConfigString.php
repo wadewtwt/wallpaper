@@ -16,6 +16,9 @@ class ConfigString
     // log category
     const CATEGORY_NEED_SOLVED = 'need-solved';
 
+    // params
+    const PARAMS_TAG_READ_URL = 'tag_red_url';
+
     /**
      * @return null|object|QiNiu
      */

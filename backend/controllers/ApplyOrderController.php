@@ -148,9 +148,9 @@ class ApplyOrderController extends AuthWebController
         }
 
         if ($this->applyOrderType == Enum::APPLY_ORDER_TYPE_INPUT) {
-            return $this->handleOverInput($applyOrder);
+            return $this->handleOver($applyOrder, ApplyOrderResource::SCENARIO_INPUT);
         } elseif (in_array($this->applyOrderType, [Enum::APPLY_ORDER_TYPE_OUTPUT, Enum::APPLY_ORDER_TYPE_APPLY])) {
-            return $this->handleOverOutputApply($applyOrder);
+            return $this->handleOver($applyOrder, ApplyOrderResource::SCENARIO_OUTPUT_APPLY);
         }
         throw new Exception('不支持的 APPLY_ORDER_TYPE 类型');
     }
@@ -225,17 +225,21 @@ class ApplyOrderController extends AuthWebController
     }
 
     /**
-     * 入库完成操作
+     * 完成操作
      * @param $applyOrder ApplyOrder
+     * @param $applyOrderResourceScenario
      * @return array|string|Response
+     * @throws Exception
      * @throws \yii\db\Exception
      */
-    protected function handleOverInput($applyOrder)
+    protected function handleOver($applyOrder, $applyOrderResourceScenario)
     {
         $request = Yii::$app->getRequest();
         $applyOrderResources = [new ApplyOrderResource([
-            'scenario' => ApplyOrderResource::SCENARIO_INPUT,
+            'scenario' => $applyOrderResourceScenario,
+            'apply_order_id' => $applyOrder->id,
         ])];
+        $tagSessionAutoStart = true; // 标签检测是否自动开启扫描、出库和申领有用
 
         if ($request->isPost) {
             /** @var ApplyOrderResource[] $applyOrderResources */
@@ -243,7 +247,8 @@ class ApplyOrderController extends AuthWebController
             $data = $request->post('ApplyOrderResource', []);
             foreach (array_keys($data) as $index) {
                 $applyOrderResources[$index] = new ApplyOrderResource([
-                    'scenario' => ApplyOrderResource::SCENARIO_INPUT,
+                    'scenario' => $applyOrderResourceScenario,
+                    'apply_order_id' => $applyOrder->id,
                 ]);
             }
             Model::loadMultiple($applyOrderResources, $request->post());
@@ -253,7 +258,8 @@ class ApplyOrderController extends AuthWebController
                 $result = ActiveForm::validateMultiple($applyOrderResources);
                 return $result;
             }
-            // 检查入库的数量和申请单的数量是否匹配
+            // 校验数据
+            $hasError = false;
             $sourceCountArr = [];
             foreach ($applyOrderResources as $applyOrderResource) {
                 if (!isset($sourceCountArr[$applyOrderResource->resource_id])) {
@@ -262,22 +268,35 @@ class ApplyOrderController extends AuthWebController
                     $sourceCountArr[$applyOrderResource->resource_id] += 1;
                 }
             }
-            $hasError = false;
-            foreach ($applyOrder->applyOrderDetails as $applyOrderDetail) {
-                if ($applyOrderDetail->quantity != $sourceCountArr[$applyOrderDetail->resource_id]) {
-                    $hasError = true;
-                    MessageAlert::set(['error' => '资源：' . $applyOrderDetail->resource->name . '，入库的数量和申请单的数量不匹配']);
-                    break;
+            $applyOrderDetails = $applyOrder->applyOrderDetails;
+            try{
+                // 检查资源类型是否匹配
+                if(count($applyOrderDetails) != count($sourceCountArr)) {
+                    throw new Exception('资源种类不匹配');
                 }
+                // 检查实际处理的数量和申请单的数量是否匹配
+                foreach ($applyOrderDetails as $applyOrderDetail) {
+                    if ($applyOrderDetail->quantity > $sourceCountArr[$applyOrderDetail->resource_id]) {
+                        throw new Exception('资源：' . $applyOrderDetail->resource->name . '，实际操作的数量不能大于申请单的数量');
+                    }
+                    $applyOrderDetail->quantity_real = $sourceCountArr[$applyOrderDetail->resource_id];
+                }
+            }catch (Exception $e) {
+                MessageAlert::set(['error' => $e->getMessage()]);
+                $hasError = true;
             }
+
             if (!$hasError) {
                 // 处理业务
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
+                    // 保存详情单的实际数量信息
+                    foreach ($applyOrderDetails as $applyOrderDetail) {
+                        // 实际数量已经在检查实际数量时赋值
+                        $applyOrderDetail->save(false);
+                    }
                     // 保存资源信息
                     foreach ($applyOrderResources as $applyOrderResource) {
-                        /** @var $detail ApplyOrderResource */
-                        $applyOrderResource->apply_order_id = $applyOrder->id;
                         $applyOrderResource->save(false);
                         ResourceDetail::operateByApplyOrderType($this->applyOrderType, $applyOrderResource);
                     }
@@ -292,12 +311,22 @@ class ApplyOrderController extends AuthWebController
                     $transaction->rollBack();
                     MessageAlert::set(['error' => '操作失败：' . $e->getMessage()]);
                 }
+                $tagSessionAutoStart = false;
             }
         }
 
-        return $this->render('@view/apply-order/over-input', [
+        if ($applyOrderResourceScenario == ApplyOrderResource::SCENARIO_INPUT) {
+            $view = 'over-input';
+        } elseif ($applyOrderResourceScenario == ApplyOrderResource::SCENARIO_OUTPUT_APPLY) {
+            $view = 'over-output-apply';
+        } else {
+            throw new Exception('未知的 applyOrderResourceScenario');
+        }
+
+        return $this->render('@view/apply-order/' . $view, [
             'applyOrder' => $applyOrder,
             'applyOrderResources' => $applyOrderResources,
+            'tagSessionAutoStart' => $tagSessionAutoStart,
         ]);
     }
 
@@ -310,23 +339,33 @@ class ApplyOrderController extends AuthWebController
     protected function handleOverOutputApply($applyOrder)
     {
         $request = Yii::$app->getRequest();
-
-        // TODO 检查数量
+        $applyOrderResources = [new ApplyOrderResource([
+            'scenario' => ApplyOrderResource::SCENARIO_OUTPUT_APPLY,
+            'apply_order_id' => $applyOrder->id,
+        ])];
+        $tagSessionAutoStart = true;
 
         if ($request->isPost) {
             $applyOrderResources = [];
             $data = $request->post('ApplyOrderResource', []);
             foreach (array_keys($data) as $index) {
-                $applyOrderResources[$index] = new ApplyOrderResource();
+                $applyOrderResources[$index] = new ApplyOrderResource([
+                    'scenario' => ApplyOrderResource::SCENARIO_OUTPUT_APPLY,
+                    'apply_order_id' => $applyOrder->id,
+                ]);
             }
             Model::loadMultiple($applyOrderResources, $request->post());
+            if ($request->post('ajax') !== null) {
+                // models 数据的 ajax 验证
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                $result = ActiveForm::validateMultiple($applyOrderResources);
+                return $result;
+            }
             // 处理业务
             $transaction = Yii::$app->db->beginTransaction();
             try {
                 // 保存资源信息
                 foreach ($applyOrderResources as $applyOrderResource) {
-                    /** @var $detail ApplyOrderResource */
-                    $applyOrderResource->apply_order_id = $applyOrder->id;
                     $applyOrderResource->save(false);
                     ResourceDetail::operateByApplyOrderType($this->applyOrderType, $applyOrderResource);
                 }
@@ -339,16 +378,19 @@ class ApplyOrderController extends AuthWebController
                 return $this->actionPreviousRedirect();
             } catch (Exception $e) {
                 $transaction->rollBack();
-                if (!YII_DEBUG) {
+                if (YII_DEBUG) {
                     MessageAlert::set(['error' => '操作失败：' . $e->getMessage()]);
                 } else {
                     throw new Exception($e);
                 }
             }
+            $tagSessionAutoStart = false;
         }
 
         return $this->render('@view/apply-order/over-output-apply', [
             'applyOrder' => $applyOrder,
+            'applyOrderResources' => $applyOrderResources,
+            'tagSessionAutoStart' => $tagSessionAutoStart,
         ]);
     }
 
