@@ -6,6 +6,7 @@ namespace common\models;
  * This is the model class for table "apply_order_resource".
  *
  * @property integer $id
+ * @property integer $is_return
  * @property integer $apply_order_id
  * @property integer $resource_id
  * @property integer $container_id
@@ -22,6 +23,7 @@ class ApplyOrderResource extends \common\models\base\ActiveRecord
 {
     const SCENARIO_INPUT = 'input'; // 入库
     const SCENARIO_OUTPUT_APPLY = 'output_apply'; // 出库和申领
+    const SCENARIO_RETURN = 'return'; // 退还
 
     /**
      * @inheritdoc
@@ -38,13 +40,14 @@ class ApplyOrderResource extends \common\models\base\ActiveRecord
     {
         return [
             [['apply_order_id', 'resource_id', 'container_id'], 'required'],
-            [['apply_order_id', 'resource_id', 'container_id', 'quantity'], 'integer'],
+            [['is_return', 'apply_order_id', 'resource_id', 'container_id', 'quantity'], 'integer'],
             [['tag_active', 'tag_passive', 'remark'], 'string', 'max' => 255],
             [['apply_order_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplyOrder::className(), 'targetAttribute' => ['apply_order_id' => 'id']],
             [['container_id'], 'exist', 'skipOnError' => true, 'targetClass' => Container::className(), 'targetAttribute' => ['container_id' => 'id']],
             [['resource_id'], 'exist', 'skipOnError' => true, 'targetClass' => Resource::className(), 'targetAttribute' => ['resource_id' => 'id']],
             [['tag_active', 'tag_passive', 'quantity'], 'required', 'on' => static::SCENARIO_INPUT],
             [['tag_passive', 'quantity'], 'required', 'on' => static::SCENARIO_OUTPUT_APPLY],
+            [['tag_passive', 'quantity'], 'required', 'on' => static::SCENARIO_RETURN],
         ];
     }
 
@@ -55,6 +58,7 @@ class ApplyOrderResource extends \common\models\base\ActiveRecord
     {
         return [
             'id' => 'ID',
+            'is_return' => '是否是归还',
             'apply_order_id' => '申请单 ID',
             'resource_id' => '资源 ID',
             'container_id' => '货位 ID',
@@ -93,10 +97,5 @@ class ApplyOrderResource extends \common\models\base\ActiveRecord
     public function getResource()
     {
         return $this->hasOne(Resource::className(), ['id' => 'resource_id']);
-    }
-
-    public function solveResourceDetail($applyOrderType)
-    {
-
     }
 }

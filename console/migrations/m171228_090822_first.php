@@ -104,6 +104,7 @@ class m171228_090822_first extends Migration
             'reason' => $this->string()->notNull()->comment('理由'),
             'delete_reason' => $this->string()->comment('作废理由'),
             'pick_type' => $this->integer()->notNull()->defaultValue(0)->comment('申领类型:使用、保养、拆封'),
+            'return_at' => $this->integer()->notNull()->defaultValue(0)->comment('归还时间'),
         ], $this->commonColumns([
             'status', 'created_at', 'created_by', 'updated_at', 'updated_by'
         ])
@@ -116,12 +117,14 @@ class m171228_090822_first extends Migration
             'resource_id' => $this->integer()->notNull()->comment('资源 ID'),
             'quantity' => $this->integer()->notNull()->defaultValue(0)->comment('数量'),
             'quantity_real' => $this->integer()->comment('实际数量'),
+            'quantity_return' => $this->integer()->comment('归还数量'),
         ], $this->setTableComment('申请单明细表'));
         $this->addForeignKey('fk-apply_order_detail-apply_order', 'apply_order_detail', 'apply_order_id', 'apply_order', 'id');
         $this->addForeignKey('fk-apply_order_detail-resource', 'apply_order_detail', 'resource_id', 'resource', 'id');
 
         $this->createTable('apply_order_resource', [
             'id' => $this->primaryKey(),
+            'is_return' => $this->boolean()->notNull()->defaultValue(false)->comment('是否是归还'),
             'apply_order_id' => $this->integer()->notNull()->comment('申请单 ID'),
             'resource_id' => $this->integer()->notNull()->comment('资源 ID'),
             'container_id' => $this->integer()->notNull()->comment('货位 ID'),

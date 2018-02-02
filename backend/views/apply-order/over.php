@@ -3,7 +3,9 @@
 /** @var $applyOrder \common\models\ApplyOrder */
 /** @var $applyOrderResources [] \common\models\ApplyOrderResource[] */
 /** @var $tagSessionAutoStart bool */
+/** @var $applyOrderResourceScenario string */
 
+use common\models\ApplyOrderResource;
 use common\models\base\ConfigString;
 use yii\helpers\Json;
 use yii\helpers\Url;
@@ -26,6 +28,7 @@ $form = ActiveForm::begin([
         ]) ?>
         <?= $this->render('_apply_order_detail', [
             'models' => $applyOrder->applyOrderDetails,
+            'showReal' => $applyOrderResourceScenario == ApplyOrderResource::SCENARIO_RETURN,
         ]) ?>
 
         <p class="lead">详情</p>

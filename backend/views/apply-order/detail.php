@@ -16,6 +16,7 @@ $isPrint = isset($isPrint) ? $isPrint : false;
         ]) ?>
         <?= $this->render('_apply_order_detail', [
             'models' => $model->applyOrderDetails,
+            'showReal' => !$isPrint
         ]) ?>
 
         <?php if (!$isPrint): ?>

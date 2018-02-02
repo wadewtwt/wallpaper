@@ -12,6 +12,7 @@ use common\models\base\Enum;
  * @property string $reason
  * @property string $delete_reason
  * @property integer $pick_type
+ * @property integer $return_at
  * @property integer $status
  * @property integer $created_at
  * @property integer $created_by
@@ -21,6 +22,7 @@ use common\models\base\Enum;
  * @property Person $person
  * @property ApplyOrderDetail[] $applyOrderDetails
  * @property ApplyOrderResource[] $applyOrderResources
+ * @property ApplyOrderResource[] $applyOrderReturnResources
  */
 class ApplyOrder extends \common\models\base\ActiveRecord
 {
@@ -53,12 +55,6 @@ class ApplyOrder extends \common\models\base\ActiveRecord
         self::STATUS_DELETE => '作废',
     ];
 
-    // 退回的状态
-    public static $returnStatusData = [
-        self::STATUS_OVER => '借出中',
-        self::STATUS_RETURN_OVER => '已归还',
-    ];
-
     /**
      * @inheritdoc
      */
@@ -74,7 +70,7 @@ class ApplyOrder extends \common\models\base\ActiveRecord
     {
         return [
             [['type', 'person_id', 'reason'], 'required'],
-            [['type', 'person_id', 'pick_type', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [['type', 'person_id', 'pick_type', 'return_at', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['reason', 'delete_reason'], 'string', 'max' => 255],
             [['person_id'], 'exist', 'skipOnError' => true, 'targetClass' => Person::className(), 'targetAttribute' => ['person_id' => 'id']],
             [['delete_reason'], 'required', 'on' => static::SCENARIO_DELETE],
@@ -93,6 +89,7 @@ class ApplyOrder extends \common\models\base\ActiveRecord
             'reason' => '理由',
             'delete_reason' => '作废理由',
             'pick_type' => '申领类型',
+            'return_at' => '归还时间',
             'status' => '状态',
             'created_at' => '创建时间',
             'created_by' => '创建人',
@@ -122,7 +119,17 @@ class ApplyOrder extends \common\models\base\ActiveRecord
      */
     public function getApplyOrderResources()
     {
-        return $this->hasMany(ApplyOrderResource::className(), ['apply_order_id' => 'id']);
+        return $this->hasMany(ApplyOrderResource::className(), ['apply_order_id' => 'id'])
+            ->onCondition(['is_return' => 0]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getApplyOrderReturnResources()
+    {
+        return $this->hasMany(ApplyOrderResource::className(), ['apply_order_id' => 'id'])
+            ->onCondition(['is_return' => 1]);
     }
 
     /**
@@ -150,15 +157,6 @@ class ApplyOrder extends \common\models\base\ActiveRecord
     public function getStatusName()
     {
         return $this->toName($this->status, self::$statusData);
-    }
-
-    /**
-     * 退还状态：已借出、以退还
-     * @return string
-     */
-    public function getReturnStatusName()
-    {
-        return $this->toName($this->status, self::$returnStatusData);
     }
 
     /**

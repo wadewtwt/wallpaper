@@ -10,6 +10,7 @@ namespace common\models;
  * @property integer $resource_id
  * @property integer $quantity
  * @property integer $quantity_real
+ * @property integer $quantity_return
  *
  * @property \common\models\Resource $resource
  * @property ApplyOrder $applyOrder
@@ -31,7 +32,7 @@ class ApplyOrderDetail extends \common\models\base\ActiveRecord
     {
         return [
             [['apply_order_id', 'resource_id'], 'required'],
-            [['apply_order_id', 'resource_id', 'quantity', 'quantity_real'], 'integer'],
+            [['apply_order_id', 'resource_id', 'quantity', 'quantity_real', 'quantity_return'], 'integer'],
             [['resource_id'], 'exist', 'skipOnError' => true, 'targetClass' => Resource::className(), 'targetAttribute' => ['resource_id' => 'id']],
             [['apply_order_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplyOrder::className(), 'targetAttribute' => ['apply_order_id' => 'id']],
         ];
@@ -48,6 +49,7 @@ class ApplyOrderDetail extends \common\models\base\ActiveRecord
             'resource_id' => '资源 ID',
             'quantity' => '数量',
             'quantity_real' => '实际数量',
+            'quantity_return' => '归还数量',
         ];
     }
 

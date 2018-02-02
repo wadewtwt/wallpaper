@@ -169,7 +169,7 @@ class ResourceDetail extends \common\models\base\ActiveRecord
     {
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            $model = static::findOne(['tag_passive' => $applyOrderResource->tag_passive, 'status' => static::STATUS_NORMAL]);
+            $model = static::findOne(['tag_passive' => $applyOrderResource->tag_passive]);
             $resource = $applyOrderResource->resource;
             // 修改资源信息
             if ($applyOrderType == Enum::APPLY_ORDER_TYPE_INPUT) {
@@ -192,7 +192,7 @@ class ResourceDetail extends \common\models\base\ActiveRecord
                 Enum::APPLY_ORDER_TYPE_OUTPUT, Enum::APPLY_ORDER_TYPE_APPLY, Enum::APPLY_ORDER_TYPE_RETURN
             ])) {
                 if (!$model) {
-                    throw new Exception("无源标签为'{$applyOrderResource->tag_passive}'的资源不存在或已出库");
+                    throw new Exception("无源标签为'{$applyOrderResource->tag_passive}'的资源不存在");
                 }
                 $model->changeStatusByApplyOrderType($applyOrderType);
                 $model->save(false);
