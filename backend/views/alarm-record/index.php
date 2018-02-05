@@ -1,7 +1,6 @@
 <?php
 /** @var $this yii\web\View */
 /** @var $dataProvider common\components\ActiveDataProvider */
-
 /** @var $searchModel backend\models\AlarmRecordSearch */
 
 use backend\widgets\SimpleDynaGrid;
