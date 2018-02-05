@@ -22,6 +22,8 @@ class AlarmRecordSearch extends AlarmRecord
             'query' => $query,
             'sort' => [
                 'defaultOrder' => [
+                    'status' => SORT_ASC,
+                    'alarm_at' => SORT_DESC,
                     'id' => SORT_DESC,
                 ]
             ]

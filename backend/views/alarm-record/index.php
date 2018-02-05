@@ -42,6 +42,9 @@ $columns = [
         }
     ],
     [
+        'attribute' => 'description',
+    ],
+    [
         'attribute' => 'solve_id',
         'value' => function (AlarmRecord $model) {
             if ($model->solve_id) {

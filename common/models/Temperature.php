@@ -97,7 +97,7 @@ class Temperature extends \common\models\base\ActiveRecord
      */
     public function triggerAlarm()
     {
-        if ($this->current_updated_at != 0 && $this->current < $this->down_limit || $this->current > $this->up_limit) {
+        if ($this->current_updated_at != 0 && ($this->current < $this->down_limit || $this->current > $this->up_limit)) {
             $alarmConfig = AlarmConfig::findOne([
                 'status' => AlarmConfig::STATUS_NORMAL,
                 'type' => AlarmConfig::TYPE_TEMPERATURE,
