@@ -42,6 +42,11 @@ class ResourceDetail extends \common\models\base\ActiveRecord
         self::STATUS_PICKED => '被领走',
     ];
 
+    // 任然有用的状态
+    public static $usedStatusData = [
+        self::STATUS_NORMAL, self::STATUS_PICKED
+    ];
+
     /**
      * @inheritdoc
      */

@@ -97,6 +97,11 @@ class m171228_090822_first extends Migration
         ), $this->setTableComment('资源使用明细表'));
         $this->addForeignKey('fk-resource_detail_operation-resource_detail', 'resource_detail_operation', 'resource_detail_id', 'resource_detail', 'id');
 
+        $this->createTable('tag_active_unused', [
+            'id' => $this->primaryKey(),
+            'tag_active' => $this->string()->notNull()->unique()->comment('有源标签'),
+        ], $this->setTableComment('有源标签未使用表'));
+
         $this->createTable('apply_order', array_merge([
             'id' => $this->primaryKey(),
             'type' => $this->integer()->notNull()->comment('类别:入库、出库、申领、归还'),

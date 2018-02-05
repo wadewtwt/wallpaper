@@ -8,6 +8,7 @@ use backend\widgets\SimpleReadTagInput;
 use backend\widgets\SimpleSelect2;
 use common\models\Container;
 use common\models\Resource;
+use common\models\TagActiveUnused;
 use unclead\multipleinput\TabularInput;
 use yii\helpers\ArrayHelper;
 use yii\widgets\ActiveForm;
@@ -66,7 +67,13 @@ $form = ActiveForm::begin([
                         'name' => 'tag_active',
                         'title' => '有源标签',
                         'enableError' => true,
-                        'type' => SimpleReadTagInput::className(),
+                        'type' => SimpleSelect2::className(),
+                        'options' => [
+                            'data' => TagActiveUnused::findAllList(),
+                            'pluginOptions' => [
+                                'tags' => true
+                            ]
+                        ],
                     ],
                     [
                         'name' => 'tag_passive',
