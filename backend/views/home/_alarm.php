@@ -31,7 +31,7 @@ $models = AlarmRecord::find()->limit(5)
                         <th>处理人</th>
                         <th>处理时间</th>
                         <th>处理描述</th>
-                        <th>仓库ID</th>
+                        <th>所属仓库</th>
                         <th>摄像头ID</th>
                         <th>报警类型</th>
                         <th>状态</th>
@@ -43,15 +43,19 @@ $models = AlarmRecord::find()->limit(5)
                         <td><?= $model->alarm_config_id?></td>
                         <td><span class="label label-warning"><?= date('Y-m-d H:i:s', $model->alarm_at) ?></span></td>
                         <td><?= $model->description?></td>
-                        <td><?= $model->solve->name?></td>
+                        <td>
+                            <?php if($model->solve_id){
+                                echo $model->solve->name;
+                            }?>
+                        </td>
                         <td><span class="label label-info"><?= date('Y-m-d H:i:s', $model->alarm_at) ?></span></td>
                         <td>
                             <span class="description-header"><?= $model->solve_description?></span>
                         </td>
                         <td class="text-primary"><?= $model->store->name?></td>
                         <td><?= $model->camera->name?></td>
-                        <td><?= $model->alarmType?></td>
-                        <td><?= $model->status?></td>
+                        <td><?= $model->TypeName?></td>
+                        <td><span class="label label-default"><?= $model->statusName?></span></td>
                     </tr>
                     <?php } ?>
                     </tbody>
