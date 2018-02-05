@@ -42,4 +42,7 @@ return [
             'savePath' => 'fxbjy/'
         ],
     ],
+    'params' => [
+        ConfigString::PARAMS_TAG_READ_URL => 'http://127.0.0.1:10888',
+    ]
 ];
