@@ -1,50 +1,22 @@
 <?php
 /** @var $this yii\web\View */
 /** @var $dataProvider common\components\ActiveDataProvider */
-/** @var $searchModel backend\models\CameraSearch */
 
 use backend\widgets\SimpleDynaGrid;
 use yii\helpers\Html;
-use common\models\Camera;
 
-$this->title = '仓库列表';
+$this->title = '资源分类管理列表';
 $this->params['breadcrumbs'] = [
-    '仓库',
+    '资源分类管理',
     $this->title,
 ];
 
-echo $this->render('_search', [
-    'model' => $searchModel,
-]);
-
 $columns = [
     [
-        'attribute' => 'id'
-    ],
-    [
-        'attribute' => 'store_id',
-        'value' => function (Camera $model) {
-            return $model->store->name;
-        },
-        'label' => '所属仓库'
+        'attribute' => 'id',
     ],
     [
         'attribute' => 'name',
-    ],
-    [
-        'attribute' => 'ip',
-    ],
-    [
-        'attribute' => 'port',
-    ],
-    [
-        'attribute' => 'username',
-    ],
-    [
-        'attribute' => 'device_no',
-    ],
-    [
-        'attribute' => 'remark',
     ],
     [
         'class' => '\kartik\grid\ActionColumn',
@@ -61,7 +33,7 @@ $columns = [
                 $options = [
                     'class' => 'btn btn-danger',
                     'data-method' => 'post',
-                    'data-confirm' => '确定删除该摄像头设备？'
+                    'data-confirm' => '确定删除该资源分类？'
                 ];
                 return Html::a('删除', $url, $options);
             },
@@ -70,7 +42,7 @@ $columns = [
 ];
 
 $simpleDynaGrid = new SimpleDynaGrid([
-    'dynaGridId' => 'dynagrid-camera-index',
+    'dynaGridId' => 'dynagrid-resource-type-index',
     'columns' => $columns,
     'dataProvider' => $dataProvider,
     'extraToolbar' => [

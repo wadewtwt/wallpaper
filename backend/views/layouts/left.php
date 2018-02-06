@@ -26,6 +26,7 @@ $menu = [
             ['label' => '货区管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/container']],
         ]
     ],
+    ['label' => '资源分类管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/resource-type']],
     [
         'label' => '设备管理', 'icon' => 'list', 'url' => '#',
         'items' => [

@@ -7,6 +7,7 @@ namespace common\models;
  *
  * @property integer $id
  * @property integer $store_id
+ * @property string $name
  * @property string $ip
  * @property string $port
  * @property string $device_no
@@ -44,7 +45,7 @@ class Temperature extends \common\models\base\ActiveRecord
             [['store_id', 'ip', 'port', 'device_no', 'down_limit', 'up_limit'], 'required'],
             [['store_id', 'current_updated_at', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['down_limit', 'up_limit', 'current'], 'number'],
-            [['ip', 'device_no', 'remark'], 'string', 'max' => 255],
+            [['name', 'ip', 'device_no', 'remark'], 'string', 'max' => 255],
             [['port'], 'string', 'max' => 10],
             [['store_id'], 'exist', 'skipOnError' => true, 'targetClass' => Store::className(), 'targetAttribute' => ['store_id' => 'id']],
             ['up_limit', 'compare', 'compareAttribute' => 'down_limit', 'operator' => '>', 'type' => 'number']
@@ -59,6 +60,7 @@ class Temperature extends \common\models\base\ActiveRecord
         return [
             'id' => 'ID',
             'store_id' => '仓库 ID',
+            'name' => '名称',
             'ip' => 'IP',
             'port' => '端口',
             'device_no' => '设备号',

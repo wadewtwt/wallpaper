@@ -23,13 +23,12 @@ $columns = [
         'attribute' => 'id'
     ],
     [
-        'attribute' => 'store_id',
-        'value' => function (AlarmConfig $model) {
-            return $model->store->name;
-        }
+        'attribute' => 'store.name',
+        'label' => '所属仓库',
     ],
     [
-        'attribute' => 'camera_id',
+        'attribute' => 'camera.name',
+        'label' => '摄像头名称',
     ],
     [
         'attribute' => 'type',

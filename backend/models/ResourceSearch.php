@@ -10,6 +10,7 @@ class ResourceSearch extends Resource
     public function rules()
     {
         return [
+            [['resource_type_id'], 'integer'],
             [['name'], 'string'],
         ];
     }
@@ -35,6 +36,7 @@ class ResourceSearch extends Resource
         }
 
         $query->andFilterWhere([
+            'resource_type_id' => $this->resource_type_id,
             'type' => $this->type,
         ]);
         $query->andFilterWhere(['like', 'name', $this->name]);

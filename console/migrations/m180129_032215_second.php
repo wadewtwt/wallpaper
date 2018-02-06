@@ -15,6 +15,7 @@ class m180129_032215_second extends Migration
         $this->createTable('temperature', array_merge([
             'id' => $this->primaryKey(),
             'store_id' => $this->integer()->notNull()->comment('仓库 ID'),
+            'name' => $this->string()->notNull()->comment('名称'),
             'ip' => $this->string()->notNull()->comment('IP'),
             'port' => $this->string(10)->notNull()->comment('端口'),
             'device_no' => $this->string()->notNull()->comment('设备号'),

@@ -3,36 +3,38 @@
 namespace backend\controllers;
 
 use backend\components\AuthWebController;
-use backend\models\CameraSearch;
-use common\models\Camera;
-use Yii;
 use backend\components\MessageAlert;
-use yii\web\NotFoundHttpException;
+use common\components\ActiveDataProvider;
 use common\components\Tools;
-use common\models\AlarmConfig;
+use common\models\ResourceType;
+use Yii;
+use yii\web\NotFoundHttpException;
 
-class CameraController extends AuthWebController
+class ResourceTypeController extends AuthWebController
 {
     // 列表
     public function actionIndex()
     {
         $this->rememberUrl();
 
-        $searchModel = new CameraSearch([
-            'status' => Camera::STATUS_NORMAL
+        $dataProvider = new ActiveDataProvider([
+            'query' => ResourceType::find(),
+            'sort' => [
+                'defaultOrder' => [
+                    'created_at' => SORT_DESC,
+                    'id' => SORT_DESC,
+                ]
+            ]
         ]);
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
         return $this->render('index', [
             'dataProvider' => $dataProvider,
-            'searchModel' => $searchModel,
         ]);
     }
 
     // 新增
     public function actionCreate()
     {
-        $model = new Camera();
+        $model = new ResourceType();
         if ($model->load(Yii::$app->request->post())) {
             if ($model->validate() && $model->save(false)) {
                 MessageAlert::set(['success' => '添加成功']);
@@ -68,30 +70,24 @@ class CameraController extends AuthWebController
     {
         $model = $this->findModel($id);
 
-        $hasAlarmConfig = AlarmConfig::find()->select(['id'])->where(['camera_id' => $id])->limit(1)->one();
-        if(!$hasAlarmConfig){
-            $isDelete = $model->delete();
-        }else{
-            $model->status = AlarmConfig::STATUS_DELETE;
-            $isDelete = $model->save();
+        if ($model->getResources()->select(['id'])->limit(1)->one()) {
+            MessageAlert::set(['error' => '删除失败：当前分类下已有设备或消耗品。']);
+        } else {
+            $model->delete();
+            MessageAlert::set(['success' => '删除成功']);
         }
 
-        if ($isDelete) {
-            MessageAlert::set(['success' => '删除成功']);
-        } else {
-            MessageAlert::set(['error' => '删除失败：' . Tools::formatModelErrors2String($model->errors)]);
-        }
         return $this->actionPreviousRedirect();
     }
 
     /**
      * @param $id
-     * @return Camera
+     * @return ResourceType
      * @throws NotFoundHttpException
      */
     public function findModel($id)
     {
-        $model = Camera::findOne($id);
+        $model = ResourceType::findOne($id);
         if (!$model) {
             throw new NotFoundHttpException();
         }

@@ -22,6 +22,10 @@ echo $this->render('_search', [
 
 $columns = [
     [
+        'attribute' => 'resourceType.name',
+        'label' => '分类',
+    ],
+    [
         'attribute' => 'name',
     ],
     [

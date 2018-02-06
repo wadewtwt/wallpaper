@@ -29,6 +29,9 @@ $columns = [
         'label' => '所属仓库'
     ],
     [
+        'attribute' => 'name',
+    ],
+    [
         'attribute' => 'ip',
     ],
     [

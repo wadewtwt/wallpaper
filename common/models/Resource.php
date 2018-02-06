@@ -11,6 +11,7 @@ use yii\helpers\ArrayHelper;
  *
  * @property integer $id
  * @property integer $type
+ * @property integer $resource_type_id
  * @property string $name
  * @property integer $min_stock
  * @property integer $current_stock
@@ -22,6 +23,7 @@ use yii\helpers\ArrayHelper;
  * @property integer $updated_at
  * @property integer $updated_by
  *
+ * @property ResourceType $resourceType
  * @property ApplyOrderDetail[] $applyOrderDetails
  * @property ApplyOrderResource[] $applyOrderResources
  * @property ResourceDetail[] $resourceDetails
@@ -53,8 +55,8 @@ class Resource extends \common\models\base\ActiveRecord
     public function rules()
     {
         return [
-            [['type', 'name'], 'required'],
-            [['type', 'min_stock', 'current_stock', 'scrap_cycle', 'maintenance_cycle', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [['type', 'resource_type_id', 'name'], 'required'],
+            [['type', 'resource_type_id', 'min_stock', 'current_stock', 'scrap_cycle', 'maintenance_cycle', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['name'], 'string', 'max' => 255],
         ];
     }
@@ -67,6 +69,7 @@ class Resource extends \common\models\base\ActiveRecord
         return [
             'id' => 'ID',
             'type' => '类型:消耗品、设备',
+            'resource_type_id' => '分类',
             'name' => '名称',
             'min_stock' => '最低库存',
             'current_stock' => '当前库存',
@@ -78,6 +81,14 @@ class Resource extends \common\models\base\ActiveRecord
             'updated_at' => '修改时间',
             'updated_by' => '修改人',
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getResourceType()
+    {
+        return $this->hasOne(ResourceType::className(), ['id' => 'resource_type_id']);
     }
 
     /**
