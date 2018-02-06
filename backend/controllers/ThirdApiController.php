@@ -19,11 +19,12 @@ class ThirdApiController extends Controller
     }
 
     // 更新设备温度
-    public function actionTemperatureUpdate($ip, $port, $current)
+    public function actionTemperatureUpdate($ip, $port, $device_no, $current)
     {
         $model = Temperature::findOne([
             'ip' => $ip,
             'port' => $port,
+            'device_no' => $device_no,
         ]);
         if (!$model) {
             return $this->jsonError('未找到设备');

@@ -13,7 +13,11 @@ class ActiveRecord extends \kriss\components\ActiveRecord
 
         $attributes = [];
         $time = time();
-        $userId = Yii::$app->has('user') ? Yii::$app->get('user')->id : null;
+        try {
+            $userId = (Yii::$app->has('user') && $user = Yii::$app->get('user')) ? $user->id : null;
+        } catch (\Exception $e) {
+            $userId = null;
+        }
         if ($this->hasAttribute('created_at')) {
             $attributes['created_at'] = [
                 self::EVENT_BEFORE_INSERT => $time,
