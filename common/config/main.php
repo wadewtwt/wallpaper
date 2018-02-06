@@ -14,8 +14,7 @@ return [
     ],
     'components' => [
         'cache' => [
-            'class' => 'yii\redis\Cache',
-            'redis' => ConfigString::COMPONENT_CACHE_REDIS,
+            'class' => 'yii\caching\FileCache',
         ],
         'log' => [
             'targets' => [

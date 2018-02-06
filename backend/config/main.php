@@ -5,7 +5,6 @@ use backend\controllers\ResourceController;
 use backend\controllers\ResourceDetailController;
 use backend\controllers\ResourceDetailOperationController;
 use common\models\Admin;
-use common\models\base\ConfigString;
 use common\models\base\Enum;
 use common\models\Resource;
 use \kartik\datecontrol\Module as DateControlModule;
@@ -148,9 +147,6 @@ return [
         ],
         'session' => [
             'name' => 'back-session',
-            'class' => 'yii\redis\Session',
-            'redis' => ConfigString::COMPONENT_SESSION_REDIS,
-            'keyPrefix' => 'app_bs_',
             'timeout' => 6 * 3600
         ],
         'log' => [
