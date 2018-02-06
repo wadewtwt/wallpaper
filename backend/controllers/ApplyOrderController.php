@@ -288,12 +288,12 @@ class ApplyOrderController extends AuthWebController
                 // 检查实际处理的数量和申请单的数量是否匹配
                 foreach ($applyOrderDetails as $applyOrderDetail) {
                     if ($this->applyOrderType == Enum::APPLY_ORDER_TYPE_RETURN) {
-                        if ($applyOrderDetail->quantity_real > $sourceCountArr[$applyOrderDetail->resource_id]) {
+                        if ($sourceCountArr[$applyOrderDetail->resource_id] > $applyOrderDetail->quantity_real) {
                             throw new Exception('资源：' . $applyOrderDetail->resource->name . '，实际操作的数量不能大于申领的实际数量');
                         }
                         $applyOrderDetail->quantity_return = $sourceCountArr[$applyOrderDetail->resource_id];
                     } else {
-                        if ($applyOrderDetail->quantity > $sourceCountArr[$applyOrderDetail->resource_id]) {
+                        if ($sourceCountArr[$applyOrderDetail->resource_id] > $applyOrderDetail->quantity) {
                             throw new Exception('资源：' . $applyOrderDetail->resource->name . '，实际操作的数量不能大于申请单的数量');
                         }
                         $applyOrderDetail->quantity_real = $sourceCountArr[$applyOrderDetail->resource_id];
