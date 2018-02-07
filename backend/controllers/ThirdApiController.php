@@ -43,38 +43,45 @@ class ThirdApiController extends Controller
         if (!$model) {
             return $this->jsonError('未找到资源');
         }
-        $model->triggerAlarm();
+        $model->triggerAlarm(false);
         return $this->jsonOk();
     }
 
     // 有源标签当前检测到的数据列表
     public function actionTagActiveList()
     {
-        $ids = json_decode(Yii::$app->request->post('ids'), true);
-        $usedIds = ResourceDetail::find()->select(['tag_active'])->where([
-            'status' => ResourceDetail::$usedStatusData
-        ])->column();
-        $usedIds = array_filter($usedIds);
-        // 当前在线，不在库的，保存到备用库
-        $unusedIds = array_diff($ids, $usedIds);
+        // 检测到的
+        $ids = array_unique(json_decode(Yii::$app->request->post('ids'), true));
+        // 应该在库的
+        $storedIds = array_filter(ResourceDetail::find()->select(['tag_active'])->where(['status' => ResourceDetail::STATUS_NORMAL])->column());
+        // 被借出的
+        $pickedIds = array_filter(ResourceDetail::find()->select(['tag_active'])->where(['status' => ResourceDetail::STATUS_PICKED])->column());
+        // 当前在线，不在库且没被借出的，保存到备用库
+        $unusedIds = array_diff($ids, $storedIds, $pickedIds);
+        // 删除所有
         TagActiveUnused::deleteAll();
+        // 保存到备用库
         $unusedIdsRows = [];
         foreach ($unusedIds as $id) {
             $unusedIdsRows[] = [$id];
         }
         Yii::$app->db->createCommand()->batchInsert(TagActiveUnused::tableName(), ['tag_active'], $unusedIdsRows)->execute();
-        // 当前在线，且在库的，设为在线
-        $onlineIds = array_intersect($ids, $usedIds);
+        // 原来离线，当前在线，且在库的，设为在线
+        $onlineIds = array_intersect($ids, $storedIds);
         ResourceDetail::updateAll(
             ['is_online' => 1, 'online_change_at' => time()],
-            ['status' => ResourceDetail::$usedStatusData, 'tag_active' => $onlineIds, 'is_online' => 0]
+            ['is_online' => 0, 'tag_active' => $onlineIds, 'status' => ResourceDetail::STATUS_NORMAL]
         );
-        // 在库的，但当前不在线的，设为离线
-        $offlineIds = array_diff($usedIds, $ids);
+        // 原来在线，且在库的，但当前不在线的，设为离线，且报警
+        $offlineIds = array_diff($storedIds, $ids);
         ResourceDetail::updateAll(
             ['is_online' => 0, 'online_change_at' => time()],
-            ['status' => ResourceDetail::$usedStatusData, 'tag_active' => $offlineIds, 'is_online' => 1]
+            ['is_online' => 1, 'tag_active' => $offlineIds, 'status' => ResourceDetail::STATUS_NORMAL]
         );
+        $alarmResources = ResourceDetail::findAll(['tag_active' => $offlineIds]);
+        foreach ($alarmResources as $alarmResource) {
+            $alarmResource->triggerAlarm(true);
+        }
 
         return $this->jsonOk();
     }

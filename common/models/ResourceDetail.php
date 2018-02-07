@@ -127,36 +127,12 @@ class ResourceDetail extends \common\models\base\ActiveRecord
     }
 
     /**
-     * @return string
-     */
-    public function getTypeName()
-    {
-        return $this->toName($this->type, Resource::$typeData);
-    }
-
-    /**
-     * 触发报警
-     */
-    public function triggerAlarm()
-    {
-        $alarmConfigs = AlarmConfig::find()->with('resource')->andWhere([
-            'status' => AlarmConfig::STATUS_NORMAL,
-            'type' => AlarmConfig::TYPE_ILLEGAL_OUTPUT,
-            'store_id' => $this->container->store_id,
-        ])->all();
-        foreach ($alarmConfigs as $alarmConfig) {
-            AlarmRecord::createOne($alarmConfig, AlarmRecord::DES_TEMP_ILLEGAL_OUTPUT, [
-                'resourceName' => $this->resource->name,
-                'tagPassive' => $this->tag_passive,
-            ], false);
-        }
-    }
-
-    /**
      * @param $applyOrderType
+     * @param \common\models\Resource $resource
+     * @param bool $isMaintenance 是否是维护
      * @throws Exception
      */
-    protected function changeStatusByApplyOrderType($applyOrderType)
+    protected function changeStatusByApplyOrderType($applyOrderType, $resource, $isMaintenance = false)
     {
         if ($this->type == Resource::TYPE_DEVICE) {
             if ($applyOrderType == Enum::APPLY_ORDER_TYPE_OUTPUT) {
@@ -179,6 +155,84 @@ class ResourceDetail extends \common\models\base\ActiveRecord
         } else {
             throw new Exception('未知的 type');
         }
+        if (in_array($applyOrderType, [Enum::APPLY_ORDER_TYPE_OUTPUT, Enum::APPLY_ORDER_TYPE_APPLY])) {
+            $this->is_online = 0;
+            $this->online_change_at = time();
+        } elseif (in_array($applyOrderType, [Enum::APPLY_ORDER_TYPE_RETURN, Enum::APPLY_ORDER_TYPE_INPUT])) {
+            $this->is_online = 1;
+            $this->online_change_at = time();
+            if ($applyOrderType == Enum::APPLY_ORDER_TYPE_INPUT) {
+                $this->scrap_at = time() + ($resource->scrap_cycle * 86400);
+                $this->maintenance_at = time() + ($resource->maintenance_cycle * 86400);
+            }
+            if ($applyOrderType == Enum::APPLY_ORDER_TYPE_RETURN && $isMaintenance) {
+                $this->maintenance_at = time() + ($resource->maintenance_cycle * 86400);
+            }
+        } else {
+            throw new Exception('未知的 applyOrderType');
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getTypeName()
+    {
+        return $this->toName($this->type, Resource::$typeData);
+    }
+
+    /**
+     * 触发报警
+     * @param bool $isActive 是否是有源报警
+     * @throws \yii\db\Exception
+     */
+    public function triggerAlarm($isActive)
+    {
+        /** @var AlarmConfig[] $alarmConfigs */
+        $alarmConfigs = AlarmConfig::find()->andWhere([
+            'status' => AlarmConfig::STATUS_NORMAL,
+            'type' => AlarmConfig::TYPE_ILLEGAL_OUTPUT,
+            'store_id' => $this->container->store_id,
+        ])->all();
+        foreach ($alarmConfigs as $alarmConfig) {
+            if ($isActive) {
+                $desTemp = AlarmRecord::DES_TEMP_ILLEGAL_OUTPUT_ACTIVE;
+                $tag = $this->tag_active;
+            } else {
+                $desTemp = AlarmRecord::DES_TEMP_ILLEGAL_OUTPUT_PASSIVE;
+                $tag = $this->tag_passive;
+            }
+            AlarmRecord::createOne($alarmConfig, $desTemp, [
+                'resourceName' => $this->resource->name,
+                'tag' => $tag,
+            ], false);
+        }
+    }
+
+    /**
+     * 有源标签是否被使用
+     * @param $tag
+     * @return bool
+     */
+    public static function isTagActiveUsed($tag)
+    {
+        $isExist = static::find()->select(['id'])
+            ->andWhere(['tag_active' => $tag, 'status' => static::$usedStatusData])
+            ->one();
+        return (bool)$isExist;
+    }
+
+    /**
+     * 无源标签是否被使用
+     * @param $tag
+     * @return bool
+     */
+    public static function isTagPassiveUsed($tag)
+    {
+        $isExist = static::find()->select(['id'])
+            ->andWhere(['tag_passive' => $tag, 'status' => static::$usedStatusData])
+            ->one();
+        return (bool)$isExist;
     }
 
     /**
@@ -192,38 +246,37 @@ class ResourceDetail extends \common\models\base\ActiveRecord
     {
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            $model = static::findOne(['tag_passive' => $applyOrderResource->tag_passive]);
+            $isTagActiveExist = static::isTagActiveUsed($applyOrderResource->tag_active);
+            $isTagPassiveExist = static::isTagPassiveUsed($applyOrderResource->tag_passive);
             $resource = $applyOrderResource->resource;
             // 修改资源信息
             if ($applyOrderType == Enum::APPLY_ORDER_TYPE_INPUT) {
-                if ($model) {
+                if ($isTagActiveExist) {
+                    throw new Exception("有源标签为'{$applyOrderResource->tag_active}'的资源已存在");
+                }
+                if ($isTagPassiveExist) {
                     throw new Exception("无源标签为'{$applyOrderResource->tag_passive}'的资源已存在");
                 }
                 $model = new static();
                 $model->resource_id = $resource->id;
                 $model->type = $resource->type;
                 $model->container_id = $applyOrderResource->container_id;
+                $model->tag_active = $applyOrderResource->tag_active;
                 $model->tag_passive = $applyOrderResource->tag_passive;
-                $model->is_online = 0;
-                $model->online_change_at = time();
-                $model->maintenance_at = time() + ($resource->maintenance_cycle * 86400);
-                $model->scrap_at = time() + ($resource->scrap_cycle * 86400);
                 $model->quantity = $applyOrderResource->quantity;
-                $model->status = self::STATUS_NORMAL;
+                $model->changeStatusByApplyOrderType($applyOrderType, $resource, false);
                 $model->save(false);
             } elseif (in_array($applyOrderType, [
                 Enum::APPLY_ORDER_TYPE_OUTPUT, Enum::APPLY_ORDER_TYPE_APPLY, Enum::APPLY_ORDER_TYPE_RETURN
             ])) {
-                if (!$model) {
+                if ($isTagActiveExist) {
+                    throw new Exception("有源标签为'{$applyOrderResource->tag_active}'的资源不存在");
+                }
+                if ($isTagPassiveExist) {
                     throw new Exception("无源标签为'{$applyOrderResource->tag_passive}'的资源不存在");
                 }
-                if (
-                    $applyOrderType == Enum::APPLY_ORDER_TYPE_RETURN &&
-                    $applyOrderResource->applyOrder->pick_type == ApplyOrder::PICK_TYPE_MAINTENANCE
-                ) {
-                    $model->maintenance_at = time() + ($resource->maintenance_cycle * 86400);
-                }
-                $model->changeStatusByApplyOrderType($applyOrderType);
+                $model = ResourceDetail::findOne(['tag_passive' => $applyOrderResource->tag_passive]);
+                $model->changeStatusByApplyOrderType($applyOrderType, $resource, $applyOrderResource->applyOrder->pick_type == ApplyOrder::PICK_TYPE_MAINTENANCE);
                 $model->save(false);
             } else {
                 throw new Exception('未知的 applyOrderType');
