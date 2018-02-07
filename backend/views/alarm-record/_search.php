@@ -10,9 +10,8 @@ use common\models\AlarmConfig;
 
 $form = SimpleSearchForm::begin(['action' => ['index']]);
 
-echo $form->field($model, 'alarm_config_id');
 echo $form->field($model, 'store_id')->dropDownList(Store::findAllIdName(true), ['prompt' => '全部']);
-echo $form->field($model, 'camera_id')->dropDownList(Camera::findAllIdName(true), ['prompt' => '全部']);
+echo $form->field($model, 'camera_id')->dropDownList(Camera::findAllIdName(true), ['prompt' => '全部'])->label('摄像头');
 echo $form->field($model, 'type')->dropDownList(AlarmConfig::$typeData, ['prompt' => '全部']);;
 echo $form->field($model, 'status')->dropDownList(AlarmRecord::$statusData, ['prompt' => '全部']);;
 

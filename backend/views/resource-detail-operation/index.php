@@ -16,15 +16,18 @@ $this->params['breadcrumbs'] = [
 
 $columns = [
     [
+        'width' => '150px',
         'attribute' => 'resourceDetail.resource.name',
     ],
     [
+        'width' => '150px',
         'attribute' => 'operation',
         'value' => function (ResourceDetailOperation $model) {
             return $model->getOperationName();
         }
     ],
     [
+        'width' => '150px',
         'attribute' => 'created_at',
         'label' => '操作时间',
         'format' => ['datetime', 'php:Y-m-d H:i:s'],

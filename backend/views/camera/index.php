@@ -32,6 +32,7 @@ $columns = [
         'attribute' => 'name',
     ],
     [
+        'width' => '120px',
         'attribute' => 'ip',
     ],
     [

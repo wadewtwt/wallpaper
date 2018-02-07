@@ -6,7 +6,7 @@
 $isPrint = isset($isPrint) ? $isPrint : false;
 ?>
 <div class="invoice">
-    <div class="container">
+
         <div class="page-header">
             <h1 class="text-center"><?= $model->getTypeName() ?>单</h1>
         </div>
@@ -47,9 +47,9 @@ $isPrint = isset($isPrint) ? $isPrint : false;
             </table>
         <?php endif; ?>
         <?php if (!$isPrint): ?>
-            <div class="box-footer container">
+            <div class="box-footer">
                 <a href="javascript:history.go(-1)" class="btn btn-default">返回</a>
             </div>
         <?php endif; ?>
-    </div>
+
 </div>

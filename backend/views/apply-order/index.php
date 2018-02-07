@@ -22,11 +22,13 @@ echo $this->render('_search', [
 
 $columns = [
     [
+        'width' => '150px',
         'attribute' => 'created_at',
         'label' => '申请时间',
         'format' => ['datetime', 'php:Y-m-d H:i:s']
     ],
     [
+        'width' => '100px',
         'attribute' => 'person.name',
         'label' => '申请人',
     ],
@@ -35,20 +37,22 @@ $columns = [
         'width' => '300px',
     ],
     [
+        'width' => '100px',
         'attribute' => 'status',
         'value' => function (ApplyOrder $model) {
             return $model->getStatusName();
         }
     ],
     [
+        'width' => '200px',
         'attribute' => 'delete_reason',
-        'width' => '300px',
     ],
 ];
 
 if (in_array($searchModel->type, [Enum::APPLY_ORDER_TYPE_APPLY, Enum::APPLY_ORDER_TYPE_RETURN])) {
     $columns = array_merge($columns, [
         [
+            'width' => '80px',
             'attribute' => 'pick_type',
             'value' => function (ApplyOrder $model) {
                 return $model->getPickTypeName();
@@ -60,8 +64,8 @@ if (in_array($searchModel->type, [Enum::APPLY_ORDER_TYPE_APPLY, Enum::APPLY_ORDE
 $columns = array_merge($columns, [
     [
         'class' => '\kartik\grid\ActionColumn',
-        'width' => '350px',
-        'template' => '{detail} {update} {print} {pass} {delete} {over}',
+        'width' => '220px',
+        'template' => '<p>{detail} {update} {print}</p>  <p>{pass} {delete} {over}</p>',
         'buttons' => [
             'detail' => function ($url) {
                 $options = [

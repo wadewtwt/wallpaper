@@ -32,6 +32,7 @@ $columns = [
         'attribute' => 'name',
     ],
     [
+        'width' => '120px',
         'attribute' => 'ip',
     ],
     [
@@ -41,6 +42,7 @@ $columns = [
         'attribute' => 'device_no',
     ],
     [
+        'width' => '120px',
         'label' => '阀值',
         'value' => function (Temperature $model) {
             return $model->down_limit . '~' . $model->up_limit;
@@ -50,6 +52,7 @@ $columns = [
         'attribute' => 'current',
     ],
     [
+        'width' => '150px',
         'attribute' => 'current_updated_at',
         'value' => function (Temperature $model) {
             if ($model->current_updated_at == 0) {

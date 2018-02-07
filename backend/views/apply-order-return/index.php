@@ -20,6 +20,7 @@ echo $this->render('_search', [
 
 $columns = [
     [
+        'width' => '100px',
         'attribute' => 'person.name',
         'label' => '申请人'
     ],
@@ -28,17 +29,20 @@ $columns = [
         'width' => '300px',
     ],
     [
+        'width' => '80px',
         'attribute' => 'status',
         'value' => function (ApplyOrderReturn $model) {
             return $model->getStatusName();
         }
     ],
     [
+        'width' => '150px',
         'attribute' => 'created_at',
         'label' => '申请时间',
         'format' => ['datetime', 'php:Y-m-d H:i:s']
     ],
     [
+        'width' => '150px',
         'attribute' => 'return_at',
         'label' => '退还时间',
         'value' => function (ApplyOrderReturn $model) {

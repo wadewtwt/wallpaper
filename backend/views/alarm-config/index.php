@@ -44,7 +44,7 @@ $columns = [
     ],
     [
         'class' => '\kartik\grid\ActionColumn',
-        'width' => '300px',
+        'width' => '180px',
         'template' => '{change-status} {delete}',
         'buttons' => [
             'change-status' => function ($url, $model) {

@@ -4,7 +4,7 @@
 
 ?>
 <div class="invoice">
-    <div class="container">
+
         <div class="page-header">
             <h1 class="text-center">退还单</h1>
         </div>
@@ -43,8 +43,7 @@
             </tbody>
         </table>
 
-        <div class="box-footer container">
+        <div class="box-footer">
             <a href="javascript:history.go(-1)" class="btn btn-default">返回</a>
         </div>
-    </div>
 </div>

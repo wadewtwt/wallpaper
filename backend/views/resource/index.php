@@ -42,7 +42,7 @@ $columns = [
     ],
     [
         'class' => '\kartik\grid\ActionColumn',
-        'width' => '300px',
+        'width' => '220px',
         'template' => '{update} {delete} {detail}',
         'buttons' => [
             'update' => function ($url) {
@@ -59,7 +59,7 @@ $columns = [
                 ];
                 return Html::a('删除', $url, $options);
             },
-            'detail' => function ($url, $model) use ($controllerId) {
+            'detail' => function ($model) use ($controllerId) {
                 $options = [
                     'class' => 'btn btn-default',
                 ];
