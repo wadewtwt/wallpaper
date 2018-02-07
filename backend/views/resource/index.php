@@ -68,7 +68,6 @@ $columns = [
         ],
     ],
 ];
-
 $simpleDynaGrid = new SimpleDynaGrid([
     'dynaGridId' => 'dynagrid-res-device-index',
     'columns' => $columns,
