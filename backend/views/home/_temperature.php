@@ -7,9 +7,11 @@ use yii\helpers\Url;
 
 ?>
     <div class="temperature-container" v-cloak>
-        <div v-for="item in dataList" class="col-md-3">
+        <div v-for="item in dataList" class="col-md-4">
             <div class="info-box">
-                <span class="info-box-icon bg-red" :class="{'bg-green': item.is_green}"><i class="fa fa-certificate"></i></span>
+                <span class="info-box-icon bg-red" :class="{'bg-green': item.is_green}">
+                    <i class="fa fa-asterisk"></i>
+                </span>
                 <div class="info-box-content">
                     <span class="info-box-text">{{ item.title }}</span>
                     <h5 class="info-box-number text-red" :class="{'text-green': item.is_green}">{{ item.content }}</h5>

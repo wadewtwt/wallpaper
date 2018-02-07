@@ -24,7 +24,9 @@ namespace common\models;
 class AlarmCall extends \common\models\base\ActiveRecord
 {
     const STATUS_NORMAL = 0; // 待处理
-    const STATUS_SOLVED = 10; // 已解决
+    const STATUS_SOLVED = 1; // 已解决
+
+    const ALARM_CONFIG_NULL = 0; // 没有经过联动调起的摄像头
 
     /**
      * @inheritdoc
@@ -82,23 +84,51 @@ class AlarmCall extends \common\models\base\ActiveRecord
      * @param $alarmRecord AlarmRecord
      * @param null $remark
      */
-    public static function createOne($alarmRecord, $remark = null)
+    public static function createByAlarmRecord($alarmRecord, $remark = null)
     {
         $model = static::findOne(['alarm_config_id' => $alarmRecord->alarm_config_id, 'status' => static::STATUS_NORMAL]);
         if (!$model) {
             $model = new static();
             $camera = $alarmRecord->camera;
             $model->alarm_config_id = $alarmRecord->alarm_config_id;
-            $model->camera_id = $camera->id;
-            $model->store_id = $camera->store_id;
-            $model->ip = $camera->ip;
-            $model->port = $camera->port;
-            $model->username = $camera->username;
-            $model->password = $camera->password;
-            $model->name = $camera->name;
-            $model->device_no = $camera->device_no;
+            $model->fillModelCamera($camera);
             $model->remark = $remark;
             $model->save(false);
         }
+    }
+
+    /**
+     * @param $camera Camera
+     * @param null $remark
+     */
+    public static function createByCameraView($camera, $remark = null)
+    {
+        $model = static::findOne([
+            'alarm_config_id' => static::ALARM_CONFIG_NULL,
+            'camera_id' => $camera->id,
+            'status' => static::STATUS_NORMAL
+        ]);
+        if (!$model) {
+            $model = new static();
+            $model->alarm_config_id = static::ALARM_CONFIG_NULL;
+            $model->fillModelCamera($camera);
+            $model->remark = $remark;
+            $model->save(false);
+        }
+    }
+
+    /**
+     * @param $camera Camera
+     */
+    protected function fillModelCamera($camera)
+    {
+        $this->camera_id = $camera->id;
+        $this->store_id = $camera->store_id;
+        $this->ip = $camera->ip;
+        $this->port = $camera->port;
+        $this->username = $camera->username;
+        $this->password = $camera->password;
+        $this->name = $camera->name;
+        $this->device_no = $camera->device_no;
     }
 }

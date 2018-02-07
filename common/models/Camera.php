@@ -92,6 +92,14 @@ class Camera extends \common\models\base\ActiveRecord
     }
 
     /**
+     * @inheritdoc
+     */
+    public static function find()
+    {
+        return parent::find()->andWhere(['status' => static::STATUS_NORMAL]);
+    }
+
+    /**
      * @param bool $map
      * @return array|\yii\db\ActiveRecord[]|Camera
      */

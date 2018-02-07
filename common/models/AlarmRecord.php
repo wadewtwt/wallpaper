@@ -175,7 +175,7 @@ class AlarmRecord extends \common\models\base\ActiveRecord
                 $model->type = $alarmConfig->type;
                 $model->save(false);
             }
-            AlarmCall::createOne($model, $des);
+            AlarmCall::createByAlarmRecord($model, $des);
 
             $transaction->commit();
         } catch (Exception $e) {

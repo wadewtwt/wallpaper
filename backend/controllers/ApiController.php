@@ -3,7 +3,9 @@
 namespace backend\controllers;
 
 use backend\components\AuthWebController;
+use common\models\AlarmCall;
 use common\models\AlarmRecord;
+use common\models\Camera;
 use common\models\Container;
 use common\models\Resource;
 use common\models\ResourceDetail;
@@ -31,7 +33,7 @@ class ApiController extends AuthWebController
             ->asArray()->all();
         $newData = [];
         foreach ($tagPassives as $tagPassive) {
-            if(isset($models[$tagPassive])) {
+            if (isset($models[$tagPassive])) {
                 // 只显示在库的设备
                 $newData[] = $models[$tagPassive];
             }
@@ -51,20 +53,29 @@ class ApiController extends AuthWebController
         return Container::findAllIdName(false);
     }
 
-    // 温湿度信息
+    // 首页温湿度信息
     public function actionHomeTemperatureData()
     {
         $models = Temperature::find()->with('store')->where(['status' => Temperature::STATUS_NORMAL])->all();
         $data = [];
         foreach ($models as $model) {
             $data[] = [
-                'title' => $model->store->name . '-' . $model->name,
+                'title' => "【{$model->store->name}】{$model->name}",
                 'content' => !$model->isLost() ? ('实时:' . $model->current) : '未连接',
                 'limit' => '阀值:' . $model->down_limit . '~' . $model->up_limit,
                 'is_green' => intval(!$model->isLost() && !$model->isCurrentOutLimit()),
             ];
         }
         return $data;
+    }
+
+    // 查看摄像头
+    public function actionCameraView()
+    {
+        $id = Yii::$app->request->post('id');
+        $camera = Camera::findOne($id);
+        AlarmCall::createByCameraView($camera, '手动查看摄像头');
+        return 1;
     }
 
     // 报警记录
