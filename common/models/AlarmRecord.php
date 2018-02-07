@@ -43,6 +43,9 @@ class AlarmRecord extends \common\models\base\ActiveRecord
     const DES_TEMP_TEMPERATURE = '温湿度设备【{temperatureName}】当前值【{current}】，超过阀值{downLimit}~{upLimit}';
     const DES_TEMP_ILLEGAL_OUTPUT = '资源【{resourceName}】非法出入库，无源标签号【tagPassive】';
 
+    // 默认的处理描述
+    const SOLVE_DESCRIPTION_DEFAULT = '已处理';
+
     /**
      * @inheritdoc
      */
@@ -62,7 +65,7 @@ class AlarmRecord extends \common\models\base\ActiveRecord
             [['description', 'solve_description'], 'string', 'max' => 255],
             [['solve_id'], 'exist', 'skipOnError' => true, 'targetClass' => Admin::className(), 'targetAttribute' => ['solve_id' => 'id']],
             [['alarm_config_id'], 'exist', 'skipOnError' => true, 'targetClass' => AlarmConfig::className(), 'targetAttribute' => ['alarm_config_id' => 'id']],
-            [['solve_id', 'solve_description'], 'required', 'on' => static::SCENARIO_SOLVE],
+            [['solve_id'], 'required', 'on' => static::SCENARIO_SOLVE],
         ];
     }
 
