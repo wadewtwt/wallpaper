@@ -29,7 +29,7 @@ class ApplyOrder extends \common\models\base\ActiveRecord
     const SCENARIO_DELETE = 'delete'; // 作废
 
     const PICK_TYPE_USE = 10;
-    const PICK_TYPE_MAINTENANCE = 20;
+    const PICK_TYPE_MAINTENANCE = 20; // 保养归还后会更新维护时间
     const PICK_TYPE_SEAL_OFF = 30;
 
     const STATUS_APPLYING = 0; // 申请中

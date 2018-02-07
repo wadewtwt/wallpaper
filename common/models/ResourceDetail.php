@@ -215,6 +215,12 @@ class ResourceDetail extends \common\models\base\ActiveRecord
                 if (!$model) {
                     throw new Exception("无源标签为'{$applyOrderResource->tag_passive}'的资源不存在");
                 }
+                if (
+                    $applyOrderType == Enum::APPLY_ORDER_TYPE_RETURN &&
+                    $applyOrderResource->applyOrder->pick_type == ApplyOrder::PICK_TYPE_MAINTENANCE
+                ) {
+                    $model->maintenance_at = time() + ($resource->maintenance_cycle * 86400);
+                }
                 $model->changeStatusByApplyOrderType($applyOrderType);
                 $model->save(false);
             } else {

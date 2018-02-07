@@ -147,7 +147,7 @@ return [
         ],
         'session' => [
             'name' => 'back-session',
-            'timeout' => 6 * 3600
+            'timeout' => 24 * 3600
         ],
         'log' => [
             //'traceLevel' => YII_DEBUG ? 3 : 0,
