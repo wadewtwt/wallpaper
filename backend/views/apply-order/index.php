@@ -22,7 +22,7 @@ echo $this->render('_search', [
 
 $columns = [
     [
-        'width' => '150px',
+        'width' => '100px',
         'attribute' => 'created_at',
         'label' => '申请时间',
         'format' => ['datetime', 'php:Y-m-d H:i:s']
@@ -34,7 +34,6 @@ $columns = [
     ],
     [
         'attribute' => 'reason',
-        'width' => '300px',
     ],
     [
         'width' => '100px',
@@ -44,7 +43,7 @@ $columns = [
         }
     ],
     [
-        'width' => '200px',
+        'width' => '150px',
         'attribute' => 'delete_reason',
     ],
 ];

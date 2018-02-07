@@ -21,7 +21,7 @@ echo $this->render('_search', [
 
 $columns = [
     [
-        'width' => '150px',
+        'width' => '100px',
         'attribute' => 'alarm_at',
         'format' => ['datetime', 'php:Y-m-d H:i:s']
     ],
@@ -34,7 +34,7 @@ $columns = [
         'label' => '所属仓库'
     ],
     [
-        'width' => '90px',
+        'width' => '100px',
         'attribute' => 'camera_id',
         'label' => '摄像头名称',
         'value' => function (AlarmRecord $model) {

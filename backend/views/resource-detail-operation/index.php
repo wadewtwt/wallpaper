@@ -20,6 +20,7 @@ $columns = [
         'attribute' => 'resourceDetail.resource.name',
     ],
     [
+        'width' => '150px',
         'attribute' => 'applyOrder.person.name',
         'label' => '申请人'
     ],
@@ -31,7 +32,7 @@ $columns = [
         }
     ],
     [
-        'width' => '150px',
+        'width' => '200px',
         'attribute' => 'created_at',
         'label' => '操作时间',
         'format' => ['datetime', 'php:Y-m-d H:i:s'],

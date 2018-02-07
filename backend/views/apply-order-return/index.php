@@ -1,7 +1,6 @@
 <?php
 /** @var $this \yii\web\View */
 /** @var $dataProvider \common\components\ActiveDataProvider */
-
 /** @var $searchModel \backend\models\ApplyOrderSearch */
 
 use backend\widgets\SimpleDynaGrid;
@@ -36,13 +35,13 @@ $columns = [
         }
     ],
     [
-        'width' => '150px',
+        'width' => '100px',
         'attribute' => 'created_at',
         'label' => '申请时间',
         'format' => ['datetime', 'php:Y-m-d H:i:s']
     ],
     [
-        'width' => '150px',
+        'width' => '100px',
         'attribute' => 'return_at',
         'label' => '退还时间',
         'value' => function (ApplyOrderReturn $model) {
@@ -54,7 +53,7 @@ $columns = [
     ],
     [
         'class' => '\kartik\grid\ActionColumn',
-        'width' => '350px',
+        'width' => '200px',
         'template' => '{detail} {detail-return} {over}',
         'buttons' => [
             'detail' => function ($url) {

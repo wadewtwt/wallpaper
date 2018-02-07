@@ -59,11 +59,12 @@ $columns = [
                 ];
                 return Html::a('删除', $url, $options);
             },
-            'detail' => function ($model) use ($controllerId) {
+            'detail' => function ($url, \common\models\Resource $model) use ($controllerId) {
                 $options = [
                     'class' => 'btn btn-default',
                 ];
-                return Html::a('明细', ["/{$controllerId}-detail", Html::getInputName(new ResourceDetailSearch(), 'resource_id') => $model->id], $options);
+                $url = ["/{$controllerId}-detail", Html::getInputName(new ResourceDetailSearch(), 'resource_id') => $model->id];
+                return Html::a('明细', $url, $options);
             },
         ],
     ],
