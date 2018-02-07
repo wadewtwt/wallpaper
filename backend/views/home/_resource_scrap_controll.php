@@ -35,10 +35,8 @@ $models = ResourceDetail::find()
                 <tr>
                     <th>类型</th>
                     <th>名称</th>
-                    <th>货架</th>
-                    <th>最近维护时间</th>
+                    <th>货区</th>
                     <th>报废时间</th>
-                    <th>状态</th>
                     <th>操作</th>
                 </tr>
                 </thead>
@@ -50,9 +48,7 @@ $models = ResourceDetail::find()
                         </td>
                         <td class="text-primary"><?= $model->resource->name ?></td>
                         <td><?= $model->container->name ?></td>
-                        <td><?= date('Y-m-d H:i:s', $model->maintenance_at) ?></td>
                         <td class="text-danger"><?= date('Y-m-d H:i:s', $model->scrap_at) ?></td>
-                        <td><span class="label label-default"><?= $model->statusName ?></span></td>
                         <td>
                             <?php
                             if ($model->type == Resource::TYPE_EXPENDABLE) {

@@ -35,7 +35,6 @@ $models = AlarmRecord::find()->limit(10)
                         <th>报警描述</th>
                         <th>所属仓库</th>
                         <th>报警类型</th>
-                        <th>状态</th>
                         <th>操作</th>
                     </tr>
                     </thead>
@@ -47,7 +46,6 @@ $models = AlarmRecord::find()->limit(10)
                             <td><?= $model->description ?></td>
                             <td class="text-primary"><?= $model->store->name ?></td>
                             <td><?= $model->typeName ?></td>
-                            <td><span class="label label-default"><?= $model->statusName ?></span></td>
                             <td><?= Html::a('查看', '/alarm-record', $btnOptions) ?></td>
                         </tr>
                     <?php } ?>
