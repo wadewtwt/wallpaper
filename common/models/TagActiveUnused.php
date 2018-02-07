@@ -7,7 +7,6 @@ use yii\helpers\ArrayHelper;
 /**
  * This is the model class for table "tag_active_unused".
  *
- * @property integer $id
  * @property string $tag_active
  */
 class TagActiveUnused extends \common\models\base\ActiveRecord
@@ -38,7 +37,6 @@ class TagActiveUnused extends \common\models\base\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
             'tag_active' => '有源标签',
         ];
     }
