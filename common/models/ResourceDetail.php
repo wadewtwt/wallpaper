@@ -246,11 +246,11 @@ class ResourceDetail extends \common\models\base\ActiveRecord
     {
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            $isTagActiveExist = static::isTagActiveUsed($applyOrderResource->tag_active);
             $isTagPassiveExist = static::isTagPassiveUsed($applyOrderResource->tag_passive);
             $resource = $applyOrderResource->resource;
             // 修改资源信息
             if ($applyOrderType == Enum::APPLY_ORDER_TYPE_INPUT) {
+                $isTagActiveExist = static::isTagActiveUsed($applyOrderResource->tag_active);
                 if ($isTagActiveExist) {
                     throw new Exception("有源标签为'{$applyOrderResource->tag_active}'的资源已存在");
                 }
@@ -269,10 +269,7 @@ class ResourceDetail extends \common\models\base\ActiveRecord
             } elseif (in_array($applyOrderType, [
                 Enum::APPLY_ORDER_TYPE_OUTPUT, Enum::APPLY_ORDER_TYPE_APPLY, Enum::APPLY_ORDER_TYPE_RETURN
             ])) {
-                if ($isTagActiveExist) {
-                    throw new Exception("有源标签为'{$applyOrderResource->tag_active}'的资源不存在");
-                }
-                if ($isTagPassiveExist) {
+                if (!$isTagPassiveExist) {
                     throw new Exception("无源标签为'{$applyOrderResource->tag_passive}'的资源不存在");
                 }
                 $model = ResourceDetail::findOne(['tag_passive' => $applyOrderResource->tag_passive]);

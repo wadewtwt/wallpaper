@@ -9,6 +9,7 @@ $this->title = '首页';
         <?= $this->render('_summary_header') ?>
     </div>
     <div class="row">
+        <?= $this->render('_tag') ?>
         <?= $this->render('_temperature') ?>
         <?= $this->render('_camera') ?>
     </div>
