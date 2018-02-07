@@ -233,7 +233,7 @@ class ResourceDetail extends \common\models\base\ActiveRecord
             // 修改货位库存
             Container::updateCurrentQuantityByApplyOrderType($applyOrderType, $model->container_id);
             // 创建操作明细
-            ResourceDetailOperation::createOne($model->id, $model->type, $applyOrderType, $applyOrderResource->remark);
+            ResourceDetailOperation::createOne($applyOrderResource->apply_order_id, $model->id, $model->type, $applyOrderType, $applyOrderResource->remark);
             $transaction->commit();
         } catch (Exception $e) {
             $transaction->rollBack();

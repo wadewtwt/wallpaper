@@ -1,6 +1,7 @@
 <?php
 /** @var $this yii\web\View */
 /** @var $dataProvider common\components\ActiveDataProvider */
+
 /** @var $searchModel \backend\models\ResourceDetailOperationSearch */
 
 use backend\widgets\SimpleDynaGrid;
@@ -17,6 +18,10 @@ $this->params['breadcrumbs'] = [
 $columns = [
     [
         'attribute' => 'resourceDetail.resource.name',
+    ],
+    [
+        'attribute' => 'applyOrder.person.name',
+        'label' => '申请人'
     ],
     [
         'attribute' => 'operation',
