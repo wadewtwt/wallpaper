@@ -39,6 +39,13 @@ class AlarmRecord extends \common\models\base\ActiveRecord
         self::STATUS_SOLVED => '已解决'
     ];
 
+    // 报警描述
+    const DES_TEMP_TEMPERATURE = '温湿度设备【{temperatureName}】当前值【{current}】，超过阀值{downLimit}~{upLimit}';
+    const DES_TEMP_ILLEGAL_OUTPUT = '资源【{resourceName}】非法出入库，无源标签号【tagPassive】';
+
+    // 默认的处理描述
+    const SOLVE_DESCRIPTION_DEFAULT = '已处理';
+
     /**
      * @inheritdoc
      */
@@ -58,7 +65,7 @@ class AlarmRecord extends \common\models\base\ActiveRecord
             [['description', 'solve_description'], 'string', 'max' => 255],
             [['solve_id'], 'exist', 'skipOnError' => true, 'targetClass' => Admin::className(), 'targetAttribute' => ['solve_id' => 'id']],
             [['alarm_config_id'], 'exist', 'skipOnError' => true, 'targetClass' => AlarmConfig::className(), 'targetAttribute' => ['alarm_config_id' => 'id']],
-            [['solve_id', 'solve_description'], 'required', 'on' => static::SCENARIO_SOLVE],
+            [['solve_id'], 'required', 'on' => static::SCENARIO_SOLVE],
         ];
     }
 
@@ -133,14 +140,26 @@ class AlarmRecord extends \common\models\base\ActiveRecord
     }
 
     /**
-     * @param $alarmConfig AlarmConfig
-     * @param null $remark
-     * @param bool $checkExist
+     * 获取描述的 html 显示
+     * @return string
      */
-    public static function createOne($alarmConfig, $remark = null, $checkExist = true)
+    public function getDescriptionHtmlFormat()
+    {
+        return strtr($this->description, ['【' => '<code>', '】' => '</code>']);
+    }
+
+    /**
+     * @param $alarmConfig AlarmConfig
+     * @param string $desTemplate ALARM_DESCRIPTION 模版
+     * @param array $desTemplateParams ALARM_DESCRIPTION 模版的参数
+     * @param bool $checkExist 是否检查是否已经存在记录，若检查则存在不重复记录
+     * @throws \yii\db\Exception
+     */
+    public static function createOne($alarmConfig, $desTemplate, $desTemplateParams, $checkExist = true)
     {
         $transaction = Yii::$app->db->beginTransaction();
         try {
+            $des = static::fillDescriptionWithTemplate($desTemplate, $desTemplateParams);
             if ($checkExist) {
                 $model = static::findOne(['alarm_config_id' => $alarmConfig->id, 'status' => static::STATUS_NORMAL]);
             } else {
@@ -150,13 +169,13 @@ class AlarmRecord extends \common\models\base\ActiveRecord
                 $model = new static();
                 $model->alarm_config_id = $alarmConfig->id;
                 $model->alarm_at = time();
-                $model->description = $remark;
+                $model->description = $des;
                 $model->store_id = $alarmConfig->store_id;
                 $model->camera_id = $alarmConfig->camera_id;
                 $model->type = $alarmConfig->type;
                 $model->save(false);
             }
-            AlarmCall::createOne($model, $remark);
+            AlarmCall::createOne($model, $des);
 
             $transaction->commit();
         } catch (Exception $e) {
@@ -165,4 +184,22 @@ class AlarmRecord extends \common\models\base\ActiveRecord
             Yii::error($e);
         }
     }
+
+    /**
+     * 按照模版填充描述
+     * @param $template
+     * @param $params
+     * @return string
+     */
+    protected static function fillDescriptionWithTemplate($template, $params)
+    {
+        $replaces = [];
+        foreach ((array)$params as $name => $value) {
+            $replaces['{' . $name . '}'] = $value;
+        }
+
+        $content = ($replaces === []) ? $template : strtr($template, $replaces);
+        return $content;
+    }
+
 }

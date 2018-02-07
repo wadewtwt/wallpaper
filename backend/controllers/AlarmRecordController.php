@@ -5,6 +5,7 @@ namespace backend\controllers;
 use backend\components\AuthWebController;
 use backend\components\MessageAlert;
 use backend\models\AlarmRecordSearch;
+use backend\models\form\AlarmRecordBatchSolveForm;
 use common\components\Tools;
 use common\models\AlarmRecord;
 use Yii;
@@ -40,6 +41,25 @@ class AlarmRecordController extends AuthWebController
             return $this->actionPreviousRedirect();
         }
         return $this->renderAjax('_solve', [
+            'model' => $model
+        ]);
+    }
+
+    // 批量处理
+    public function actionBatchSolve()
+    {
+        $model = new AlarmRecordBatchSolveForm();
+        if ($model->load(Yii::$app->request->post())) {
+            if ($model->validate() && $result = $model->solve(Yii::$app->user->getId())) {
+                MessageAlert::set([$result['type'] => $result['msg']]);
+            } else {
+                MessageAlert::set(['error' => '处理失败：' . Tools::formatModelErrors2String($model->errors)]);
+            }
+            return $this->actionPreviousRedirect();
+        }
+
+        $model->keys = implode(',', Yii::$app->request->post('keys'));
+        return $this->renderAjax('_batch_solve', [
             'model' => $model
         ]);
     }

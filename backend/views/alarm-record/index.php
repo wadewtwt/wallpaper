@@ -7,6 +7,7 @@
 use backend\widgets\SimpleDynaGrid;
 use yii\helpers\Html;
 use common\models\AlarmRecord;
+use yii\helpers\Url;
 
 $this->title = '仓库列表';
 $this->params['breadcrumbs'] = [
@@ -49,6 +50,10 @@ $columns = [
     ],
     [
         'attribute' => 'description',
+        'value' => function (AlarmRecord $model) {
+            return $model->getDescriptionHtmlFormat();
+        },
+        'format' => 'html',
     ],
     [
         'width' => '250px',
@@ -91,12 +96,23 @@ $columns = [
             },
         ],
     ],
+    [
+        'class' => '\kartik\grid\CheckboxColumn',
+    ],
 ];
 
 $simpleDynaGrid = new SimpleDynaGrid([
     'dynaGridId' => 'dynagrid-alarm-record-index',
     'columns' => $columns,
     'dataProvider' => $dataProvider,
-
+    'extraToolbar' => [
+        [
+            'content' =>
+                Html::button('批量处理', [
+                    'class' => 'btn btn-success check_operate_need_confirm_and_modal',
+                    'data-url' => Url::to(['batch-solve']),
+                ])
+        ],
+    ],
 ]);
 $simpleDynaGrid->renderDynaGrid();

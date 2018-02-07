@@ -7,6 +7,7 @@ namespace common\models;
  *
  * @property integer $id
  * @property integer $resource_detail_id
+ * @property integer $apply_order_id
  * @property integer $type
  * @property integer $operation
  * @property string $remark
@@ -14,6 +15,7 @@ namespace common\models;
  * @property integer $created_at
  * @property integer $created_by
  *
+ * @property ApplyOrder $applyOrder
  * @property ResourceDetail $resourceDetail
  */
 class ResourceDetailOperation extends \common\models\base\ActiveRecord
@@ -44,8 +46,8 @@ class ResourceDetailOperation extends \common\models\base\ActiveRecord
     public function rules()
     {
         return [
-            [['resource_detail_id', 'type', 'operation'], 'required'],
-            [['resource_detail_id', 'type', 'operation', 'status', 'created_at', 'created_by'], 'integer'],
+            [['resource_detail_id', 'apply_order_id', 'type', 'operation'], 'required'],
+            [['resource_detail_id', 'apply_order_id', 'type', 'operation', 'status', 'created_at', 'created_by'], 'integer'],
             [['remark'], 'string', 'max' => 255],
             [['resource_detail_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResourceDetail::className(), 'targetAttribute' => ['resource_detail_id' => 'id']],
         ];
@@ -59,6 +61,7 @@ class ResourceDetailOperation extends \common\models\base\ActiveRecord
         return [
             'id' => 'ID',
             'resource_detail_id' => '设备 ID',
+            'apply_order_id' => '申请单 ID',
             'type' => '类型',
             'operation' => '操作',
             'remark' => '备注',
@@ -74,6 +77,14 @@ class ResourceDetailOperation extends \common\models\base\ActiveRecord
     public function getResourceDetail()
     {
         return $this->hasOne(ResourceDetail::className(), ['id' => 'resource_detail_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getApplyOrder()
+    {
+        return $this->hasOne(ApplyOrder::className(), ['id' => 'apply_order_id']);
     }
 
     /**
@@ -93,15 +104,17 @@ class ResourceDetailOperation extends \common\models\base\ActiveRecord
     }
 
     /**
+     * @param $applyOrderId
      * @param $resourceDetailId
      * @param $type
      * @param $applyOrderType
      * @param $remark
      */
-    public static function createOne($resourceDetailId, $type, $applyOrderType, $remark = null)
+    public static function createOne($applyOrderId, $resourceDetailId, $type, $applyOrderType, $remark = null)
     {
         $model = new static();
         $model->resource_detail_id = $resourceDetailId;
+        $model->apply_order_id = $applyOrderId;
         $model->type = $type;
         $model->operation = $applyOrderType;
         $model->remark = $remark;

@@ -27,7 +27,7 @@ use yii\base\Exception;
  * @property integer $updated_by
  *
  * @property Container $container
- * @property Resource $resource
+ * @property \common\models\Resource $resource
  * @property ResourceDetailOperation[] $resourceDetailOperations
  */
 class ResourceDetail extends \common\models\base\ActiveRecord
@@ -139,14 +139,16 @@ class ResourceDetail extends \common\models\base\ActiveRecord
      */
     public function triggerAlarm()
     {
-        $alarmConfig = AlarmConfig::findOne([
+        $alarmConfigs = AlarmConfig::find()->with('resource')->andWhere([
             'status' => AlarmConfig::STATUS_NORMAL,
             'type' => AlarmConfig::TYPE_ILLEGAL_OUTPUT,
             'store_id' => $this->container->store_id,
-        ]);
-        if ($alarmConfig) {
-            $msg = '无源标签为' . $this->tag_passive . '的资源非法出入库';
-            AlarmRecord::createOne($alarmConfig, $msg, false);
+        ])->all();
+        foreach ($alarmConfigs as $alarmConfig) {
+            AlarmRecord::createOne($alarmConfig, AlarmRecord::DES_TEMP_ILLEGAL_OUTPUT, [
+                'resourceName' => $this->resource->name,
+                'tagPassive' => $this->tag_passive,
+            ], false);
         }
     }
 
@@ -231,7 +233,7 @@ class ResourceDetail extends \common\models\base\ActiveRecord
             // 修改货位库存
             Container::updateCurrentQuantityByApplyOrderType($applyOrderType, $model->container_id);
             // 创建操作明细
-            ResourceDetailOperation::createOne($model->id, $model->type, $applyOrderType, $applyOrderResource->remark);
+            ResourceDetailOperation::createOne($applyOrderResource->apply_order_id, $model->id, $model->type, $applyOrderType, $applyOrderResource->remark);
             $transaction->commit();
         } catch (Exception $e) {
             $transaction->rollBack();

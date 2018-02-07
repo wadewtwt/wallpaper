@@ -2,7 +2,6 @@
 
 namespace common\models;
 
-use kriss\components\CellphoneValidator;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -45,10 +44,9 @@ class Person extends \common\models\base\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'cellphone', 'position_id'], 'required'],
+            [['name', 'position_id'], 'required'],
             [['position_id', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['name', 'cellphone'], 'string', 'max' => 255],
-            [['cellphone'], CellphoneValidator::className()],
             [['position_id'], 'exist', 'skipOnError' => true, 'targetClass' => Position::className(), 'targetAttribute' => ['position_id' => 'id']],
         ];
     }

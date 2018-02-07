@@ -20,6 +20,10 @@ $columns = [
         'attribute' => 'resourceDetail.resource.name',
     ],
     [
+        'attribute' => 'applyOrder.person.name',
+        'label' => '申请人'
+    ],
+    [
         'width' => '150px',
         'attribute' => 'operation',
         'value' => function (ResourceDetailOperation $model) {

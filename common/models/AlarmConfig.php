@@ -83,12 +83,12 @@ class AlarmConfig extends \common\models\base\ActiveRecord
      */
     public function beforeDelete()
     {
-        if(!parent::beforeDelete()){
+        if (!parent::beforeDelete()) {
             return false;
         }
         $hasAlarmRecord = AlarmRecord::find()->select(['id'])->where(['alarm_config_id' => $this->id])->limit(1)->one();
-        if($hasAlarmRecord){
-            $this->addError('id','该配置已在报警记录中存在');
+        if ($hasAlarmRecord) {
+            $this->addError('id', '该配置已在报警记录中存在');
             return false;
         }
         return true;
