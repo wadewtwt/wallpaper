@@ -11,6 +11,9 @@ $this->title = '首页';
         <?= $this->render('_summary_header') ?>
     </div>
     <div class="row">
+        <?= $this->render('_temperature') ?>
+    </div>
+    <div class="row">
         <div class="col-lg-6 col-xs-6">
             <?= $this->render('_resource_detail_operation', [
                 'title' => '消耗品操作',
@@ -25,9 +28,6 @@ $this->title = '首页';
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-3 col-xs-6">
-            <?= $this->render('_two_icon') ?>
-        </div>
         <div class="col-lg-9 col-xs-6">
             <?= $this->render('_apply_order') ?>
         </div>

@@ -95,11 +95,20 @@ class Temperature extends \common\models\base\ActiveRecord
     }
 
     /**
+     * 检查当前温度是否超过阀值
+     * @return bool
+     */
+    public function checkIsCurrentOutLimit()
+    {
+        return $this->current_updated_at != 0 && ($this->current < $this->down_limit || $this->current > $this->up_limit);
+    }
+
+    /**
      * 触发报警
      */
     public function triggerAlarm()
     {
-        if ($this->current_updated_at != 0 && ($this->current < $this->down_limit || $this->current > $this->up_limit)) {
+        if ($this->checkIsCurrentOutLimit()) {
             $alarmConfigs = AlarmConfig::findAll([
                 'status' => AlarmConfig::STATUS_NORMAL,
                 'type' => AlarmConfig::TYPE_TEMPERATURE,
