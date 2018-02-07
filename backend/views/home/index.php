@@ -41,7 +41,6 @@ $btnOptions = ['class' => 'btn btn-primary'];
             ]) ?>
         </div>
     </div>
-
 </div>
 
 
