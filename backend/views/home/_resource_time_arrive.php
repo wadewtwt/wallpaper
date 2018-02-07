@@ -1,5 +1,6 @@
 <?php
 /** @var $this \yii\web\View */
+
 /** @var $type string */
 
 use common\models\ResourceDetail;
@@ -8,10 +9,10 @@ use yii\helpers\Html;
 use common\models\Resource;
 use backend\models\ResourceDetailSearch;
 
-if($type == 'maintenance') {
+if ($type == 'maintenance') {
     $attribute = 'maintenance_at';
     $name = '报废';
-}elseif($type == 'scrap') {
+} elseif ($type == 'scrap') {
     $attribute = 'scrap_at';
     $name = '维护';
 } else {
@@ -22,14 +23,14 @@ $daysLaterTime = time() + 7 * 86400;
 $models = ResourceDetail::find()
     ->with(['resource', 'container'])
     ->where(['status' => ResourceDetail::STATUS_NORMAL])
-    ->andWhere(['<', $attribute, $daysLaterTime]) // 报废时间小于七天后的那个时间戳
+    ->andWhere(['<', $attribute, $daysLaterTime])// 报废时间小于七天后的那个时间戳
     ->orderBy([$attribute => SORT_ASC])
     ->limit(10)
     ->all();
 ?>
 <div class="box box-info">
     <div class="box-header with-border">
-        <h3 class="box-title">资源<strong>临近<?=$name?>时间</strong>监控</h3>
+        <h3 class="box-title">资源<strong>临近<?= $name ?>时间</strong>监控</h3>
 
         <div class="box-tools pull-right">
             <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -46,7 +47,7 @@ $models = ResourceDetail::find()
                     <th>类型</th>
                     <th>名称</th>
                     <th>货区</th>
-                    <th><?=$name?>时间</th>
+                    <th><?= $name ?>时间</th>
                     <th>操作</th>
                 </tr>
                 </thead>

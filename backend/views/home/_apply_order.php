@@ -1,5 +1,4 @@
 <?php
-/** 出入库监控 */
 /** @var $this \yii\web\View */
 
 use common\models\ApplyOrder;
@@ -66,7 +65,7 @@ $models = ApplyOrder::find()
                             } else {
                                 $url = '';
                             }
-                            echo Html::a('查看', $url, $btnOptions);
+                            echo Html::a('查看', $url, ['class' => 'btn btn-primary btn-sm']);
                             ?>
                         </td>
                     </tr>

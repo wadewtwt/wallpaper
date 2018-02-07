@@ -2,7 +2,6 @@
 /** @var $this \yii\web\View */
 
 $this->title = '首页';
-$btnOptions = ['class' => 'btn btn-primary btn-sm'];
 ?>
 
 <div class="content">
@@ -15,9 +14,7 @@ $btnOptions = ['class' => 'btn btn-primary btn-sm'];
     </div>
     <div class="row">
         <div class="col-md-12">
-            <?= $this->render('_alarm', [
-                'btnOptions' => $btnOptions
-            ]) ?>
+            <?= $this->render('_alarm') ?>
         </div>
     </div>
     <div class="row">
@@ -34,9 +31,7 @@ $btnOptions = ['class' => 'btn btn-primary btn-sm'];
     </div>
     <div class="row">
         <div class="col-md-12">
-            <?= $this->render('_apply_order', [
-                'btnOptions' => $btnOptions
-            ]) ?>
+            <?= $this->render('_apply_order') ?>
         </div>
     </div>
 </div>

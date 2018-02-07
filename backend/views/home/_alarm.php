@@ -42,7 +42,7 @@ $models = AlarmRecord::find()->with('store')
                             <td><?= $model->getDescriptionHtmlFormat() ?></td>
                             <td><?= $model->store->name ?></td>
                             <td><?= $model->typeName ?></td>
-                            <td><?= Html::a('查看', '/alarm-record', $btnOptions) ?></td>
+                            <td><?= Html::a('查看', ['/alarm-record'], ['class' => 'btn btn-primary btn-sm']) ?></td>
                         </tr>
                     <?php endforeach; ?>
                     </tbody>
