@@ -149,21 +149,37 @@ class Resource extends \common\models\base\ActiveRecord
      * @param null $type
      * @param bool $map
      * @param null|array $ids
+     * @param bool $withCurrentStock 是否包含当前库存
      * @return array|Resource[]
      */
-    public static function findAllIdName($type = null, $map = true, $ids = null)
+    public static function findAllIdName($type = null, $map = true, $ids = null, $withCurrentStock = false)
     {
-        $query = static::find()->select(['id', 'name']);
+        $select = ['id', 'name'];
+        $toArrayProperties = [
+            self::className() => ['id', 'name']
+        ];
+        if ($withCurrentStock) {
+            $select = array_merge($select, ['current_stock']);
+            $toArrayProperties = [
+                self::className() => [
+                    'id',
+                    'name' => function (self $model) {
+                        return $model->name . "({$model->current_stock})";
+                    }
+                ]
+            ];
+        }
+        $query = self::find()->select($select);
         if ($type !== null) {
             $query->andWhere(['type' => $type]);
         }
         if ($ids !== null) {
             $query->andWhere(['id' => $ids]);
         }
-        $model = $query->asArray()->all();
+        $models = ArrayHelper::toArray($query->all(), $toArrayProperties);
         if ($map) {
-            return ArrayHelper::map($model, 'id', 'name');
+            return ArrayHelper::map($models, 'id', 'name');
         }
-        return $model;
+        return $models;
     }
 }

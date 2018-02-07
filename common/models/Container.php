@@ -102,27 +102,27 @@ class Container extends \common\models\base\ActiveRecord
 
     /**
      * @param bool $map
-     * @param bool $withQuantity
+     * @param bool $withFreeQuantity
      * @return array|Container[]
      */
-    public static function findAllIdName($map = false, $withQuantity = false)
+    public static function findAllIdName($map = false, $withFreeQuantity = false)
     {
         $select = ['id', 'name'];
         $toArrayProperties = [
             self::className() => ['id', 'name']
         ];
-        if ($withQuantity) {
-            $select += ['free_quantity', 'total_quantity'];
+        if ($withFreeQuantity) {
+            $select = array_merge($select, ['current_quantity', 'total_quantity']);
             $toArrayProperties = [
                 self::className() => [
                     'id',
                     'name' => function (self $model) {
-                        return $model->name . "({$model->free_quantity}/{$model->total_quantity}";
+                        return $model->name . "({$model->getFreeQuantity()})";
                     }
                 ]
             ];
         }
-        $models = ArrayHelper::toArray(self::find()->select($select)->asArray()->all(), $toArrayProperties);
+        $models = ArrayHelper::toArray(self::find()->select($select)->all(), $toArrayProperties);
         if ($map) {
             return ArrayHelper::map($models, 'id', 'name');
         }

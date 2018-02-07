@@ -7,13 +7,11 @@ use backend\widgets\SimpleActiveForm;
 use backend\widgets\SimpleSelect2;
 use common\models\ApplyOrder;
 use common\models\base\Enum;
-use common\models\Container;
 use common\models\Person;
 use common\models\Resource;
 use unclead\multipleinput\TabularInput;
 
-$resourceData = Resource::findAllIdName(null, true);
-$containerData = Container::findAllIdName(true, true);
+$resourceData = Resource::findAllIdName(null, true, null, true);
 
 $form = SimpleActiveForm::begin([
     'title' => $applyOrder->isNewRecord ? '新增' : '修改'
@@ -41,7 +39,7 @@ if ($applyOrder->type == Enum::APPLY_ORDER_TYPE_APPLY) {
                 'columns' => [
                     [
                         'name' => 'resource_id',
-                        'title' => '资源名',
+                        'title' => '资源名(当前库存)',
                         'enableError' => true,
                         'type' => SimpleSelect2::className(),
                         'options' => [
