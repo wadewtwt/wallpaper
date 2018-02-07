@@ -151,12 +151,4 @@ class Container extends \common\models\base\ActiveRecord
         }
     }
 
-    /**
-     * 计算总货架数
-     * @return int|string
-     */
-    public static function countAllContainer()
-    {
-        return self::find()->count();
-    }
 }
