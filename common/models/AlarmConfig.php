@@ -2,8 +2,6 @@
 
 namespace common\models;
 
-use function Qiniu\setWithoutEmpty;
-
 /**
  * This is the model class for table "alarm_config".
  *
