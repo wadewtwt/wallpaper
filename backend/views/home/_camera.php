@@ -10,44 +10,33 @@ $models = Camera::find()
     ->all();
 ?>
 
-<div class="box box-info">
-    <div class="box-header with-border">
+<div class="box">
+    <div class="box-header">
         <h3 class="box-title">摄像头设备</h3>
-
-        <div class="box-tools pull-right">
-            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-            </button>
-            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i>
-            </button>
-        </div>
     </div>
+    <!-- /.box-header -->
+    <div class="box-body no-padding">
+        <table class="table table-condensed">
+            <tbody>
+            <tr>
+                <th>#所属仓库</th>
+                <th>名称</th>
+                <th style="width: 40px">操作</th>
+            </tr>
 
-    <div class="box-body">
-        <div class="table-responsive">
-            <table class="table no-margin">
-                <thead>
+
+            <?php foreach ($models as $model) { ?>
                 <tr>
-                    <th>所属仓库</th>
-                    <th>名称</th>
-                    <th>备注</th>
-                    <th>设备号</th>
-                    <th>操作</th>
+                    <td><span class="badge bg-yellow"><?= $model->store->name ?></span></td>
+                    <td><span class="badge bg-red"><?= $model->name ?></span></td>
+                    <td>
+                        <?= Html::a('查看', '/camera', ['class' => 'btn bg-danger btn-sm']); ?>
+                    </td>
                 </tr>
-                </thead>
-                <tbody>
-                <?php foreach ($models as $model) { ?>
-                    <tr>
-                        <td><span class="label label-info"><?= $model->store->name ?></span></td>
-                        <td><?= $model->name ?></td>
-                        <td><?= $model->remark ?></td>
-                        <td class="text-primary"><?= $model->device_no ?></td>
-                        <td>
-                            <?= Html::a('查看', '/camera', $btnOptions); ?>
-                        </td>
-                    </tr>
-                <?php } ?>
-                </tbody>
-            </table>
-        </div>
+            <?php } ?>
+
+            </tbody></table>
     </div>
+    <!-- /.box-body -->
 </div>
+
