@@ -27,7 +27,7 @@ use yii\base\Exception;
  * @property integer $updated_by
  *
  * @property Container $container
- * @property Resource $resource
+ * @property \common\models\Resource $resource
  * @property ResourceDetailOperation[] $resourceDetailOperations
  */
 class ResourceDetail extends \common\models\base\ActiveRecord
@@ -139,14 +139,16 @@ class ResourceDetail extends \common\models\base\ActiveRecord
      */
     public function triggerAlarm()
     {
-        $alarmConfig = AlarmConfig::findOne([
+        $alarmConfigs = AlarmConfig::find()->with('resource')->andWhere([
             'status' => AlarmConfig::STATUS_NORMAL,
             'type' => AlarmConfig::TYPE_ILLEGAL_OUTPUT,
             'store_id' => $this->container->store_id,
-        ]);
-        if ($alarmConfig) {
-            $msg = '无源标签为' . $this->tag_passive . '的资源非法出入库';
-            AlarmRecord::createOne($alarmConfig, $msg, false);
+        ])->all();
+        foreach ($alarmConfigs as $alarmConfig) {
+            AlarmRecord::createOne($alarmConfig, AlarmRecord::DES_TEMP_ILLEGAL_OUTPUT, [
+                'resourceName' => $this->resource->name,
+                'tagPassive' => $this->tag_passive,
+            ], false);
         }
     }
 

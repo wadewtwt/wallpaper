@@ -1,6 +1,7 @@
 <?php
 /** @var $this yii\web\View */
 /** @var $dataProvider common\components\ActiveDataProvider */
+
 /** @var $searchModel backend\models\AlarmRecordSearch */
 
 use backend\widgets\SimpleDynaGrid;
@@ -43,6 +44,10 @@ $columns = [
     ],
     [
         'attribute' => 'description',
+        'value' => function (AlarmRecord $model) {
+            return $model->getDescriptionHtmlFormat();
+        },
+        'format' => 'html',
     ],
     [
         'attribute' => 'solve_id',

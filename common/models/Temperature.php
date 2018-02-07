@@ -100,14 +100,18 @@ class Temperature extends \common\models\base\ActiveRecord
     public function triggerAlarm()
     {
         if ($this->current_updated_at != 0 && ($this->current < $this->down_limit || $this->current > $this->up_limit)) {
-            $alarmConfig = AlarmConfig::findOne([
+            $alarmConfigs = AlarmConfig::findAll([
                 'status' => AlarmConfig::STATUS_NORMAL,
                 'type' => AlarmConfig::TYPE_TEMPERATURE,
                 'store_id' => $this->store_id,
             ]);
-            if ($alarmConfig) {
-                $msg = '当前温度' . $this->current . '，超过阀值' . $this->down_limit . '~' . $this->up_limit;
-                AlarmRecord::createOne($alarmConfig, $msg, true);
+            foreach ($alarmConfigs as $alarmConfig) {
+                AlarmRecord::createOne($alarmConfig, AlarmRecord::DES_TEMP_TEMPERATURE, [
+                    'temperatureName' => $this->name,
+                    'current' => $this->current,
+                    'downLimit' => $this->down_limit,
+                    'upLimit' => $this->up_limit,
+                ], true);
             }
         }
     }
