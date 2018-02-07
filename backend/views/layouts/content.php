@@ -18,5 +18,6 @@ use dmstr\widgets\Alert;
 
 <section class="content">
     <?= Alert::widget() ?>
+    <?= \backend\widgets\AlarmCheckWidget::widget() ?>
     <?= $content ?>
 </section>
