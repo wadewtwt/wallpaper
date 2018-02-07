@@ -15,18 +15,6 @@ echo $form->field($model, 'person_id')->dropDownList(Person::findAllIdName(true)
 echo $form->field($model, 'status')->dropDownList(ApplyOrder::$statusData, [
     'prompt' => '请选择'
 ]);
-echo $form->field($model, 'status')->dropDownList(ApplyOrder::$statusData, [
-    'prompt' => '请选择'
-]);
-echo $form->field($model, 'status')->dropDownList(ApplyOrder::$statusData, [
-    'prompt' => '请选择'
-]);
-echo $form->field($model, 'status')->dropDownList(ApplyOrder::$statusData, [
-    'prompt' => '请选择'
-]);
-echo $form->field($model, 'status')->dropDownList(ApplyOrder::$statusData, [
-    'prompt' => '请选择'
-]);
 
 echo $form->renderFooterButtons();
 
