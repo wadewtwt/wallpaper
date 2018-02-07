@@ -59,9 +59,9 @@ class ApiController extends AuthWebController
         foreach ($models as $model) {
             $data[] = [
                 'title' => $model->store->name . '-' . $model->name,
-                'content' => $model->current_updated_at > 0 ? ('实时:' . $model->current) : '未连接',
+                'content' => !$model->isLost() ? ('实时:' . $model->current) : '未连接',
                 'limit' => '阀值:' . $model->down_limit . '~' . $model->up_limit,
-                'is_green' => intval($model->checkIsCurrentOutLimit()),
+                'is_green' => intval(!$model->isLost() && !$model->isCurrentOutLimit()),
             ];
         }
         return $data;

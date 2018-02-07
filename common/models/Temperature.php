@@ -28,6 +28,8 @@ class Temperature extends \common\models\base\ActiveRecord
 {
     const STATUS_NORMAL = 0;
 
+    const LOST_TIME = 3600; // 失联的计算时间
+
     /**
      * @inheritdoc
      */
@@ -95,12 +97,21 @@ class Temperature extends \common\models\base\ActiveRecord
     }
 
     /**
+     * 是否已经失联
+     * @return bool
+     */
+    public function isLost()
+    {
+        return $this->current_updated_at < (time() - static::LOST_TIME);
+    }
+
+    /**
      * 检查当前温度是否超过阀值
      * @return bool
      */
-    public function checkIsCurrentOutLimit()
+    public function isCurrentOutLimit()
     {
-        return $this->current_updated_at != 0 && ($this->current < $this->down_limit || $this->current > $this->up_limit);
+        return ($this->current < $this->down_limit || $this->current > $this->up_limit);
     }
 
     /**
@@ -108,7 +119,7 @@ class Temperature extends \common\models\base\ActiveRecord
      */
     public function triggerAlarm()
     {
-        if ($this->checkIsCurrentOutLimit()) {
+        if ($this->current_updated_at != 0 && $this->isCurrentOutLimit()) {
             $alarmConfigs = AlarmConfig::findAll([
                 'status' => AlarmConfig::STATUS_NORMAL,
                 'type' => AlarmConfig::TYPE_TEMPERATURE,

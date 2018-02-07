@@ -222,7 +222,7 @@ class ApplyOrderController extends AuthWebController
                 }
 
                 MessageAlert::set(['success' => '操作成功']);
-                return $this->actionPreviousRedirect();
+                return $this->redirect(['index']);
             }
         }
 
