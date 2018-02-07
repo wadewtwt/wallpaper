@@ -31,12 +31,10 @@ class ApiController extends AuthWebController
             ->asArray()->all();
         $newData = [];
         foreach ($tagPassives as $tagPassive) {
-            $newData[] = isset($models[$tagPassive]) ? $models[$tagPassive] : [
-                'tag_passive' => $tagPassive,
-                'container_id' => '',
-                'resource_id' => '',
-                'quantity' => '',
-            ];
+            if(isset($models[$tagPassive])) {
+                // 只显示在库的设备
+                $newData[] = $models[$tagPassive];
+            }
         }
         return $newData;
     }
