@@ -106,3 +106,16 @@ $form = ActiveForm::begin([
     ActiveForm::end();
     ?>
 </div>
+<?php
+$css = <<<CSS
+.list-cell__tag_active {
+    width: 120px;
+}
+.list-cell__tag_passive {
+    width: 330px;
+}
+.list-cell__quantity{
+    width: 60px;
+}
+CSS;
+$this->registerCss($css);
