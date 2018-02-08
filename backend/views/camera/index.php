@@ -39,9 +39,6 @@ $columns = [
         'attribute' => 'port',
     ],
     [
-        'attribute' => 'username',
-    ],
-    [
         'attribute' => 'device_no',
     ],
     [

@@ -11,7 +11,7 @@ echo $form->field($model, 'name');
 echo $form->field($model, 'ip');
 echo $form->field($model, 'port');
 echo $form->field($model, 'username');
-echo $form->field($model, 'password');
+echo $form->field($model, 'password')->passwordInput();
 echo $form->field($model, 'device_no');
 echo $form->field($model, 'remark')->textarea(['row' => 4]);
 SimpleAjaxForm::end();
