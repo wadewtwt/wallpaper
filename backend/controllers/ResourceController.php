@@ -69,12 +69,15 @@ class ResourceController extends AbstractResourceController
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
+        if (($result = $model->canDelete()) !== true) {
+            MessageAlert::set(['error' => '删除失败：' . $result]);
+            return $this->actionPreviousRedirect();
+        }
         $model->status = Resource::STATUS_DELETED;
-        $isDelete = $model->save();
-        if ($isDelete) {
+        if ($model->save(false)) {
             MessageAlert::set(['success' => '删除成功！']);
         } else {
-            MessageAlert::set(['success' => '删除失败：' . Tools::formatModelErrors2String($model->errors)]);
+            MessageAlert::set(['error' => '删除失败：' . Tools::formatModelErrors2String($model->errors)]);
         }
         return $this->actionPreviousRedirect();
     }

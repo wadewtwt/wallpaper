@@ -69,14 +69,16 @@ class ResourceTypeController extends AuthWebController
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-
-        if ($model->getResources()->select(['id'])->limit(1)->one()) {
-            MessageAlert::set(['error' => '删除失败：当前分类下已有设备或消耗品。']);
-        } else {
-            $model->delete();
-            MessageAlert::set(['success' => '删除成功']);
+        if (($result = $model->canDelete()) !== true) {
+            MessageAlert::set(['error' => '删除失败：' . $result]);
+            return $this->actionPreviousRedirect();
         }
-
+        $model->status = ResourceType::STATUS_DELETED;
+        if ($model->save(false)) {
+            MessageAlert::set(['success' => '删除成功！']);
+        } else {
+            MessageAlert::set(['error' => '删除失败：' . Tools::formatModelErrors2String($model->errors)]);
+        }
         return $this->actionPreviousRedirect();
     }
 

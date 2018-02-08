@@ -82,6 +82,15 @@ class ResourceDetailOperation extends \common\models\base\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getResource()
+    {
+        return $this->hasOne(Resource::className(), ['id' => 'resource_id'])
+            ->via('resourceDetail');
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getApplyOrder()
     {
         return $this->hasOne(ApplyOrder::className(), ['id' => 'apply_order_id']);

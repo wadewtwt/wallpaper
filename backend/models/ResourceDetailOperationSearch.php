@@ -3,6 +3,7 @@
 namespace backend\models;
 
 use common\components\ActiveDataProvider;
+use common\models\Resource;
 use common\models\ResourceDetailOperation;
 
 class ResourceDetailOperationSearch extends ResourceDetailOperation
@@ -16,7 +17,8 @@ class ResourceDetailOperationSearch extends ResourceDetailOperation
 
     public function search($params)
     {
-        $query = static::find();
+        $query = static::find()->alias('a')->joinWith(['resource b', 'applyOrder c'])
+            ->andWhere(['b.status' => Resource::STATUS_NORMAL]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -35,8 +37,8 @@ class ResourceDetailOperationSearch extends ResourceDetailOperation
         }
 
         $query->andFilterWhere([
-            'type' => $this->type,
-            'resource_detail_id' => $this->resource_detail_id,
+            'a.type' => $this->type,
+            'a.resource_detail_id' => $this->resource_detail_id,
         ]);
 
         return $dataProvider;

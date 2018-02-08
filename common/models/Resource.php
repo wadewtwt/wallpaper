@@ -124,6 +124,21 @@ class Resource extends \common\models\base\ActiveRecord
     }
 
     /**
+     * 是否可以删除
+     * @return true|string
+     */
+    public function canDelete()
+    {
+        $has = $this->getResourceDetails()
+            ->andWhere(['status' => [ResourceDetail::STATUS_NORMAL, ResourceDetail::STATUS_PICKED]])
+            ->select(['id'])->limit(1)->one();
+        if ($has) {
+            return '该资源下还存在明细，请先将资源出库';
+        }
+        return true;
+    }
+
+    /**
      * @param $applyOrderType
      * @param $resourceId
      * @param $quantity
@@ -169,7 +184,7 @@ class Resource extends \common\models\base\ActiveRecord
                 ]
             ];
         }
-        $query = self::find()->select($select);
+        $query = self::find()->select($select)->andWhere(['status' => static::STATUS_NORMAL]);
         if ($type !== null) {
             $query->andWhere(['type' => $type]);
         }

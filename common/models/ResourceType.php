@@ -19,6 +19,9 @@ use yii\helpers\ArrayHelper;
  */
 class ResourceType extends \common\models\base\ActiveRecord
 {
+    const STATUS_NORMAL = 0;
+    const STATUS_DELETED = 99;
+
     /**
      * @inheritdoc
      */
@@ -64,13 +67,29 @@ class ResourceType extends \common\models\base\ActiveRecord
     }
 
     /**
+     * 是否可以删除
+     * @return true|string
+     */
+    public function canDelete()
+    {
+        $has = $this->getResources()
+            ->andWhere(['status' => ResourceDetail::STATUS_NORMAL])
+            ->select(['id'])->limit(1)->one();
+        if ($has) {
+            return '该分类下还存在资源未删除，请先将资源删除';
+        }
+        return true;
+    }
+
+    /**
      * @param bool $map
-     * @param bool $withQuantity
      * @return array|Container[]
      */
     public static function findAllIdName($map = false)
     {
-        $models = self::find()->select(['id', 'name'])->asArray()->all();
+        $models = self::find()->select(['id', 'name'])
+            ->andWhere(['status' => static::STATUS_NORMAL])
+            ->asArray()->all();
         if ($map) {
             return ArrayHelper::map($models, 'id', 'name');
         }
