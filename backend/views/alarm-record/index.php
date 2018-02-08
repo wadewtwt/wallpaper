@@ -27,19 +27,13 @@ $columns = [
     ],
     [
         'width' => '80px',
-        'attribute' => 'store_id',
-        'value' => function (AlarmRecord $model) {
-            return $model->store->name;
-        },
+        'attribute' => 'store.name',
         'label' => '所属仓库'
     ],
     [
         'width' => '100px',
-        'attribute' => 'camera_id',
+        'attribute' => 'camera.name',
         'label' => '摄像头名称',
-        'value' => function (AlarmRecord $model) {
-            return $model->camera->name;
-        }
     ],
     [
         'width' => '100px',
