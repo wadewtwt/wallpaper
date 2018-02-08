@@ -14,17 +14,24 @@ var tagRead = {
                     if (!errorCallback) {
                         alert('读取失败');
                     } else {
-                        errorCallback(data.Data)
+                        errorCallback(data.Data);
                     }
+                }
+            },
+            error: function () {
+                if(!timeoutCallback) {
+                    alert("读取失败,设备未连通");
+                } else {
+                    timeoutCallback();
                 }
             },
             timeout: 2000,
             complete: function (XMLHttpRequest, status) {
                 if (status === 'timeout') {
                     if(!timeoutCallback) {
-                        alert("读取失败,设备未连通");
+                        alert("读取失败,请求超时");
                     } else {
-                        timeoutCallback()
+                        timeoutCallback();
                     }
                 }
             }
