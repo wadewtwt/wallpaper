@@ -11,7 +11,7 @@ use common\models\base\ConfigString;
         <div v-for="item in dataList" class="col-md-4">
             <div class="info-box">
                 <span class="info-box-icon" :class="'bg-' + item.color">
-                    <i class="fa fa-video-camera"></i>
+                    <i class="fa fa-tablet"></i>
                 </span>
                 <div class="info-box-content">
                     <span class="info-box-text">{{ item.name }}</span>

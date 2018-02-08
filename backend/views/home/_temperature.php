@@ -10,7 +10,7 @@ use yii\helpers\Url;
         <div v-for="item in dataList" class="col-md-4">
             <div class="info-box">
                 <span class="info-box-icon bg-red" :class="{'bg-green': item.is_green}">
-                    <i class="fa fa-asterisk"></i>
+                    <i class="fa fa-thermometer-empty"></i>
                 </span>
                 <div class="info-box-content">
                     <span class="info-box-text">{{ item.title }}</span>
