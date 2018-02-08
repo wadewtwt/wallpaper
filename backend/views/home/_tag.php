@@ -1,6 +1,8 @@
 <?php
 /** @var $this \yii\web\View */
 
+use common\models\base\ConfigString;
+
 \common\assets\VueAssets::register($this);
 \backend\assets\TagReadAsset::register($this);
 
@@ -21,6 +23,7 @@
         </div>
     </div>
 <?php
+$tagReadBaseUrl = Yii::$app->params[ConfigString::PARAMS_TAG_READ_URL];
 $js = <<<JS
 new Vue({
     el: '.vue-tag-container',
@@ -62,6 +65,7 @@ new Vue({
         }
     },
     mounted: function() {
+        tagRead.baseUrl = '{$tagReadBaseUrl}'
         this.checkTagExists();
         setInterval(this.checkTagExists, 5000);
     }
