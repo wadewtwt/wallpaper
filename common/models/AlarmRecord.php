@@ -42,7 +42,7 @@ class AlarmRecord extends \common\models\base\ActiveRecord
     // 报警描述
     const DES_TEMP_TEMPERATURE = '温湿度设备【{temperatureName}】当前值【{current}】，超过阀值{downLimit}~{upLimit}';
     const DES_TEMP_ILLEGAL_OUTPUT_ACTIVE = '资源【{resourceName}】非法出库，【有源检测】标签号【{tag}】';
-    const DES_TEMP_ILLEGAL_OUTPUT_PASSIVE = '资源【{resourceName}】非法出入库，【无源检测】标签号【{tag}】';
+    const DES_TEMP_ILLEGAL_OUTPUT_PASSIVE = '资源【{resourceName}】非法出库，【无源检测】标签号【{tag}】';
 
     // 默认的处理描述
     const SOLVE_DESCRIPTION_DEFAULT = '已处理';

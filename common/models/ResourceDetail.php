@@ -188,24 +188,26 @@ class ResourceDetail extends \common\models\base\ActiveRecord
      */
     public function triggerAlarm($isActive)
     {
-        /** @var AlarmConfig[] $alarmConfigs */
-        $alarmConfigs = AlarmConfig::find()->andWhere([
-            'status' => AlarmConfig::STATUS_NORMAL,
-            'type' => AlarmConfig::TYPE_ILLEGAL_OUTPUT,
-            'store_id' => $this->container->store_id,
-        ])->all();
-        foreach ($alarmConfigs as $alarmConfig) {
-            if ($isActive) {
-                $desTemp = AlarmRecord::DES_TEMP_ILLEGAL_OUTPUT_ACTIVE;
-                $tag = $this->tag_active;
-            } else {
-                $desTemp = AlarmRecord::DES_TEMP_ILLEGAL_OUTPUT_PASSIVE;
-                $tag = $this->tag_passive;
+        if ($this->status == static::STATUS_NORMAL) {
+            /** @var AlarmConfig[] $alarmConfigs */
+            $alarmConfigs = AlarmConfig::find()->andWhere([
+                'status' => AlarmConfig::STATUS_NORMAL,
+                'type' => AlarmConfig::TYPE_ILLEGAL_OUTPUT,
+                'store_id' => $this->container->store_id,
+            ])->all();
+            foreach ($alarmConfigs as $alarmConfig) {
+                if ($isActive) {
+                    $desTemp = AlarmRecord::DES_TEMP_ILLEGAL_OUTPUT_ACTIVE;
+                    $tag = $this->tag_active;
+                } else {
+                    $desTemp = AlarmRecord::DES_TEMP_ILLEGAL_OUTPUT_PASSIVE;
+                    $tag = $this->tag_passive;
+                }
+                AlarmRecord::createOne($alarmConfig, $desTemp, [
+                    'resourceName' => $this->resource->name,
+                    'tag' => $tag,
+                ], true);
             }
-            AlarmRecord::createOne($alarmConfig, $desTemp, [
-                'resourceName' => $this->resource->name,
-                'tag' => $tag,
-            ], false);
         }
     }
 
