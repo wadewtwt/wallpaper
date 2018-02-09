@@ -196,8 +196,8 @@ new Vue({
     mounted: function () {
         this.getResourceData();
         this.getContainerData();
-        //tagRead.baseUrl = '{$tagReadBaseUrl}';
-        //this.tagSessionIsStart = {$tagSessionAutoStart};
+        tagRead.baseUrl = '{$tagReadBaseUrl}';
+        this.tagSessionIsStart = {$tagSessionAutoStart};
     }
 });
 JS;
