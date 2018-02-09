@@ -68,13 +68,13 @@ $form = ActiveForm::begin([
                     </select>
                     <div class="help-block help-block-error">{{ validateErrors[index+'-container_id'] }}</div>
                 </td>
-                <td class="form-group" :class="{'has-error': validateErrors[index+'-tag_passive']}">
+                <td class="form-group" :class="{'has-error': validateErrors[index+'-tag_passive']}" style="width: 330px">
                     <input type="text" v-model="item.tag_passive"
                            :name="'ApplyOrderResource[' + index + '][tag_passive]'"
                            class="form-control" readonly>
                     <div class="help-block help-block-error">{{ validateErrors[index+'-tag_passive'] }}</div>
                 </td>
-                <td class="form-group" :class="{'has-error': validateErrors[index+'-quantity']}">
+                <td class="form-group" :class="{'has-error': validateErrors[index+'-quantity']}" style="width: 60px">
                     <input type="text" v-model="item.quantity"
                            :name="'ApplyOrderResource[' + index + '][quantity]'"
                            class="form-control" readonly>
@@ -196,8 +196,8 @@ new Vue({
     mounted: function () {
         this.getResourceData();
         this.getContainerData();
-        tagRead.baseUrl = '{$tagReadBaseUrl}';
-        this.tagSessionIsStart = {$tagSessionAutoStart};
+        //tagRead.baseUrl = '{$tagReadBaseUrl}';
+        //this.tagSessionIsStart = {$tagSessionAutoStart};
     }
 });
 JS;
