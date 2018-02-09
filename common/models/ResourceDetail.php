@@ -199,14 +199,16 @@ class ResourceDetail extends \common\models\base\ActiveRecord
                 if ($isActive) {
                     $desTemp = AlarmRecord::DES_TEMP_ILLEGAL_OUTPUT_ACTIVE;
                     $tag = $this->tag_active;
+                    $flag = '有源:' . $tag;
                 } else {
                     $desTemp = AlarmRecord::DES_TEMP_ILLEGAL_OUTPUT_PASSIVE;
                     $tag = $this->tag_passive;
+                    $flag = '无源:' . $tag;
                 }
                 AlarmRecord::createOne($alarmConfig, $desTemp, [
                     'resourceName' => $this->resource->name,
                     'tag' => $tag,
-                ], true);
+                ], true, $flag);
             }
         }
     }

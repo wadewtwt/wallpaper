@@ -10,6 +10,7 @@ use yii\base\Exception;
  *
  * @property integer $id
  * @property integer $alarm_config_id
+ * @property string $flag
  * @property integer $alarm_at
  * @property string $description
  * @property integer $solve_id
@@ -63,7 +64,7 @@ class AlarmRecord extends \common\models\base\ActiveRecord
         return [
             [['alarm_config_id', 'alarm_at', 'store_id', 'camera_id', 'type'], 'required'],
             [['alarm_config_id', 'alarm_at', 'solve_id', 'solve_at', 'store_id', 'camera_id', 'type', 'status', 'updated_at', 'updated_by'], 'integer'],
-            [['description', 'solve_description'], 'string', 'max' => 255],
+            [['flag', 'description', 'solve_description'], 'string', 'max' => 255],
             [['solve_id'], 'exist', 'skipOnError' => true, 'targetClass' => Admin::className(), 'targetAttribute' => ['solve_id' => 'id']],
             [['alarm_config_id'], 'exist', 'skipOnError' => true, 'targetClass' => AlarmConfig::className(), 'targetAttribute' => ['alarm_config_id' => 'id']],
             [['solve_id'], 'required', 'on' => static::SCENARIO_SOLVE],
@@ -78,6 +79,7 @@ class AlarmRecord extends \common\models\base\ActiveRecord
         return [
             'id' => 'ID',
             'alarm_config_id' => '报警配置 ID',
+            'flag' => '标记',
             'alarm_at' => '报警时间',
             'description' => '报警描述',
             'solve_id' => '处理人',
@@ -154,21 +156,27 @@ class AlarmRecord extends \common\models\base\ActiveRecord
      * @param string $desTemplate ALARM_DESCRIPTION 模版
      * @param array $desTemplateParams ALARM_DESCRIPTION 模版的参数
      * @param bool $checkExist 是否检查是否已经存在记录，若检查则存在不重复记录
+     * @param null|string $flag 检查重复时用的标记
      * @throws \yii\db\Exception
      */
-    public static function createOne($alarmConfig, $desTemplate, $desTemplateParams, $checkExist = true)
+    public static function createOne($alarmConfig, $desTemplate, $desTemplateParams, $checkExist = true, $flag = null)
     {
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $des = static::fillDescriptionWithTemplate($desTemplate, $desTemplateParams);
             if ($checkExist) {
-                $model = static::findOne(['alarm_config_id' => $alarmConfig->id, 'status' => static::STATUS_NORMAL]);
+                $model = static::findOne([
+                    'alarm_config_id' => $alarmConfig->id,
+                    'flag' => $flag,
+                    'status' => static::STATUS_NORMAL
+                ]);
             } else {
                 $model = null;
             }
             if (!$model) {
                 $model = new static();
                 $model->alarm_config_id = $alarmConfig->id;
+                $model->flag = $flag;
                 $model->alarm_at = time();
                 $model->description = $des;
                 $model->store_id = $alarmConfig->store_id;

@@ -131,7 +131,7 @@ class Temperature extends \common\models\base\ActiveRecord
                     'current' => $this->current,
                     'downLimit' => $this->down_limit,
                     'upLimit' => $this->up_limit,
-                ], true);
+                ], true, '设备ID:' . $this->id);
             }
         }
     }
