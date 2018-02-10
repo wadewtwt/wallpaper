@@ -7,12 +7,23 @@ use common\models\OperateLog;
 
 class OperateLogSearch extends OperateLog
 {
+    public $start_time;
+    public $end_time;
+
     public function rules()
     {
         return [
             [['route'], 'string'],
-            [['created_at', 'created_by'], 'integer'],
+            [['created_at', 'created_by','end_time', 'start_time'], 'integer'],
         ];
+    }
+
+    public function attributeLabels()
+    {
+        return array_merge(parent::attributeLabels(), [
+            'start_time' => '开始时间',
+            'end_time' => '结束时间',
+        ]);
     }
 
     public function search($params)
@@ -41,6 +52,8 @@ class OperateLogSearch extends OperateLog
         ]);
 
         $query->andFilterWhere(['like', 'route', $this->route]);
+
+        $query->andFilterWhere(['between', 'created_at', $this->start_time, $this->end_time]);
 
         return $dataProvider;
     }

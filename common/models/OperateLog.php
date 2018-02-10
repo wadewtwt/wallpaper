@@ -88,7 +88,7 @@ class OperateLog extends \common\models\base\ActiveRecord
             'raw_body' => urldecode($request->rawBody),
             'query_string' => urldecode($request->queryString),
             'created_at' => time(),
-            'created_by' => Yii::$app->user->getId(),
+//            'created_by' => Yii::$app->user->getId(),
         ]);
         $model->save(false);
     }
