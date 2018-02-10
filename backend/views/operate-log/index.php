@@ -42,7 +42,7 @@ $columns = [
         'buttons' => [
             'more' => function ($url) {
                 $options = [
-                    'class' => 'btn btn-default',
+                    'class' => 'btn btn-default show_ajax_modal',
                 ];
                 return Html::a('更多信息', $url, $options);
             },
