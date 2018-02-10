@@ -135,6 +135,9 @@ return [
         ],
     ],
     'components' => [
+        'request' => [
+            'csrfParam' => '_csrf-backend',
+        ],
         'user' => [
             'class' => \kriss\modules\auth\components\User::className(),
             'authClass' => \common\models\base\Auth::className(),
