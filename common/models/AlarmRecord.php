@@ -22,6 +22,7 @@ use yii\base\Exception;
  * @property integer $status
  * @property integer $updated_at
  * @property integer $updated_by
+ * @property string $resource_tag
  *
  * @property Admin $solve
  * @property AlarmConfig $alarmConfig
@@ -64,7 +65,7 @@ class AlarmRecord extends \common\models\base\ActiveRecord
         return [
             [['alarm_config_id', 'alarm_at', 'store_id', 'camera_id', 'type'], 'required'],
             [['alarm_config_id', 'alarm_at', 'solve_id', 'solve_at', 'store_id', 'camera_id', 'type', 'status', 'updated_at', 'updated_by'], 'integer'],
-            [['flag', 'description', 'solve_description'], 'string', 'max' => 255],
+            [['flag', 'description', 'solve_description', 'resource_tag'], 'string', 'max' => 255],
             [['solve_id'], 'exist', 'skipOnError' => true, 'targetClass' => Admin::className(), 'targetAttribute' => ['solve_id' => 'id']],
             [['alarm_config_id'], 'exist', 'skipOnError' => true, 'targetClass' => AlarmConfig::className(), 'targetAttribute' => ['alarm_config_id' => 'id']],
             [['solve_id'], 'required', 'on' => static::SCENARIO_SOLVE],
@@ -91,6 +92,7 @@ class AlarmRecord extends \common\models\base\ActiveRecord
             'status' => '状态',
             'updated_at' => '修改时间',
             'updated_by' => '修改人',
+            'resource_tag' => '资源标签',
         ];
     }
 
@@ -157,9 +159,10 @@ class AlarmRecord extends \common\models\base\ActiveRecord
      * @param array $desTemplateParams ALARM_DESCRIPTION 模版的参数
      * @param bool $checkExist 是否检查是否已经存在记录，若检查则存在不重复记录
      * @param null|string $flag 检查重复时用的标记
+     * @param null $resourceTag 资源的tag，用于报警后生成申领单使用
      * @throws \yii\db\Exception
      */
-    public static function createOne($alarmConfig, $desTemplate, $desTemplateParams, $checkExist = true, $flag = null)
+    public static function createOne($alarmConfig, $desTemplate, $desTemplateParams, $checkExist = true, $flag = null, $resourceTag = null)
     {
         $transaction = Yii::$app->db->beginTransaction();
         try {
@@ -182,6 +185,7 @@ class AlarmRecord extends \common\models\base\ActiveRecord
                 $model->store_id = $alarmConfig->store_id;
                 $model->camera_id = $alarmConfig->camera_id;
                 $model->type = $alarmConfig->type;
+                $model->resource_tag = $resourceTag;
                 $model->save(false);
             }
             AlarmCall::createByAlarmRecord($model, $des);

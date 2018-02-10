@@ -107,6 +107,14 @@ $simpleDynaGrid = new SimpleDynaGrid([
                     'data-url' => Url::to(['batch-solve']),
                 ])
         ],
+        [
+            'content' =>
+                Html::button('生成申领单', [
+                    'class' => 'btn btn-primary simple_check_operate',
+                    'data-url' => Url::to(['generate-apply-order']),
+                    'data-form' => '1',
+                ])
+        ],
     ],
 ]);
 $simpleDynaGrid->renderDynaGrid();

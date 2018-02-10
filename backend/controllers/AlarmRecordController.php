@@ -6,6 +6,7 @@ use backend\components\AuthWebController;
 use backend\components\MessageAlert;
 use backend\models\AlarmRecordSearch;
 use backend\models\form\AlarmRecordBatchSolveForm;
+use backend\models\form\AlarmRecordGenerateApplyOrderForm;
 use common\components\Tools;
 use common\models\AlarmRecord;
 use Yii;
@@ -60,6 +61,37 @@ class AlarmRecordController extends AuthWebController
 
         $model->keys = implode(',', Yii::$app->request->post('keys'));
         return $this->renderAjax('_batch_solve', [
+            'model' => $model
+        ]);
+    }
+
+    // 生成出库或申领单
+    public function actionGenerateApplyOrder()
+    {
+        $request = Yii::$app->request;
+        if ($request->isGet) {
+            MessageAlert::set(['error' => '访问错误']);
+            return $this->actionPreviousRedirect();
+        }
+
+        $model = new AlarmRecordGenerateApplyOrderForm([
+            'alarm_record_ids' => Yii::$app->request->post('keys'),
+        ]);
+        if (!$model->initData()) {
+            MessageAlert::set(['error' => Tools::getFirstError($model->errors)]);
+            return $this->actionPreviousRedirect();
+        }
+
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $result = $model->generateAndSolve(Yii::$app->user->getId());
+            if ($result['type'] == 'success') {
+                MessageAlert::set(['success' => $result['msg']]);
+                return $this->actionPreviousRedirect();
+            }
+            MessageAlert::set(['error' => '处理失败：' . $result['msg']]);
+        }
+
+        return $this->render('generate_apply_order', [
             'model' => $model
         ]);
     }
