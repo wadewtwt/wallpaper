@@ -67,6 +67,7 @@ $menu = [
     ],
     ['label' => '报警记录管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/alarm-record']],
     ['label' => '管理员管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/admin']],
+    ['label' => '操作日志管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/operate-log']],
     [
         'label' => '权限管理', 'icon' => 'list', 'url' => '#', 'visible' => AuthValidate::has([Auth::PERMISSION_VIEW, Auth::ROLE_VIEW]),
         'items' => [

@@ -18,6 +18,13 @@ class BaseWebController extends Controller
             'class' => IframeLinkFilter::className(),
             'layout' => '@app/views/layouts/main-content'
         ];
+        $behaviors['operate_log'] = [
+            'class' => OperateLogFilter::className(),
+            'exceptRoutes' => [
+                'api/*',
+                'third-api/*',
+            ],
+        ];
 
         return $behaviors;
     }
