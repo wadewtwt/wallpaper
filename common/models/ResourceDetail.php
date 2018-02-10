@@ -277,6 +277,10 @@ class ResourceDetail extends \common\models\base\ActiveRecord
                     throw new Exception("无源标签为'{$applyOrderResource->tag_passive}'的资源不存在");
                 }
                 $model = ResourceDetail::findOne(['tag_passive' => $applyOrderResource->tag_passive]);
+                if (in_array($applyOrderType, [Enum::APPLY_ORDER_TYPE_OUTPUT, Enum::APPLY_ORDER_TYPE_APPLY])
+                    && $model->status == ResourceDetail::STATUS_NORMAL) {
+                    throw new Exception("无源标签为'{$applyOrderResource->tag_passive}'的资源未入库，不能出库或申领");
+                }
                 $model->changeStatusByApplyOrderType($applyOrderType, $resource, $applyOrderResource->applyOrder->pick_type == ApplyOrder::PICK_TYPE_MAINTENANCE);
                 $model->save(false);
             } else {
