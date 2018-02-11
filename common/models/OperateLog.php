@@ -155,7 +155,6 @@ class OperateLog extends \common\models\base\ActiveRecord
         'temperature/create' => '温湿度设备管理-新增',
         'temperature/update' => '温湿度设备管理-更新',
         'temperature/delete' => '温湿度设备管理-删除',
-
     ];
 
     /**
