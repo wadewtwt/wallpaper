@@ -2,11 +2,11 @@
 
 namespace common\models;
 
-use common\models\base\ActiveRecord;
 use common\components\Tools;
+use common\models\base\ActiveRecord;
 use yii\base\NotSupportedException;
-use yii\web\IdentityInterface;
 use yii\helpers\ArrayHelper;
+use yii\web\IdentityInterface;
 
 /**
  * This is the model class for table "admin".
@@ -23,6 +23,7 @@ use yii\helpers\ArrayHelper;
  * @property integer $updated_at
  * @property integer $updated_by
  * @property string $auth_role
+ * @property integer $admin_role
  *
  * @property AlarmRecord[] $alarmRecords
  * @property string $statusName
@@ -34,9 +35,17 @@ class Admin extends ActiveRecord implements IdentityInterface
     const STATUS_NORMAL = 0; // 正常
     const STATUS_DISABLE = 10; // 不可登录
 
+    const ADMIN_ROLE_SUPER_ADMIN = 0; // 超级管理员
+    const ADMIN_ROLE_NORMAL_ADMIN = 1; // 普通管理员
+
     public static $statusData = [
         self::STATUS_NORMAL => '正常',
         self::STATUS_DISABLE => '不可用',
+    ];
+
+    public static $adminRoleData = [
+        self::ADMIN_ROLE_SUPER_ADMIN => '超级管理员',
+        self::ADMIN_ROLE_NORMAL_ADMIN => '普通管理员',
     ];
 
     /**
@@ -54,7 +63,7 @@ class Admin extends ActiveRecord implements IdentityInterface
     {
         return [
             [['username', 'password_hash', 'name', 'auth_key'], 'required'],
-            [['status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [['status', 'created_at', 'created_by', 'updated_at', 'updated_by', 'admin_role'], 'integer'],
             [['username', 'password_hash', 'name', 'cellphone', 'auth_key', 'auth_role'], 'string', 'max' => 255],
             [['username'], 'unique'],
         ];
@@ -78,6 +87,7 @@ class Admin extends ActiveRecord implements IdentityInterface
             'updated_at' => '修改时间',
             'updated_by' => '修改人',
             'auth_role' => 'Auth Role',
+            'admin_role' => '管理员角色',
         ];
     }
 
@@ -95,6 +105,14 @@ class Admin extends ActiveRecord implements IdentityInterface
     public function getStatusName()
     {
         return $this->toName($this->status, self::$statusData);
+    }
+
+    /**
+     * @return string
+     */
+    public function getAdminRoleName()
+    {
+        return $this->toName($this->admin_role, self::$adminRoleData);
     }
 
     /**

@@ -7,28 +7,29 @@ use common\models\base\Auth;
 
 /** @var $admin Admin */
 $admin = Yii::$app->user->identity;
+$isSuperAdmin = $admin->admin_role == Admin::ADMIN_ROLE_SUPER_ADMIN;
 
 $menuTitle = '总管理后台';
 $baseUrl = '';
 $menu = [
-    ['label' => '首页', 'icon' => 'circle-o', 'url' => [$baseUrl . '/home']],
+    ['label' => '首页', 'icon' => 'circle-o', 'url' => [$baseUrl . '/home'], 'visible' => $isSuperAdmin],
     [
-        'label' => '人员管理', 'icon' => 'list', 'url' => '#',
+        'label' => '人员管理', 'icon' => 'list', 'url' => '#', 'visible' => $isSuperAdmin,
         'items' => [
             ['label' => '职称管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/position']],
             ['label' => '人员管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/person']],
         ]
     ],
     [
-        'label' => '仓库货位管理', 'icon' => 'list', 'url' => '#',
+        'label' => '仓库货位管理', 'icon' => 'list', 'url' => '#', 'visible' => $isSuperAdmin,
         'items' => [
             ['label' => '仓库管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/store']],
             ['label' => '货区管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/container']],
         ]
     ],
-    ['label' => '资源分类管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/resource-type']],
+    ['label' => '资源分类管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/resource-type'], 'visible' => $isSuperAdmin,],
     [
-        'label' => '设备管理', 'icon' => 'list', 'url' => '#',
+        'label' => '设备管理', 'icon' => 'list', 'url' => '#', 'visible' => $isSuperAdmin,
         'items' => [
             ['label' => '设备列表', 'icon' => 'circle-o', 'url' => [$baseUrl . '/device']],
             ['label' => '设备明细', 'icon' => 'circle-o', 'url' => [$baseUrl . '/device-detail']],
@@ -36,7 +37,7 @@ $menu = [
         ]
     ],
     [
-        'label' => '消耗品管理', 'icon' => 'list', 'url' => '#',
+        'label' => '消耗品管理', 'icon' => 'list', 'url' => '#', 'visible' => $isSuperAdmin,
         'items' => [
             ['label' => '消耗品列表', 'icon' => 'circle-o', 'url' => [$baseUrl . '/expendable']],
             ['label' => '消耗品明细', 'icon' => 'circle-o', 'url' => [$baseUrl . '/expendable-detail']],
@@ -58,16 +59,16 @@ $menu = [
         ]
     ],
     [
-        'label' => '监控设备管理', 'icon' => 'list', 'url' => '#',
+        'label' => '监控设备管理', 'icon' => 'list', 'url' => '#', 'visible' => $isSuperAdmin,
         'items' => [
             ['label' => '温湿度设备管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/temperature']],
             ['label' => '摄像头设备管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/camera']],
             ['label' => '联动设置', 'icon' => 'circle-o', 'url' => [$baseUrl . '/alarm-config']],
         ]
     ],
-    ['label' => '报警记录管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/alarm-record']],
-    ['label' => '管理员管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/admin']],
-    ['label' => '操作日志管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/operate-log']],
+    ['label' => '报警记录管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/alarm-record'], 'visible' => $isSuperAdmin,],
+    ['label' => '管理员管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/admin'], 'visible' => $isSuperAdmin,],
+    ['label' => '操作日志管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/operate-log'], 'visible' => $isSuperAdmin,],
     [
         'label' => '权限管理', 'icon' => 'list', 'url' => '#', 'visible' => AuthValidate::has([Auth::PERMISSION_VIEW, Auth::ROLE_VIEW]),
         'items' => [
