@@ -5,7 +5,7 @@ use common\models\Camera;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
-$models = Camera::find()->all();
+$models = Camera::find()->with('store')->all();
 ?>
 <?php foreach ($models as $model) : ?>
     <div class="col-md-4">
