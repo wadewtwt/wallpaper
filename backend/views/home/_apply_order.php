@@ -6,6 +6,7 @@ use common\models\base\Enum;
 use yii\helpers\Html;
 
 $models = ApplyOrder::find()
+    ->with('person')
     ->where(['status' => [// 排除了“已完成”，“已归还”，“作废”
         ApplyOrder::STATUS_APPLYING,
         ApplyOrder::STATUS_OPERATE_PRINT,

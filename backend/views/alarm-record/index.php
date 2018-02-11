@@ -5,9 +5,14 @@
 /** @var $searchModel backend\models\AlarmRecordSearch */
 
 use backend\widgets\SimpleDynaGrid;
+use common\models\Admin;
 use yii\helpers\Html;
 use common\models\AlarmRecord;
 use yii\helpers\Url;
+
+/** @var Admin $admin */
+$admin = Yii::$app->user->identity;
+$isSuperAdmin = $admin->admin_role == Admin::ADMIN_ROLE_SUPER_ADMIN;
 
 $this->title = '仓库列表';
 $this->params['breadcrumbs'] = [
@@ -52,18 +57,18 @@ $columns = [
     [
         'width' => '250px',
         'label' => '处理情况',
-        'value' => function (AlarmRecord $model){
+        'value' => function (AlarmRecord $model) {
             $html = [];
             if ($model->solve_id) {
                 $html[] = $model->getAttributeLabel('solve_id') . ':' . $model->solve->name;
             }
             if ($model->solve_id) {
-                $html[] = $model->getAttributeLabel('solve_at').':'.date('Y-m-d H:i:s', $model->solve_at);
+                $html[] = $model->getAttributeLabel('solve_at') . ':' . date('Y-m-d H:i:s', $model->solve_at);
             }
             if ($model->solve_id) {
-                $html[] = $model->getAttributeLabel('solve_description').':'.$model->solve_description;
+                $html[] = $model->getAttributeLabel('solve_description') . ':' . $model->solve_description;
             }
-            return implode('<br>',$html);
+            return implode('<br>', $html);
         },
         'format' => 'html'
     ],
@@ -109,11 +114,11 @@ $simpleDynaGrid = new SimpleDynaGrid([
         ],
         [
             'content' =>
-                Html::button('生成申领单', [
+                $isSuperAdmin ? Html::button('生成申领单', [
                     'class' => 'btn btn-primary simple_check_operate',
                     'data-url' => Url::to(['generate-apply-order']),
                     'data-form' => '1',
-                ])
+                ]) : ''
         ],
     ],
 ]);

@@ -3,6 +3,7 @@
 /** @var $dataProvider common\components\ActiveDataProvider */
 
 use backend\widgets\SimpleDynaGrid;
+use kriss\modules\auth\tools\AuthValidate;
 use yii\helpers\Html;
 use common\models\Admin;
 
@@ -23,6 +24,12 @@ $columns = [
         'attribute' => 'cellphone',
     ],
     [
+        'attribute' => 'admin_role',
+        'value' => function (Admin $model) {
+            return $model->getAdminRoleName();
+        }
+    ],
+    [
         'attribute' => 'status',
         'value' => function (Admin $model) {
             return $model->getStatusName();
@@ -32,6 +39,9 @@ $columns = [
         'class' => '\kartik\grid\ActionColumn',
         'width' => '300px',
         'template' => '{update} {update-role} {reset-password} {change-status}',
+        'visibleButtons' => [
+            'update-role' => AuthValidate::has('adminUpdateRole')
+        ],
         'buttons' => [
             'update' => function ($url, Admin $model) {
                 if ($model->id == Admin::SUPER_ADMIN_ID) {
