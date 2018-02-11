@@ -23,6 +23,7 @@ class BaseWebController extends Controller
             'exceptRoutes' => [
                 'api/*',
                 'third-api/*',
+                'site/*',
             ],
         ];
 
