@@ -119,6 +119,9 @@ class OperateLog extends \common\models\base\ActiveRecord
         'expendable-detail-operation' => '消耗品操作记录管理-列表',
         'expendable-detail-operation/index' => '消耗品操作记录管理-列表',
 
+        'home' => '首页',
+        'home/index' => '首页',
+
         'operate-log' => '操作日志管理-列表',
         'operate-log/index' => '操作日志管理-列表',
         'operate-log/more' => '操作日志管理-更多',
