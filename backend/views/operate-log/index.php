@@ -4,6 +4,7 @@
 /** @var $searchModel backend\models\OperateLogSearch */
 
 use backend\widgets\SimpleDynaGrid;
+use common\models\OperateLog;
 use yii\helpers\Html;
 
 $this->title = '操作日志管理列表';
@@ -27,10 +28,9 @@ $columns = [
     ],
     [
         'attribute' => 'route',
-    ],
-    [
-        'attribute' => 'absolute_url',
-        'width' => '200px',
+        'value' => function (OperateLog $model) {
+            return $model->getRouteName();
+        }
     ],
     [
         'attribute' => 'method',
