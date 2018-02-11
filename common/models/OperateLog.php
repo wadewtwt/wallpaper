@@ -23,6 +23,20 @@ use Yii;
  */
 class OperateLog extends \common\models\base\ActiveRecord
 {
+    // 路由名字定义
+    public static $routeNameData = [
+        '' => '首页',
+
+        'account/modify-password' => '修改密码',
+
+        'admin' => '管理员管理-列表',
+        'admin/index' => '管理员管理-列表',
+        'admin/create' => '管理员管理-新增',
+        'admin/update' => '管理员管理-更新',
+        'admin/reset-password' => '管理员管理-重置密码',
+        'admin/change-status' => '管理员管理-禁用启用',
+    ];
+
     /**
      * @inheritdoc
      */
