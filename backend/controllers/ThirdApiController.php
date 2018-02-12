@@ -6,6 +6,7 @@ use common\models\ResourceDetail;
 use common\models\TagActiveUnused;
 use common\models\Temperature;
 use Yii;
+use yii\base\Exception;
 use yii\web\Controller;
 use yii\web\Response;
 
@@ -50,40 +51,48 @@ class ThirdApiController extends Controller
     // 有源标签当前检测到的数据列表
     public function actionTagActiveList()
     {
-        // 检测到的
-        $ids = array_unique(json_decode(Yii::$app->request->post('ids'), true));
-        // 应该在库的
-        $storedIds = array_filter(ResourceDetail::find()->select(['tag_active'])->where(['status' => ResourceDetail::STATUS_NORMAL])->column());
-        // 被借出的
-        $pickedIds = array_filter(ResourceDetail::find()->select(['tag_active'])->where(['status' => ResourceDetail::STATUS_PICKED])->column());
-        // 当前在线，不在库且没被借出的，保存到备用库
-        $unusedIds = array_diff($ids, $storedIds, $pickedIds);
-        // 删除所有
-        TagActiveUnused::deleteAll();
-        // 保存到备用库
-        $unusedIdsRows = [];
-        foreach ($unusedIds as $id) {
-            $unusedIdsRows[] = [$id];
-        }
-        Yii::$app->db->createCommand()->batchInsert(TagActiveUnused::tableName(), ['tag_active'], $unusedIdsRows)->execute();
-        // 原来离线，当前在线，且在库的，设为在线
-        $onlineIds = array_intersect($ids, $storedIds);
-        ResourceDetail::updateAll(
-            ['is_online' => 1, 'online_change_at' => time()],
-            ['is_online' => 0, 'tag_active' => $onlineIds, 'status' => ResourceDetail::STATUS_NORMAL]
-        );
-        // 原来在线，且在库的，但当前不在线的，设为离线，且报警
-        $offlineIds = array_diff($storedIds, $ids);
-        ResourceDetail::updateAll(
-            ['is_online' => 0, 'online_change_at' => time()],
-            ['is_online' => 1, 'tag_active' => $offlineIds, 'status' => ResourceDetail::STATUS_NORMAL]
-        );
-        $alarmResources = ResourceDetail::findAll(['tag_active' => $offlineIds]);
-        foreach ($alarmResources as $alarmResource) {
-            $alarmResource->triggerAlarm(true);
-        }
+        $transaction = Yii::$app->db->beginTransaction();
+        try{
+            // 检测到的
+            $ids = array_unique(json_decode(Yii::$app->request->post('ids'), true));
+            // 应该在库的
+            $storedIds = array_filter(ResourceDetail::find()->select(['tag_active'])->where(['status' => ResourceDetail::STATUS_NORMAL])->column());
+            // 被借出的
+            $pickedIds = array_filter(ResourceDetail::find()->select(['tag_active'])->where(['status' => ResourceDetail::STATUS_PICKED])->column());
+            // 当前在线，不在库且没被借出的，保存到备用库
+            $unusedIds = array_diff($ids, $storedIds, $pickedIds);
+            // 删除所有
+            TagActiveUnused::deleteAll();
+            // 保存到备用库
+            $unusedIdsRows = [];
+            foreach ($unusedIds as $id) {
+                $unusedIdsRows[] = [$id];
+            }
+            Yii::$app->db->createCommand()->batchInsert(TagActiveUnused::tableName(), ['tag_active'], $unusedIdsRows)->execute();
+            // 原来离线，当前在线，且在库的，设为在线
+            $onlineIds = array_intersect($ids, $storedIds);
+            ResourceDetail::updateAll(
+                ['is_online' => 1, 'online_change_at' => time()],
+                ['is_online' => 0, 'tag_active' => $onlineIds, 'status' => ResourceDetail::STATUS_NORMAL]
+            );
+            // 原来在线，且在库的，但当前不在线的，设为离线，且报警
+            $offlineIds = array_diff($storedIds, $ids);
+            $alarmResources = ResourceDetail::findAll(['is_online' => 1, 'tag_active' => $offlineIds, 'status' => ResourceDetail::STATUS_NORMAL]);
+            ResourceDetail::updateAll(
+                ['is_online' => 0, 'online_change_at' => time()],
+                ['is_online' => 1, 'tag_active' => $offlineIds, 'status' => ResourceDetail::STATUS_NORMAL]
+            );
+            foreach ($alarmResources as $alarmResource) {
+                $alarmResource->triggerAlarm(true);
+            }
 
-        return $this->jsonOk();
+            $transaction->commit();
+            return $this->jsonOk();
+        }catch (Exception $e) {
+            $transaction->rollBack();
+            Yii::error($e);
+            return $this->jsonError($e->getMessage());
+        }
     }
 
     protected function jsonOk($data = 'ok')

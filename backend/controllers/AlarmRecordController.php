@@ -34,6 +34,7 @@ class AlarmRecordController extends AuthWebController
         $model->scenario = AlarmRecord::SCENARIO_SOLVE;
         if ($model->load(Yii::$app->request->post())) {
             $model->status = AlarmRecord::STATUS_SOLVED;
+            $model->solve_at = time();
             if ($model->validate() && $model->save(false)) {
                 MessageAlert::set(['success' => '处理成功']);
             } else {
