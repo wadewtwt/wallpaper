@@ -29,11 +29,11 @@ $menu = [
     ],
     ['label' => '资源分类管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/resource-type'], 'visible' => $isSuperAdmin,],
     [
-        'label' => '设备管理', 'icon' => 'list', 'url' => '#', 'visible' => $isSuperAdmin,
+        'label' => '装备管理', 'icon' => 'list', 'url' => '#', 'visible' => $isSuperAdmin,
         'items' => [
-            ['label' => '设备列表', 'icon' => 'circle-o', 'url' => [$baseUrl . '/device']],
-            ['label' => '设备明细', 'icon' => 'circle-o', 'url' => [$baseUrl . '/device-detail']],
-            ['label' => '设备操作记录', 'icon' => 'circle-o', 'url' => [$baseUrl . '/device-detail-operation']],
+            ['label' => '装备列表', 'icon' => 'circle-o', 'url' => [$baseUrl . '/device']],
+            ['label' => '装备明细', 'icon' => 'circle-o', 'url' => [$baseUrl . '/device-detail']],
+            ['label' => '装备操作记录', 'icon' => 'circle-o', 'url' => [$baseUrl . '/device-detail-operation']],
         ]
     ],
     [

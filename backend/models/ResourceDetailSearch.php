@@ -11,7 +11,7 @@ class ResourceDetailSearch extends ResourceDetail
     public function rules()
     {
         return [
-            [['resource_id'], 'integer'],
+            [['resource_id', 'status', 'is_online'], 'integer'],
         ];
     }
 
@@ -39,6 +39,8 @@ class ResourceDetailSearch extends ResourceDetail
         $query->andFilterWhere([
             'a.type' => $this->type,
             'a.resource_id' => $this->resource_id,
+            'a.status' => $this->status,
+            'a.is_online' => $this->is_online,
         ]);
 
         return $dataProvider;

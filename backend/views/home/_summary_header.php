@@ -38,14 +38,14 @@ $data = [
         'more' => ['/apply-order-input'],
     ],
     [
-        'title' => '当前总设备库存',
+        'title' => '当前总装备库存',
         'count' => Resource::find()->where(['type' => Resource::TYPE_DEVICE])->sum('current_stock'),
         'icon' => 'th-large',
         'bg' => 'teal',
         'more' => ['/device'],
     ],
     [
-        'title' => '总设备类别量',
+        'title' => '总装备类别量',
         'count' => Resource::find()->where(['type' => Resource::TYPE_DEVICE])->count(),
         'icon' => 'th-large',
         'bg' => 'teal',

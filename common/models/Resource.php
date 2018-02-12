@@ -38,7 +38,7 @@ class Resource extends \common\models\base\ActiveRecord
 
     public static $typeData = [
         self::TYPE_EXPENDABLE => '消耗品',
-        self::TYPE_DEVICE => '设备',
+        self::TYPE_DEVICE => '装备',
     ];
 
     /**
@@ -68,7 +68,7 @@ class Resource extends \common\models\base\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'type' => '类型:消耗品、设备',
+            'type' => '类型:消耗品、装备',
             'resource_type_id' => '分类',
             'name' => '名称',
             'min_stock' => '最低库存',

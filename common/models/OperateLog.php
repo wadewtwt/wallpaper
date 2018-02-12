@@ -95,17 +95,17 @@ class OperateLog extends \common\models\base\ActiveRecord
         'container/update' => '货区管理-更新',
         'container/delete' => '货区管理-删除货架',
 
-        'device' => '设备管理-列表',
-        'device/index' => '设备管理-列表',
-        'device/create' => '设备管理-新增',
-        'device/update' => '设备管理-更新',
-        'device/delete' => '设备管理-删除',
+        'device' => '装备管理-列表',
+        'device/index' => '装备管理-列表',
+        'device/create' => '装备管理-新增',
+        'device/update' => '装备管理-更新',
+        'device/delete' => '装备管理-删除',
 
-        'device-detail' => '设备明细管理-列表',
-        'device-detail/index' => '设备明细管理-列表',
+        'device-detail' => '装备明细管理-列表',
+        'device-detail/index' => '装备明细管理-列表',
 
-        'device-detail-operation' => '设备操作记录管理-列表',
-        'device-detail-operation/index' => '设备操作记录管理-列表',
+        'device-detail-operation' => '装备操作记录管理-列表',
+        'device-detail-operation/index' => '装备操作记录管理-列表',
 
         'expendable' => '消耗品管理-列表',
         'expendable/index' => '消耗品管理-列表',

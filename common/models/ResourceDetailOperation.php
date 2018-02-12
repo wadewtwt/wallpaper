@@ -60,7 +60,7 @@ class ResourceDetailOperation extends \common\models\base\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'resource_detail_id' => '设备 ID',
+            'resource_detail_id' => '装备 ID',
             'apply_order_id' => '申请单 ID',
             'type' => '类型',
             'operation' => '操作',

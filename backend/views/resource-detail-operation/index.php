@@ -14,6 +14,10 @@ $this->params['breadcrumbs'] = [
     $this->title,
 ];
 
+echo $this->render('_search', [
+    'model' => $searchModel,
+]);
+
 $columns = [
     [
         'width' => '150px',

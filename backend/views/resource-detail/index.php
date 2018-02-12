@@ -3,6 +3,7 @@
 /** @var $dataProvider common\components\ActiveDataProvider */
 /** @var $searchModel backend\models\ResourceDetailSearch */
 
+use backend\models\ResourceDetailOperationSearch;
 use backend\widgets\SimpleDynaGrid;
 use common\models\ResourceDetail;
 use yii\helpers\Html;
@@ -22,6 +23,9 @@ echo $this->render('_search', [
 
 $columns = [
     [
+        'attribute' => 'id',
+    ],
+    [
         'attribute' => 'resource.name',
     ],
     [
@@ -29,14 +33,39 @@ $columns = [
         'label' => '货位'
     ],
     [
-        'attribute' => 'is_online',
+        'label' => '标签',
+        'width' => '300px',
         'value' => function (ResourceDetail $model) {
-            return $model->is_online ? '在线' : '离线';
-        }
+            $html = [];
+            $html[] = '有源标签：' . $model->tag_active;
+            $html[] = '无源标签：' . $model->tag_passive;
+            return implode('<br>', $html);
+        },
+        'format' => 'html'
     ],
     [
-        'attribute' => 'online_change_at',
-        'format' => ['date', 'php:Y-m-d']
+        'label' => '在线离线',
+        'width' => '200px',
+        'value' => function (ResourceDetail $model) {
+            $html = [];
+            $html[] = $model->is_online
+                ? '<span class="fa fa-check-circle text-green"></span> 在线'
+                : '<span class="fa fa-exclamation-circle text-red"></span> 离线';
+            $html[] = '时间：' . date('Y-m-d H:i:s', $model->online_change_at);
+            return implode('<br>', $html);
+        },
+        'format' => 'html'
+    ],
+    [
+        'label' => '状态',
+        'width' => '200px',
+        'value' => function (ResourceDetail $model) {
+            $html = [];
+            $html[] = $model->getStatusName();
+            $html[] = '时间：' . date('Y-m-d H:i:s', $model->updated_at);
+            return implode('<br>', $html);
+        },
+        'format' => 'html'
     ],
     [
         'attribute' => 'maintenance_at',
@@ -50,21 +79,16 @@ $columns = [
         'attribute' => 'quantity',
     ],
     [
-        'attribute' => 'status',
-        'value' => function (ResourceDetail $model) {
-            return $model->getStatusName();
-        }
-    ],
-    [
         'class' => '\kartik\grid\ActionColumn',
         'width' => '150px',
         'template' => '{detail}',
         'buttons' => [
-            'detail' => function ($url, $model) use ($controllerId) {
+            'detail' => function ($url, ResourceDetail $model) use ($controllerId) {
                 $options = [
                     'class' => 'btn btn-default',
                 ];
-                return Html::a('操作记录', ["/{$controllerId}-operation", 'device_id' => $model->id], $options);
+                $url = ["/{$controllerId}-operation", Html::getInputName(new ResourceDetailOperationSearch(), 'resource_detail_id') => $model->id];
+                return Html::a('操作记录', $url, $options);
             },
         ],
     ],

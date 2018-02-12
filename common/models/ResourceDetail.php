@@ -77,7 +77,7 @@ class ResourceDetail extends \common\models\base\ActiveRecord
         return [
             'id' => 'ID',
             'resource_id' => '资源 ID',
-            'type' => '类型:消耗品、设备',
+            'type' => '类型:消耗品、装备',
             'container_id' => '货位 ID',
             'tag_active' => '有源标签',
             'tag_passive' => '无源标签',
@@ -116,6 +116,17 @@ class ResourceDetail extends \common\models\base\ActiveRecord
     public function getResourceDetailOperations()
     {
         return $this->hasMany(ResourceDetailOperation::className(), ['resource_detail_id' => 'id']);
+    }
+
+    /**
+     * 入库操作
+     * @return \yii\db\ActiveQuery
+     */
+    public function getResourceDetailOperateInput()
+    {
+        return $this->hasOne(ResourceDetailOperation::className(), ['resource_detail_id' => 'id'])
+            ->onCondition(['operation' => ResourceDetailOperation::OPERATION_INPUT])
+            ->orderBy(['created_at' => SORT_DESC]);
     }
 
     /**
@@ -278,7 +289,8 @@ class ResourceDetail extends \common\models\base\ActiveRecord
                 }
                 $model = ResourceDetail::findOne(['tag_passive' => $applyOrderResource->tag_passive]);
                 if (in_array($applyOrderType, [Enum::APPLY_ORDER_TYPE_OUTPUT, Enum::APPLY_ORDER_TYPE_APPLY])
-                    && $model->status != ResourceDetail::STATUS_NORMAL) {
+                    && $model->status != ResourceDetail::STATUS_NORMAL
+                ) {
                     throw new Exception("无源标签为'{$applyOrderResource->tag_passive}'的资源未入库，不能出库或申领");
                 }
                 $model->changeStatusByApplyOrderType($applyOrderType, $resource, $applyOrderResource->applyOrder->pick_type == ApplyOrder::PICK_TYPE_MAINTENANCE);

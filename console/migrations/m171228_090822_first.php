@@ -55,7 +55,7 @@ class m171228_090822_first extends Migration
 
         $this->createTable('resource', array_merge([
             'id' => $this->primaryKey(),
-            'type' => $this->integer()->notNull()->comment('类型:消耗品、设备'),
+            'type' => $this->integer()->notNull()->comment('类型:消耗品、装备'),
             'name' => $this->string()->notNull()->comment('名称'),
             'min_stock' => $this->integer()->notNull()->defaultValue(0)->comment('最低库存'),
             'current_stock' => $this->integer()->notNull()->defaultValue(0)->comment('当前库存'),
@@ -64,12 +64,12 @@ class m171228_090822_first extends Migration
         ], $this->commonColumns([
             'status', 'created_at', 'created_by', 'updated_at', 'updated_by'
         ])
-        ), $this->setTableComment('设备资源表'));
+        ), $this->setTableComment('装备资源表'));
 
         $this->createTable('resource_detail', array_merge([
             'id' => $this->primaryKey(),
             'resource_id' => $this->integer()->notNull()->comment('资源 ID'),
-            'type' => $this->integer()->notNull()->comment('类型:消耗品、设备'),
+            'type' => $this->integer()->notNull()->comment('类型:消耗品、装备'),
             'container_id' => $this->integer()->notNull()->comment('货位 ID'),
             'tag_active' => $this->string()->notNull()->comment('有源标签'),
             'tag_passive' => $this->string()->notNull()->comment('无源标签'),
@@ -87,8 +87,8 @@ class m171228_090822_first extends Migration
 
         $this->createTable('resource_detail_operation', array_merge([
             'id' => $this->primaryKey(),
-            'resource_detail_id' => $this->integer()->notNull()->comment('设备 ID'),
-            'type' => $this->integer()->notNull()->comment('类型:消耗品、设备'),
+            'resource_detail_id' => $this->integer()->notNull()->comment('装备 ID'),
+            'type' => $this->integer()->notNull()->comment('类型:消耗品、装备'),
             'operation' => $this->smallInteger(1)->notNull()->comment('操作'),
             'remark' => $this->string()->comment('备注'),
         ], $this->commonColumns([
