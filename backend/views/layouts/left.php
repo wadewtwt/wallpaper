@@ -75,7 +75,8 @@ $menu = [
             ['label' => '权限查看', 'icon' => 'circle-o', 'url' => [$baseUrl . '/auth/permission'], 'visible' => AuthValidate::has([Auth::PERMISSION_VIEW])],
             ['label' => '角色管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/auth/role'], 'visible' => AuthValidate::has([Auth::ROLE_VIEW])],
         ]
-    ]
+    ],
+    ['label' => '系统设置', 'icon' => 'circle-o', 'url' => [$baseUrl . '/settings'], 'visible' => $isSuperAdmin,],
 ];
 
 $menuHelper = new \backend\components\MenuHelper([

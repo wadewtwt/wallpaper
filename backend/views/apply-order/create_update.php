@@ -9,6 +9,7 @@ use common\models\ApplyOrder;
 use common\models\base\Enum;
 use common\models\Person;
 use common\models\Resource;
+use common\models\Settings;
 use unclead\multipleinput\TabularInput;
 
 $resourceData = Resource::findAllIdName(null, true, null, true);
@@ -20,7 +21,24 @@ $form = SimpleActiveForm::begin([
 echo $form->field($applyOrder, 'person_id')->dropDownList(Person::findAllIdName(true), [
     'prompt' => '请选择'
 ])->label('申请人');
-echo $form->field($applyOrder, 'reason')->textarea(['rows' => 4]);
+
+$dropDownItems = [];
+if ($applyOrder->type == Enum::APPLY_ORDER_TYPE_INPUT) {
+    $dropDownItems = Settings::getValueOptionsForArr(Settings::KEY_RK_OPTIONS);
+} elseif ($applyOrder->type == Enum::APPLY_ORDER_TYPE_OUTPUT) {
+    $dropDownItems = Settings::getValueOptionsForArr(Settings::KEY_CK_OPTIONS);
+} elseif ($applyOrder->type == Enum::APPLY_ORDER_TYPE_APPLY) {
+    $dropDownItems = Settings::getValueOptionsForArr(Settings::KEY_SL_OPTIONS);
+} elseif ($applyOrder->type == Enum::APPLY_ORDER_TYPE_RETURN) {
+    $dropDownItems = Settings::getValueOptionsForArr(Settings::KEY_GH_OPTIONS);
+}
+echo $form->field($applyOrder, 'reason')->widget(SimpleSelect2::className(), [
+    'data' => $dropDownItems,
+    'pluginOptions' => [
+        'tags' => true
+    ]
+]);
+
 if ($applyOrder->type == Enum::APPLY_ORDER_TYPE_APPLY) {
     echo $form->field($applyOrder, 'pick_type')->dropDownList(ApplyOrder::$pickTypeData);
 }
