@@ -32,6 +32,7 @@ new Vue({
             active: { name: '有源标签检测设备', serverOk: false, deviceOk: false, color: 'red' },
             passive: { name: '无源标签检测设备', serverOk: false, deviceOk: false, color: 'red' },
         },
+        activeErrorCount: 0,
     },
     methods: {
         checkTagExists: function() {
@@ -40,15 +41,23 @@ new Vue({
                 _this.dataList.active.serverOk = true;
                 _this.dataList.active.deviceOk = true;
                 _this.dataList.active.color = 'green';
+                _this.activeErrorCount = 0;
             }, function() {
-                _this.dataList.active.serverOk = true;
-                _this.dataList.active.deviceOk = false;
-                _this.dataList.active.color = 'yellow';
+                _this.activeErrorCount++;
+                if (_this.activeErrorCount > 10) {
+                    _this.dataList.active.serverOk = true;
+                    _this.dataList.active.deviceOk = false;
+                    _this.dataList.active.color = 'yellow';
+                }
             }, function() {
-                _this.dataList.active.serverOk = false;
-                _this.dataList.active.deviceOk = false;
-                _this.dataList.active.color = 'red';
+                _this.activeErrorCount++;
+                if (_this.activeErrorCount > 10) {
+                    _this.dataList.active.serverOk = false;
+                    _this.dataList.active.deviceOk = false;
+                    _this.dataList.active.color = 'red';
+                }
             });
+            console.log(_this.activeErrorCount)
             tagRead.checkPassiveStatus(function() {
                 _this.dataList.passive.serverOk = true;
                 _this.dataList.passive.deviceOk = true;
