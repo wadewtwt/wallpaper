@@ -21,13 +21,15 @@ class AlarmCheckWidget extends Widget
 
     public function run()
     {
-        $this->registerAssets();
-        echo Html::tag('div', '', ['id' => $this->_alarmContainerId]);
-        echo Html::tag('audio', '', [
-            'src' => Yii::getAlias('@web/audio/alarm.wav'),
-            'preload' => 'none',
-            'id' => $this->_alarmAudioId
-        ]);
+        if (false) {
+            $this->registerAssets();
+            echo Html::tag('div', '', ['id' => $this->_alarmContainerId]);
+            echo Html::tag('audio', '', [
+                'src' => Yii::getAlias('@web/audio/alarm.wav'),
+                'preload' => 'none',
+                'id' => $this->_alarmAudioId
+            ]);
+        }
     }
 
     public function registerAssets()
