@@ -179,7 +179,7 @@ class ApplyOrder extends \common\models\base\ActiveRecord
             case self::STATUS_RETURN_OVER:
                 return $this->status == self::STATUS_OVER;
             case self::STATUS_DELETE:
-                return !in_array($this->status, [self::STATUS_DELETE, self::STATUS_OVER]);
+                return !in_array($this->status, [self::STATUS_DELETE, self::STATUS_OVER, self::STATUS_RETURN_OVER]);
             default:
                 return false;
         }
