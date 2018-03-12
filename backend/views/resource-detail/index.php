@@ -79,6 +79,9 @@ $columns = [
         'attribute' => 'quantity',
     ],
     [
+        'attribute' => 'remark',
+    ],
+    [
         'class' => '\kartik\grid\ActionColumn',
         'width' => '150px',
         'template' => '{detail}',

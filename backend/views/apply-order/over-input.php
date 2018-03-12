@@ -1,7 +1,6 @@
 <?php
 /** @var $this \yii\web\View */
 /** @var $applyOrder \common\models\ApplyOrder */
-
 /** @var $applyOrderResources \common\models\ApplyOrderResource[] */
 
 use backend\widgets\SimpleReadTagInput;
