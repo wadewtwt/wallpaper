@@ -3,6 +3,7 @@
 namespace backend\models;
 
 use common\components\ActiveDataProvider;
+use common\components\Tools;
 use common\models\AlarmRecord;
 
 class AlarmRecordSearch extends AlarmRecord
@@ -16,7 +17,7 @@ class AlarmRecordSearch extends AlarmRecord
 
     public function search($params)
     {
-        $query = AlarmRecord::find();
+        $query = AlarmRecord::find()->andWhere(['store_id' => Tools::getStoreIds()]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

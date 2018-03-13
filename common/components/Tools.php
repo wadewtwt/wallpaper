@@ -2,9 +2,12 @@
 
 namespace common\components;
 
+use common\models\Admin;
 use common\models\base\ConfigString;
+use common\models\Store;
 use kriss\tools\Fun;
 use Yii;
+use yii\base\Exception;
 
 class Tools extends Fun
 {
@@ -30,6 +33,24 @@ class Tools extends Fun
             return true;
         }
         return self::generatePasswordHash($password) === $passwordHash;
+    }
+
+    /**
+     * 获取当前登录的用户管理的所有仓库
+     * @return array
+     * @throws Exception
+     */
+    public static function getStoreIds()
+    {
+        /** @var Admin $user */
+        $user = Yii::$app->user->identity;
+        if (!$user) {
+            throw new Exception('用户未登录不能调用');
+        }
+        if ($user->admin_role == Admin::ADMIN_ROLE_SUPER_ADMIN) {
+            return Store::find()->select(['id'])->column();
+        }
+        return $user->getStoreIds();
     }
 
     /**

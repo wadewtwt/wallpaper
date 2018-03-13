@@ -24,6 +24,7 @@ use yii\web\IdentityInterface;
  * @property integer $updated_by
  * @property string $auth_role
  * @property integer $admin_role
+ * @property string $store_ids
  *
  * @property AlarmRecord[] $alarmRecords
  * @property string $statusName
@@ -64,7 +65,7 @@ class Admin extends ActiveRecord implements IdentityInterface
         return [
             [['username', 'password_hash', 'name', 'auth_key'], 'required'],
             [['status', 'created_at', 'created_by', 'updated_at', 'updated_by', 'admin_role'], 'integer'],
-            [['username', 'password_hash', 'name', 'cellphone', 'auth_key', 'auth_role'], 'string', 'max' => 255],
+            [['username', 'password_hash', 'name', 'cellphone', 'auth_key', 'auth_role', 'store_ids'], 'string', 'max' => 255],
             [['username'], 'unique'],
         ];
     }
@@ -88,6 +89,7 @@ class Admin extends ActiveRecord implements IdentityInterface
             'updated_by' => '修改人',
             'auth_role' => 'Auth Role',
             'admin_role' => '管理员角色',
+            'store_ids' => '管理仓库',
         ];
     }
 
@@ -113,6 +115,35 @@ class Admin extends ActiveRecord implements IdentityInterface
     public function getAdminRoleName()
     {
         return $this->toName($this->admin_role, self::$adminRoleData);
+    }
+
+    /**
+     * @param $ids array|string
+     */
+    public function setStoreIds($ids)
+    {
+        $this->store_ids = $this->array2Str($ids);
+    }
+
+    /**
+     * @return array
+     */
+    public function getStoreIds()
+    {
+        return $this->str2Arr($this->store_ids);
+    }
+
+    /**
+     * @return string
+     */
+    public function getStoreNames()
+    {
+        if ($this->admin_role == Admin::ADMIN_ROLE_SUPER_ADMIN) {
+            return '所有';
+        }
+        $storeIds = $this->getStoreIds();
+        $names = Store::find()->select(['name'])->andWhere(['id' => $storeIds])->column();
+        return implode(',', $names);
     }
 
     /**

@@ -30,6 +30,12 @@ $columns = [
         }
     ],
     [
+        'attribute' => 'store_ids',
+        'value' => function (Admin $model) {
+            return $model->getStoreNames();
+        }
+    ],
+    [
         'attribute' => 'status',
         'value' => function (Admin $model) {
             return $model->getStatusName();

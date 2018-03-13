@@ -21,7 +21,7 @@ class AlarmCheckWidget extends Widget
 
     public function run()
     {
-        if (false) {
+        if (true) {
             $this->registerAssets();
             echo Html::tag('div', '', ['id' => $this->_alarmContainerId]);
             echo Html::tag('audio', '', [

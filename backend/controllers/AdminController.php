@@ -65,6 +65,7 @@ class AdminController extends AuthWebController
         if ($model->load(Yii::$app->request->post())) {
             $model->generateAuthKey();
             $model->setPassword($model->password_hash);
+            $model->setStoreIds($model->store_ids);
             if ($model->validate() && $model->save(false)) {
                 MessageAlert::set(['success' => '新建成功']);
             } else {
@@ -85,6 +86,7 @@ class AdminController extends AuthWebController
         }
         $model = $this->findModel($id);
         if ($model->load(Yii::$app->request->post())) {
+            $model->setStoreIds($model->store_ids);
             if ($model->validate() && $model->save()) {
                 MessageAlert::set(['success' => '修改成功']);
             } else {
@@ -92,6 +94,8 @@ class AdminController extends AuthWebController
             }
             return $this->actionPreviousRedirect();
         }
+
+        $model->store_ids = $model->getStoreIds();
         return $this->renderAjax('_create_update', [
             'model' => $model
         ]);

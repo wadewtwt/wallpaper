@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 use backend\components\AuthWebController;
+use common\components\Tools;
 use common\models\AlarmCall;
 use common\models\AlarmRecord;
 use common\models\Camera;
@@ -85,6 +86,7 @@ class ApiController extends AuthWebController
             ->with('store')
             ->andWhere(['status' => AlarmRecord::STATUS_NORMAL])
             ->andWhere(['>=', 'alarm_at', $start_time])
+            ->andWhere(['store_id' => Tools::getStoreIds()])
             ->all();
         // 打开以下测试
         /*$models = AlarmRecord::find()

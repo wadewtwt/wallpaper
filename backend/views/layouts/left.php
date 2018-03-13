@@ -66,7 +66,7 @@ $menu = [
             ['label' => '联动设置', 'icon' => 'circle-o', 'url' => [$baseUrl . '/alarm-config']],
         ]
     ],
-    ['label' => '报警记录管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/alarm-record'], 'visible' => $isSuperAdmin,],
+    ['label' => '报警记录管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/alarm-record']],
     ['label' => '管理员管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/admin'], 'visible' => $isSuperAdmin,],
     ['label' => '操作日志管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/operate-log'], 'visible' => $isSuperAdmin,],
     [
