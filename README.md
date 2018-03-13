@@ -8,7 +8,7 @@ cd xxx
 php composer.phar install -vvv
 php init --env=Development --overwrite=n
 #修改数据库配置后，初始化数据
-php yii migrate
+php yii migrate --interactive=0
 php yii init/init-data
 php init-auth/restore
 ```
