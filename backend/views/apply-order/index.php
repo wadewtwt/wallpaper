@@ -1,6 +1,7 @@
 <?php
 /** @var $this yii\web\View */
 /** @var $dataProvider common\components\ActiveDataProvider */
+
 /** @var $searchModel backend\models\ApplyOrderSearch */
 
 use backend\widgets\SimpleDynaGrid;
@@ -64,7 +65,7 @@ $columns = array_merge($columns, [
     [
         'class' => '\kartik\grid\ActionColumn',
         'width' => '220px',
-        'template' => '<p>{detail} {update} {print}</p>  <p>{pass} {delete} {over}</p>',
+        'template' => '<p>{detail} {update} {print}</p>  <p>{pass} {delete} {over}</p> <p>{clone}</p>',
         'buttons' => [
             'detail' => function ($url) {
                 $options = [
@@ -119,6 +120,16 @@ $columns = array_merge($columns, [
                 ];
                 return Html::a($typeName, $url, $options);
             },
+            'clone' => function ($url, ApplyOrder $model) {
+                if (!in_array($model->type, [Enum::APPLY_ORDER_TYPE_INPUT, Enum::APPLY_ORDER_TYPE_OUTPUT, Enum::APPLY_ORDER_TYPE_APPLY])) {
+                    return '';
+                }
+                $options = [
+                    'class' => 'btn btn-primary',
+                    'data-confirm' => '确认复制该记录？复制的申请单状态为待审核'
+                ];
+                return Html::a('复用', $url, $options);
+            }
         ],
     ],
 ]);

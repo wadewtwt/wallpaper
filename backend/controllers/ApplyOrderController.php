@@ -163,6 +163,21 @@ class ApplyOrderController extends AuthWebController
         throw new Exception('不支持的 APPLY_ORDER_TYPE 类型');
     }
 
+    // 复用
+    public function actionClone($id)
+    {
+        $model = $this->findModel($id);
+
+        $result = $model->cloneOne();
+        if ($result['type'] == 'success') {
+            MessageAlert::set(['success' => '复制成功']);
+        } else {
+            MessageAlert::set(['error' => $result['msg']]);
+        }
+
+        return $this->actionPreviousRedirect();
+    }
+
     /**
      * @param $id
      * @return ApplyOrder

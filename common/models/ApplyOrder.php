@@ -1,7 +1,9 @@
 <?php
 
 namespace common\models;
+
 use common\models\base\Enum;
+use Yii;
 
 /**
  * This is the model class for table "apply_order".
@@ -185,8 +187,43 @@ class ApplyOrder extends \common\models\base\ActiveRecord
         }
     }
 
-    public function resourceOver() {
+    /**
+     * @return array
+     * @throws \yii\db\Exception
+     */
+    public function cloneOne()
+    {
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            // 复制申请单
+            $model = new static();
+            $model->attributes = $this->attributes;
+            $model->status = static::STATUS_APPLYING;
+            unset($model['delete_reason'], $model['return_at']);
+            $model->save(false);
+            // 复制申请单详情
+            $rows = [];
+            foreach ($this->applyOrderDetails as $applyOrderDetail) {
+                $rows[] = [
+                    'apply_order_id' => $model->id,
+                    'resource_id' => $applyOrderDetail->resource_id,
+                    'quantity' => $applyOrderDetail->quantity,
+                ];
+            }
+            if (count($rows) > 0) {
+                Yii::$app->db->createCommand()->batchInsert(
+                    ApplyOrderDetail::tableName(),
+                    array_keys($rows[0]),
+                    $rows
+                )->execute();
+            }
 
+            $transaction->commit();
+            return ['type' => 'success', 'msg' => 'ok'];
+        } catch (\Exception $e) {
+            $transaction->rollBack();
+            return ['type' => 'error', 'msg' => $e->getMessage()];
+        }
     }
 
     /**
