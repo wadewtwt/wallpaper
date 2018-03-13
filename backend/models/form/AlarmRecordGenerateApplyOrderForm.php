@@ -105,7 +105,7 @@ class AlarmRecordGenerateApplyOrderForm extends Model
                 $this->applyOrderDetails[$resourceDetail->resource_id]['quantity_real'] += $resourceDetail->quantity;
             } else {
                 $applyOrderDetail = new ApplyOrderDetail([
-                    'resource_id' => $resourceDetail->id,
+                    'resource_id' => $resourceDetail->resource_id,
                     'quantity' => $resourceDetail->quantity,
                     'quantity_real' => $resourceDetail->quantity,
                 ]);
@@ -113,8 +113,9 @@ class AlarmRecordGenerateApplyOrderForm extends Model
             }
 
             $applyOrderResource = new ApplyOrderResource([
-                'resource_id' => $resourceDetail->id,
+                'resource_id' => $resourceDetail->resource_id,
                 'container_id' => $resourceDetail->container_id,
+                'tag_active' => $resourceDetail->tag_active,
                 'tag_passive' => $resourceDetail->tag_passive,
                 'quantity' => $resourceDetail->quantity,
             ]);
