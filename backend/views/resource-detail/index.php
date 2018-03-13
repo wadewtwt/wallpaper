@@ -1,6 +1,7 @@
 <?php
 /** @var $this yii\web\View */
 /** @var $dataProvider common\components\ActiveDataProvider */
+
 /** @var $searchModel backend\models\ResourceDetailSearch */
 
 use backend\models\ResourceDetailOperationSearch;
@@ -50,7 +51,11 @@ $columns = [
             $html = [];
             $html[] = $model->is_online
                 ? '<span class="fa fa-check-circle text-green"></span> 在线'
-                : '<span class="fa fa-exclamation-circle text-red"></span> 离线';
+                : (
+                !in_array($model->status, [ResourceDetail::STATUS_OUTPUT, ResourceDetail::STATUS_PICKED])
+                    ? '<span class="fa fa-exclamation-circle text-warning"></span> 异常'
+                    : '<span class="fa fa-exclamation-circle text-red"></span> 离线'
+                );
             $html[] = '时间：' . date('Y-m-d H:i:s', $model->online_change_at);
             return implode('<br>', $html);
         },
