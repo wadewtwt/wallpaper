@@ -81,7 +81,8 @@ $menu = [
 
 $menuHelper = new \backend\components\MenuHelper([
     'cacheEnable' => YII_DEBUG ? false : true,
-    'cacheTime' => 60
+    'cacheTime' => 60,
+    'cacheKey' => [$admin->admin_role]
 ]);
 $menu = $menuHelper->changeActive($menu);
 ?>

@@ -16,6 +16,10 @@ class MenuHelper extends BaseObject
      * @var int
      */
     public $cacheTime = 60;
+    /**
+     * @var string|array
+     */
+    public $cacheKey;
 
     private $currentAction;
     private $controllerRoute;
@@ -45,7 +49,7 @@ class MenuHelper extends BaseObject
     {
         if ($this->cacheEnable) {
             $cache = Yii::$app->cache;
-            $cacheKey = [__CLASS__, __FUNCTION__, 'cache-menu-active', $this->controllerRoute, $this->currentAction];
+            $cacheKey = array_merge([__CLASS__, __FUNCTION__, 'cache-menu-active', $this->controllerRoute, $this->currentAction], (array)$this->cacheKey);
             return $cache->getOrSet($cacheKey, function () use ($menu) {
                 return $this->doChangeActive($menu);
             }, $this->cacheTime);
