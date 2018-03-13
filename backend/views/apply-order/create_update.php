@@ -32,6 +32,9 @@ if ($applyOrder->type == Enum::APPLY_ORDER_TYPE_INPUT) {
 } elseif ($applyOrder->type == Enum::APPLY_ORDER_TYPE_RETURN) {
     $dropDownItems = Settings::getValueOptionsForArr(Settings::KEY_GH_OPTIONS);
 }
+if ($applyOrder->reason) {
+    $dropDownItems[$applyOrder->reason] = $applyOrder->reason;
+}
 echo $form->field($applyOrder, 'reason')->widget(SimpleSelect2::className(), [
     'data' => $dropDownItems,
     'pluginOptions' => [
