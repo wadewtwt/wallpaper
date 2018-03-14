@@ -44,20 +44,10 @@ $menu = [
             ['label' => '消耗品操作记录', 'icon' => 'circle-o', 'url' => [$baseUrl . '/expendable-detail-operation']],
         ]
     ],
-    [
-        'label' => '出入库管理', 'icon' => 'list', 'url' => '#',
-        'items' => [
-            ['label' => '入库管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-input']],
-            ['label' => '出库管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-output']],
-        ]
-    ],
-    [
-        'label' => '调度管理', 'icon' => 'list', 'url' => '#',
-        'items' => [
-            ['label' => '申领管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-apply']],
-            ['label' => '退还管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-return']],
-        ]
-    ],
+    ['label' => '入库管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-input']],
+    ['label' => '出库管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-output']],
+    ['label' => '申领管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-apply']],
+    ['label' => '退还管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/apply-order-return']],
     [
         'label' => '监控设备管理', 'icon' => 'list', 'url' => '#', 'visible' => $isSuperAdmin,
         'items' => [
