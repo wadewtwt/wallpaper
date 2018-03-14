@@ -20,7 +20,7 @@ $isPrint = isset($isPrint) ? $isPrint : false;
         ]) ?>
 
         <?php if (!$isPrint): ?>
-            <?= $this->render('_apply_order_detail', [
+            <?= $this->render('_apply_order_resource', [
                 'models' => $model->applyOrderResources,
             ]) ?>
         <?php endif; ?>

@@ -24,6 +24,7 @@
                 <th class="text-center">序号</th>
                 <th class="text-center">资源名</th>
                 <th class="text-center">货位</th>
+                <th class="text-center">有源标签</th>
                 <th class="text-center">无源标签</th>
                 <th class="text-center">数量</th>
                 <th class="text-center">备注</th>
@@ -35,6 +36,7 @@
                     <td><?= ($key + 1) ?></td>
                     <td><?= $applyOrderResource->resource->name ?></td>
                     <td><?= $applyOrderResource->container->name ?></td>
+                    <td><?= $applyOrderResource->tag_active ?></td>
                     <td><?= $applyOrderResource->tag_passive ?></td>
                     <td><?= $applyOrderResource->quantity ?></td>
                     <td><?= $applyOrderResource->remark ?></td>

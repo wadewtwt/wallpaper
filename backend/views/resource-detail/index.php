@@ -34,7 +34,7 @@ $columns = [
     ],
     [
         'label' => '标签',
-        'width' => '300px',
+        'width' => '150px',
         'value' => function (ResourceDetail $model) {
             $html = [];
             $html[] = '有源标签：' . $model->tag_active;
@@ -45,7 +45,7 @@ $columns = [
     ],
     [
         'label' => '在线离线',
-        'width' => '200px',
+        'width' => '140px',
         'value' => function (ResourceDetail $model) {
             $html = [];
             $html[] = $model->is_online
@@ -58,7 +58,7 @@ $columns = [
     ],
     [
         'label' => '状态',
-        'width' => '200px',
+        'width' => '140px',
         'value' => function (ResourceDetail $model) {
             $html = [];
             if ($model->status == ResourceDetail::STATUS_NORMAL && !$model->is_online) {
@@ -74,10 +74,12 @@ $columns = [
     ],
     [
         'attribute' => 'maintenance_at',
+        'width' => '100px',
         'format' => ['date', 'php:Y-m-d H:i:s']
     ],
     [
         'attribute' => 'scrap_at',
+        'width' => '100px',
         'format' => ['date', 'php:Y-m-d H:i:s']
     ],
     [

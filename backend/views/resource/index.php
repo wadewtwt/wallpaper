@@ -41,6 +41,12 @@ $columns = [
         'attribute' => 'maintenance_cycle',
     ],
     [
+        'attribute' => 'unit',
+        'value' => function (\common\models\Resource $model) {
+            return $model->getUnitName();
+        }
+    ],
+    [
         'class' => '\kartik\grid\ActionColumn',
         'width' => '220px',
         'template' => '{update} {delete} {detail}',

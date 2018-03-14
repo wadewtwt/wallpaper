@@ -17,6 +17,7 @@ use yii\helpers\ArrayHelper;
  * @property integer $current_stock
  * @property integer $scrap_cycle
  * @property integer $maintenance_cycle
+ * @property integer $unit
  * @property integer $status
  * @property integer $created_at
  * @property integer $created_by
@@ -56,7 +57,7 @@ class Resource extends \common\models\base\ActiveRecord
     {
         return [
             [['type', 'resource_type_id', 'name'], 'required'],
-            [['type', 'resource_type_id', 'min_stock', 'current_stock', 'scrap_cycle', 'maintenance_cycle', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [['type', 'resource_type_id', 'min_stock', 'current_stock', 'scrap_cycle', 'maintenance_cycle', 'unit', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['name'], 'string', 'max' => 255],
         ];
     }
@@ -75,6 +76,7 @@ class Resource extends \common\models\base\ActiveRecord
             'current_stock' => '当前库存',
             'scrap_cycle' => '报废周期（天）',
             'maintenance_cycle' => '维护周期（天）',
+            'unit' => '计量单位',
             'status' => '状态',
             'created_at' => '创建时间',
             'created_by' => '创建人',
@@ -121,6 +123,14 @@ class Resource extends \common\models\base\ActiveRecord
     public function getTypeName()
     {
         return $this->toName($this->type, self::$typeData);
+    }
+
+    /**
+     * @return string
+     */
+    public function getUnitName()
+    {
+        return $this->toName($this->unit, Enum::$unitData);
     }
 
     /**

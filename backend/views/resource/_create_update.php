@@ -3,6 +3,7 @@
 /** @var $model \common\models\Resource */
 
 use backend\widgets\SimpleAjaxForm;
+use common\models\base\Enum;
 use common\models\ResourceType;
 
 $isEdit = ($model->isNewRecord) ? 0 : 1;
@@ -19,6 +20,7 @@ if ($isEdit) {
 } else {
     echo $form->field($model, 'scrap_cycle');
     echo $form->field($model, 'maintenance_cycle');
+    echo $form->field($model, 'unit')->dropDownList(Enum::$unitData);
 }
 
 SimpleAjaxForm::end();

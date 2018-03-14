@@ -5,6 +5,7 @@ namespace common\models;
 use common\models\base\Enum;
 use Yii;
 use yii\base\Exception;
+use yii\web\NotFoundHttpException;
 
 /**
  * This is the model class for table "resource_detail".
@@ -62,7 +63,7 @@ class ResourceDetail extends \common\models\base\ActiveRecord
     public function rules()
     {
         return [
-            [['resource_id', 'type', 'container_id', 'tag_active', 'tag_passive', 'online_change_at', 'maintenance_at', 'scrap_at', 'quantity'], 'required'],
+            [['resource_id', 'type', 'container_id', 'online_change_at', 'maintenance_at', 'scrap_at', 'quantity'], 'required'],
             [['resource_id', 'type', 'container_id', 'is_online', 'online_change_at', 'maintenance_at', 'scrap_at', 'quantity', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['tag_active', 'tag_passive', 'remark'], 'string', 'max' => 255],
             [['container_id'], 'exist', 'skipOnError' => true, 'targetClass' => Container::className(), 'targetAttribute' => ['container_id' => 'id']],
@@ -147,31 +148,31 @@ class ResourceDetail extends \common\models\base\ActiveRecord
      */
     protected function changeStatusByApplyOrderType($applyOrderType, $resource, $isMaintenance = false)
     {
-        if ($this->type == Resource::TYPE_DEVICE) {
-            if ($applyOrderType == Enum::APPLY_ORDER_TYPE_OUTPUT) {
-                $this->status = self::STATUS_OUTPUT;
-            } elseif ($applyOrderType == Enum::APPLY_ORDER_TYPE_APPLY) {
-                $this->status = self::STATUS_PICKED;
-            } elseif (in_array($applyOrderType, [Enum::APPLY_ORDER_TYPE_RETURN, Enum::APPLY_ORDER_TYPE_INPUT])) {
-                $this->status = self::STATUS_NORMAL;
+        if ($resource->unit != Enum::UNIT_BATCH) {
+            if ($this->type == Resource::TYPE_DEVICE) {
+                if ($applyOrderType == Enum::APPLY_ORDER_TYPE_OUTPUT) {
+                    $this->status = self::STATUS_OUTPUT;
+                } elseif ($applyOrderType == Enum::APPLY_ORDER_TYPE_APPLY) {
+                    $this->status = self::STATUS_PICKED;
+                } elseif (in_array($applyOrderType, [Enum::APPLY_ORDER_TYPE_RETURN, Enum::APPLY_ORDER_TYPE_INPUT])) {
+                    $this->status = self::STATUS_NORMAL;
+                } else {
+                    throw new Exception('未知的 applyOrderType');
+                }
+            } elseif ($this->type == Resource::TYPE_EXPENDABLE) {
+                if (in_array($applyOrderType, [Enum::APPLY_ORDER_TYPE_OUTPUT, Enum::APPLY_ORDER_TYPE_APPLY])) {
+                    $this->status = self::STATUS_OUTPUT;
+                } elseif (in_array($applyOrderType, [Enum::APPLY_ORDER_TYPE_RETURN, Enum::APPLY_ORDER_TYPE_INPUT])) {
+                    $this->status = self::STATUS_NORMAL;
+                } else {
+                    throw new Exception('未知的 applyOrderType');
+                }
             } else {
-                throw new Exception('未知的 applyOrderType');
+                throw new Exception('未知的 type');
             }
-        } elseif ($this->type == Resource::TYPE_EXPENDABLE) {
-            if (in_array($applyOrderType, [Enum::APPLY_ORDER_TYPE_OUTPUT, Enum::APPLY_ORDER_TYPE_APPLY])) {
-                $this->status = self::STATUS_OUTPUT;
-            } elseif (in_array($applyOrderType, [Enum::APPLY_ORDER_TYPE_RETURN, Enum::APPLY_ORDER_TYPE_INPUT])) {
-                $this->status = self::STATUS_NORMAL;
-            } else {
-                throw new Exception('未知的 applyOrderType');
-            }
-        } else {
-            throw new Exception('未知的 type');
         }
-        if (in_array($applyOrderType, [Enum::APPLY_ORDER_TYPE_OUTPUT, Enum::APPLY_ORDER_TYPE_APPLY])) {
-            $this->is_online = 0;
-            $this->online_change_at = time();
-        } elseif (in_array($applyOrderType, [Enum::APPLY_ORDER_TYPE_RETURN, Enum::APPLY_ORDER_TYPE_INPUT])) {
+
+        if ($resource->unit == Enum::UNIT_BATCH) {
             $this->is_online = 1;
             $this->online_change_at = time();
             if ($applyOrderType == Enum::APPLY_ORDER_TYPE_INPUT) {
@@ -182,7 +183,22 @@ class ResourceDetail extends \common\models\base\ActiveRecord
                 $this->maintenance_at = time() + ($resource->maintenance_cycle * 86400);
             }
         } else {
-            throw new Exception('未知的 applyOrderType');
+            if (in_array($applyOrderType, [Enum::APPLY_ORDER_TYPE_OUTPUT, Enum::APPLY_ORDER_TYPE_APPLY])) {
+                $this->is_online = 0;
+                $this->online_change_at = time();
+            } else if (in_array($applyOrderType, [Enum::APPLY_ORDER_TYPE_RETURN, Enum::APPLY_ORDER_TYPE_INPUT])) {
+                $this->is_online = 1;
+                $this->online_change_at = time();
+                if ($applyOrderType == Enum::APPLY_ORDER_TYPE_INPUT) {
+                    $this->scrap_at = time() + ($resource->scrap_cycle * 86400);
+                    $this->maintenance_at = time() + ($resource->maintenance_cycle * 86400);
+                }
+                if ($applyOrderType == Enum::APPLY_ORDER_TYPE_RETURN && $isMaintenance) {
+                    $this->maintenance_at = time() + ($resource->maintenance_cycle * 86400);
+                }
+            } else {
+                throw new Exception('未知的 applyOrderType');
+            }
         }
     }
 
@@ -263,38 +279,76 @@ class ResourceDetail extends \common\models\base\ActiveRecord
     {
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            $isTagPassiveExist = static::isTagPassiveUsed($applyOrderResource->tag_passive);
             $resource = $applyOrderResource->resource;
             // 修改资源信息
             if ($applyOrderType == Enum::APPLY_ORDER_TYPE_INPUT) {
-                $isTagActiveExist = static::isTagActiveUsed($applyOrderResource->tag_active);
+                $isTagPassiveExist = false;
+                $isTagActiveExist = false;
+                if ($applyOrderResource->tag_passive) {
+                    $isTagPassiveExist = static::isTagPassiveUsed($applyOrderResource->tag_passive);
+                }
+                if ($applyOrderResource->tag_active) {
+                    $isTagActiveExist = static::isTagActiveUsed($applyOrderResource->tag_active);
+                }
                 if ($isTagActiveExist) {
                     throw new Exception("有源标签为'{$applyOrderResource->tag_active}'的资源已存在");
                 }
                 if ($isTagPassiveExist) {
                     throw new Exception("无源标签为'{$applyOrderResource->tag_passive}'的资源已存在");
                 }
-                $model = new static();
-                $model->resource_id = $resource->id;
-                $model->type = $resource->type;
-                $model->container_id = $applyOrderResource->container_id;
-                $model->tag_active = $applyOrderResource->tag_active;
-                $model->tag_passive = $applyOrderResource->tag_passive;
-                $model->quantity = $applyOrderResource->quantity;
-                $model->remark = $applyOrderResource->remark;
+                if ($resource->unit == Enum::UNIT_BATCH) {
+                    $model = static::findOne(['resource_id' => $resource->id]);
+                    if (!$model) {
+                        $model = new static();
+                    }
+                } else {
+                    $model = new static();
+                }
+                if ($model->isNewRecord) {
+                    $model->resource_id = $resource->id;
+                    $model->type = $resource->type;
+                    $model->container_id = $applyOrderResource->container_id;
+                    $model->tag_active = $applyOrderResource->tag_active ?: null;
+                    $model->tag_passive = $applyOrderResource->tag_passive ?: null;
+                    $model->quantity = $applyOrderResource->quantity;
+                    $model->remark = $applyOrderResource->remark;
+                } else {
+                    $model->quantity += $applyOrderResource->quantity;
+                }
                 $model->changeStatusByApplyOrderType($applyOrderType, $resource, false);
                 $model->save(false);
             } elseif (in_array($applyOrderType, [
                 Enum::APPLY_ORDER_TYPE_OUTPUT, Enum::APPLY_ORDER_TYPE_APPLY, Enum::APPLY_ORDER_TYPE_RETURN
             ])) {
-                if (!$isTagPassiveExist) {
-                    throw new Exception("无源标签为'{$applyOrderResource->tag_passive}'的资源不存在");
+                if ($resource->unit == Enum::UNIT_BATCH) {
+                    $model = static::findOne(['resource_id' => $resource->id]);
+                    if (!$model) {
+                        throw new NotFoundHttpException("资源 ID 为{$model->id}的资源不存在");
+                    }
+                    if (in_array($applyOrderType, [Enum::APPLY_ORDER_TYPE_OUTPUT, Enum::APPLY_ORDER_TYPE_APPLY])) {
+                        $model->quantity -= $applyOrderResource->quantity;
+                    } else {
+                        $model->quantity += $applyOrderResource->quantity;
+                    }
+                } else {
+                    if ($applyOrderResource->tag_passive) {
+                        $model = ResourceDetail::findOne(['tag_passive' => $applyOrderResource->tag_passive]);
+                        if (!$model) {
+                            throw new NotFoundHttpException('无源标签为' . $applyOrderResource->tag_passive . '的资源不存在');
+                        }
+                    } elseif ($applyOrderResource->tag_active) {
+                        $model = ResourceDetail::findOne(['tag_active' => $applyOrderResource->tag_active]);
+                        if (!$model) {
+                            throw new NotFoundHttpException('有源标签为' . $applyOrderResource->tag_active . '的资源不存在');
+                        }
+                    } else {
+                        throw new NotFoundHttpException("单个处理的数据必须得有'有源标签'或者'无源标签'");
+                    }
                 }
-                $model = ResourceDetail::findOne(['tag_passive' => $applyOrderResource->tag_passive]);
                 if (in_array($applyOrderType, [Enum::APPLY_ORDER_TYPE_OUTPUT, Enum::APPLY_ORDER_TYPE_APPLY])
                     && $model->status != ResourceDetail::STATUS_NORMAL
                 ) {
-                    throw new Exception("无源标签为'{$applyOrderResource->tag_passive}'的资源未入库，不能出库或申领");
+                    throw new Exception("资源 ID 为{$model->id}未入库，不能出库或申领");
                 }
                 $model->changeStatusByApplyOrderType($applyOrderType, $resource, $applyOrderResource->applyOrder->pick_type == ApplyOrder::PICK_TYPE_MAINTENANCE);
                 $model->save(false);
@@ -302,11 +356,15 @@ class ResourceDetail extends \common\models\base\ActiveRecord
                 throw new Exception('未知的 applyOrderType');
             }
             // 修改资源库存
-            Resource::updateCurrentStockByApplyOrderType($applyOrderType, $model->resource_id, $model->quantity);
+            Resource::updateCurrentStockByApplyOrderType($applyOrderType, $model->resource_id, $applyOrderResource->quantity);
             // 修改货位库存
             Container::updateCurrentQuantityByApplyOrderType($applyOrderType, $model->container_id);
             // 创建操作明细
-            ResourceDetailOperation::createOne($applyOrderResource->apply_order_id, $model->id, $model->type, $applyOrderType, $applyOrderResource->remark);
+            $remark = $applyOrderResource->remark;
+            if ($resource->unit == Enum::UNIT_BATCH) {
+                $remark = '操作数量：' . $applyOrderResource->quantity . ($remark ? '，备注：' . $remark : '');
+            }
+            ResourceDetailOperation::createOne($applyOrderResource->apply_order_id, $model->id, $model->type, $applyOrderType, $remark);
             $transaction->commit();
         } catch (Exception $e) {
             $transaction->rollBack();

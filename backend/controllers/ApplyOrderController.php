@@ -288,30 +288,31 @@ class ApplyOrderController extends AuthWebController
             $hasError = false;
             $sourceCountArr = [];
             foreach ($applyOrderResources as $applyOrderResource) {
-                if (!isset($sourceCountArr[$applyOrderResource->resource_id])) {
-                    $sourceCountArr[$applyOrderResource->resource_id] = 1;
+                $countKey = $applyOrderResource->resource_id;
+                if (!isset($sourceCountArr[$countKey])) {
+                    $sourceCountArr[$countKey] = $applyOrderResource->quantity;
                 } else {
-                    $sourceCountArr[$applyOrderResource->resource_id] += 1;
+                    $sourceCountArr[$countKey] += $applyOrderResource->quantity;
                 }
             }
             $applyOrderDetails = $applyOrder->applyOrderDetails;
             try {
-                // 检查资源类型是否匹配
-                if (count($applyOrderDetails) != count($sourceCountArr)) {
-                    throw new Exception('资源种类不匹配');
-                }
                 // 检查实际处理的数量和申请单的数量是否匹配
                 foreach ($applyOrderDetails as $applyOrderDetail) {
+                    $countKey = $applyOrderDetail->resource_id;
+                    if (!isset($sourceCountArr[$countKey])) {
+                        throw new Exception("资源'{$applyOrderDetail->resource->name}'不存在");
+                    }
                     if ($this->applyOrderType == Enum::APPLY_ORDER_TYPE_RETURN) {
-                        if ($sourceCountArr[$applyOrderDetail->resource_id] > $applyOrderDetail->quantity_real) {
+                        if ($sourceCountArr[$countKey] > $applyOrderDetail->quantity_real) {
                             throw new Exception('资源：' . $applyOrderDetail->resource->name . '，实际操作的数量不能大于申领的实际数量');
                         }
-                        $applyOrderDetail->quantity_return = $sourceCountArr[$applyOrderDetail->resource_id];
+                        $applyOrderDetail->quantity_return = $sourceCountArr[$countKey];
                     } else {
-                        if ($sourceCountArr[$applyOrderDetail->resource_id] > $applyOrderDetail->quantity) {
+                        if ($sourceCountArr[$countKey] > $applyOrderDetail->quantity) {
                             throw new Exception('资源：' . $applyOrderDetail->resource->name . '，实际操作的数量不能大于申请单的数量');
                         }
-                        $applyOrderDetail->quantity_real = $sourceCountArr[$applyOrderDetail->resource_id];
+                        $applyOrderDetail->quantity_real = $sourceCountArr[$countKey];
                     }
                 }
             } catch (Exception $e) {

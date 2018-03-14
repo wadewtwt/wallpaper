@@ -45,9 +45,9 @@ class ApplyOrderResource extends \common\models\base\ActiveRecord
             [['apply_order_id'], 'exist', 'skipOnError' => true, 'targetClass' => ApplyOrder::className(), 'targetAttribute' => ['apply_order_id' => 'id']],
             [['container_id'], 'exist', 'skipOnError' => true, 'targetClass' => Container::className(), 'targetAttribute' => ['container_id' => 'id']],
             [['resource_id'], 'exist', 'skipOnError' => true, 'targetClass' => Resource::className(), 'targetAttribute' => ['resource_id' => 'id']],
-            [['tag_active', 'tag_passive', 'quantity'], 'required', 'on' => static::SCENARIO_INPUT],
-            [['tag_passive', 'quantity'], 'required', 'on' => static::SCENARIO_OUTPUT_APPLY],
-            [['tag_passive', 'quantity'], 'required', 'on' => static::SCENARIO_RETURN],
+            [['quantity'], 'required', 'on' => static::SCENARIO_INPUT],
+            [['quantity'], 'required', 'on' => static::SCENARIO_OUTPUT_APPLY],
+            [['quantity'], 'required', 'on' => static::SCENARIO_RETURN],
         ];
     }
 

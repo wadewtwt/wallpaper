@@ -20,91 +20,91 @@ $form = ActiveForm::begin([
     'id' => 'over-input'
 ]);
 ?>
-<div class="invoice">
-    <div class="page-header">
-        <h1 class="text-center"><?= $applyOrder->getTypeName() ?>单</h1>
-    </div>
-    <?= $this->render('_apply_order', [
-        'model' => $applyOrder,
-    ]) ?>
-    <?= $this->render('_apply_order_detail', [
-        'models' => $applyOrderDetails,
-    ]) ?>
-
-    <p class="lead">详情</p>
-    <div class="form-group row">
-        <div class="col-sm-12">
-            <?= TabularInput::widget([
-                'models' => $applyOrderResources,
-                'attributeOptions' => [
-                    'enableAjaxValidation' => true,
-                    'enableClientValidation' => true,
-                    'validateOnChange' => false,
-                    'validateOnSubmit' => true,
-                    'validateOnBlur' => false,
-                ],
-                'columns' => [
-                    [
-                        'name' => 'resource_id',
-                        'title' => '资源名',
-                        'enableError' => true,
-                        'type' => SimpleSelect2::className(),
-                        'options' => [
-                            'data' => $resourceData,
-                        ],
-                    ],
-                    [
-                        'name' => 'container_id',
-                        'title' => '货位',
-                        'enableError' => true,
-                        'type' => SimpleSelect2::className(),
-                        'options' => [
-                            'data' => $containerData,
-                        ],
-                    ],
-                    [
-                        'name' => 'tag_active',
-                        'title' => '有源标签',
-                        'enableError' => true,
-                        'type' => SimpleSelect2::className(),
-                        'options' => [
-                            'data' => TagActiveUnused::findAllList(),
-                            'pluginOptions' => [
-                                'tags' => true
-                            ]
-                        ],
-                    ],
-                    [
-                        'name' => 'tag_passive',
-                        'title' => '无源标签',
-                        'enableError' => true,
-                        'type' => SimpleReadTagInput::className(),
-                    ],
-                    [
-                        'name' => 'quantity',
-                        'title' => '数量',
-                        'enableError' => true,
-                        'defaultValue' => 1,
-                    ],
-                    [
-                        'name' => 'remark',
-                        'title' => '备注',
-                        'enableError' => true,
-                    ],
-                ],
-            ]); ?>
+    <div class="invoice">
+        <div class="page-header">
+            <h1 class="text-center"><?= $applyOrder->getTypeName() ?>单</h1>
         </div>
-    </div>
+        <?= $this->render('_apply_order', [
+            'model' => $applyOrder,
+        ]) ?>
+        <?= $this->render('_apply_order_detail', [
+            'models' => $applyOrderDetails,
+        ]) ?>
 
-    <div class="box-footer">
-        <a href="javascript:history.go(-1)" class="btn btn-default">取消</a>
-        <input type="submit" value="完成" class="btn btn-primary">
-    </div>
+        <p class="lead">详情</p>
+        <div class="form-group row">
+            <div class="col-sm-12">
+                <?= TabularInput::widget([
+                    'models' => $applyOrderResources,
+                    'attributeOptions' => [
+                        'enableAjaxValidation' => true,
+                        'enableClientValidation' => true,
+                        'validateOnChange' => false,
+                        'validateOnSubmit' => true,
+                        'validateOnBlur' => false,
+                    ],
+                    'columns' => [
+                        [
+                            'name' => 'resource_id',
+                            'title' => '资源名',
+                            'enableError' => true,
+                            'type' => SimpleSelect2::className(),
+                            'options' => [
+                                'data' => $resourceData,
+                            ],
+                        ],
+                        [
+                            'name' => 'container_id',
+                            'title' => '货位',
+                            'enableError' => true,
+                            'type' => SimpleSelect2::className(),
+                            'options' => [
+                                'data' => $containerData,
+                            ],
+                        ],
+                        [
+                            'name' => 'tag_active',
+                            'title' => '有源标签',
+                            'enableError' => true,
+                            'type' => SimpleSelect2::className(),
+                            'options' => [
+                                'data' => TagActiveUnused::findAllList(),
+                                'pluginOptions' => [
+                                    'tags' => true
+                                ]
+                            ],
+                        ],
+                        [
+                            'name' => 'tag_passive',
+                            'title' => '无源标签',
+                            'enableError' => true,
+                            'type' => SimpleReadTagInput::className(),
+                        ],
+                        [
+                            'name' => 'quantity',
+                            'title' => '数量',
+                            'enableError' => true,
+                            'defaultValue' => 1,
+                        ],
+                        [
+                            'name' => 'remark',
+                            'title' => '备注',
+                            'enableError' => true,
+                        ],
+                    ],
+                ]); ?>
+            </div>
+        </div>
 
-    <?php
-    ActiveForm::end();
-    ?>
-</div>
+        <div class="box-footer">
+            <a href="javascript:history.go(-1)" class="btn btn-default">取消</a>
+            <input type="submit" value="完成" class="btn btn-primary">
+        </div>
+
+        <?php
+        ActiveForm::end();
+        ?>
+    </div>
 <?php
 $css = <<<CSS
 .list-cell__tag_active {

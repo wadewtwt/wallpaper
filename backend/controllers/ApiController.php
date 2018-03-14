@@ -6,6 +6,7 @@ use backend\components\AuthWebController;
 use common\components\Tools;
 use common\models\AlarmCall;
 use common\models\AlarmRecord;
+use common\models\base\Enum;
 use common\models\Camera;
 use common\models\Container;
 use common\models\Resource;
@@ -28,7 +29,8 @@ class ApiController extends AuthWebController
     {
         $tagPassives = array_filter(explode(',', $tag_passives));
         $models = ResourceDetail::find()
-            ->select(['container_id', 'resource_id', 'tag_passive', 'quantity'])
+            ->with('resource')
+            ->select(['id', 'container_id', 'resource_id', 'tag_active', 'tag_passive', 'quantity'])
             ->where(['tag_passive' => $tagPassives])
             ->indexBy('tag_passive')
             ->asArray()->all();
@@ -36,10 +38,23 @@ class ApiController extends AuthWebController
         foreach ($tagPassives as $tagPassive) {
             if (isset($models[$tagPassive])) {
                 // 只显示在库的设备
-                $newData[] = $models[$tagPassive];
+                $models[$tagPassive]['can_modify_quantity'] = (int)$models[$tagPassive]['resource']['unit'] == Enum::UNIT_BATCH;
+                $newData[$models[$tagPassive]['id']] = $models[$tagPassive];
             }
         }
         return $newData;
+    }
+
+    // 申请完成时单独添加一个资源的接口
+    public function actionApplyOrderOverAdd($id)
+    {
+        $model = ResourceDetail::find()
+            ->with('resource')
+            ->select(['container_id', 'resource_id', 'tag_active', 'tag_passive', 'quantity'])
+            ->where(['id' => $id])
+            ->asArray()->one();
+        $model['can_modify_quantity'] = (int)$model['resource']['unit'] == Enum::UNIT_BATCH;
+        return $model;
     }
 
     // 所有资源数据
