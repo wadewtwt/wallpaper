@@ -14,6 +14,7 @@ namespace common\models;
  * @property integer $created_by
  * @property integer $updated_at
  * @property integer $updated_by
+ * @property string $remark
  *
  * @property AlarmCall[] $alarmCalls
  * @property Camera $camera
@@ -24,10 +25,12 @@ class AlarmConfig extends \common\models\base\ActiveRecord
 {
     const TYPE_TEMPERATURE = 10;
     const TYPE_ILLEGAL_OUTPUT = 20;
+    const TYPE_OTHER = 100;
 
     public static $typeData = [
         self::TYPE_TEMPERATURE => '温湿度警报',
-        self::TYPE_ILLEGAL_OUTPUT => '非法出库警报'
+        self::TYPE_ILLEGAL_OUTPUT => '非法出库警报',
+        self::TYPE_OTHER => '其他'
     ];
 
     const STATUS_NORMAL = 0;
@@ -55,6 +58,7 @@ class AlarmConfig extends \common\models\base\ActiveRecord
         return [
             [['store_id', 'camera_id', 'type'], 'required'],
             [['store_id', 'camera_id', 'type', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
+            [['remark'], 'string'],
             [['camera_id'], 'exist', 'skipOnError' => true, 'targetClass' => Camera::className(), 'targetAttribute' => ['camera_id' => 'id']],
             [['store_id'], 'exist', 'skipOnError' => true, 'targetClass' => Store::className(), 'targetAttribute' => ['store_id' => 'id']],
         ];
@@ -75,6 +79,7 @@ class AlarmConfig extends \common\models\base\ActiveRecord
             'created_by' => '创建人',
             'updated_at' => '修改时间',
             'updated_by' => '修改人',
+            'remark' => '备注',
         ];
     }
 

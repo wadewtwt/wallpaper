@@ -2,6 +2,8 @@
 
 namespace backend\controllers;
 
+use backend\models\form\ThirdPartAlarmRecordCreateForm;
+use common\components\Tools;
 use common\models\ResourceDetail;
 use common\models\TagActiveUnused;
 use common\models\Temperature;
@@ -52,7 +54,7 @@ class ThirdApiController extends Controller
     public function actionTagActiveList()
     {
         $transaction = Yii::$app->db->beginTransaction();
-        try{
+        try {
             // 检测到的
             $ids = array_unique(json_decode(Yii::$app->request->post('ids'), true));
             // 应该在库的
@@ -88,11 +90,28 @@ class ThirdApiController extends Controller
 
             $transaction->commit();
             return $this->jsonOk();
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             $transaction->rollBack();
             Yii::error($e);
             return $this->jsonError($e->getMessage());
         }
+    }
+
+    // 创建报警记录
+    public function actionAlarmRecordCreate()
+    {
+        $model = new ThirdPartAlarmRecordCreateForm();
+
+        if ($model->load(Yii::$app->request->post(), '') && $model->validate()) {
+            $result = $model->create();
+            if ($result['type'] == 'success') {
+                return $this->jsonOk($result['msg']);
+            } else {
+                return $this->jsonError($result['msg']);
+            }
+        }
+
+        return $this->jsonError(Tools::getFirstError($model->errors));
     }
 
     protected function jsonOk($data = 'ok')

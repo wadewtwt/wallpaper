@@ -1,7 +1,6 @@
 <?php
 /** @var $this yii\web\View */
 /** @var $dataProvider common\components\ActiveDataProvider */
-
 /** @var $searchModel backend\models\AlarmConfigSearch */
 
 use backend\widgets\SimpleDynaGrid;
@@ -35,6 +34,9 @@ $columns = [
         'value' => function (AlarmConfig $model) {
             return $model->getAlarmType();
         }
+    ],
+    [
+        'attribute' => 'remark',
     ],
     [
         'attribute' => 'status',

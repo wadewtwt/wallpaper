@@ -1,4 +1,4 @@
 @echo off
 cd ../
-git pull
-pause
+php yii migrate --interactive=0
+cmd
