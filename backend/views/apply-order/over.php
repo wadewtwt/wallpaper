@@ -3,6 +3,7 @@
 /** @var $applyOrder \common\models\ApplyOrder */
 /** @var $applyOrderResources [] \common\models\ApplyOrderResource[] */
 /** @var $tagSessionAutoStart bool */
+
 /** @var $applyOrderResourceScenario string */
 
 use backend\widgets\SimpleSelect2;
@@ -22,14 +23,19 @@ $form = ActiveForm::begin([
 ]);
 
 $select2ResourceDetailData = [];
-$resourceDetails = ResourceDetail::find()->with(['resource', 'container'])->where(['status' => ResourceDetail::STATUS_NORMAL])->all();
+$showStatusArr = [ResourceDetail::STATUS_NORMAL];
+if ($applyOrderResourceScenario == ApplyOrderResource::SCENARIO_RETURN) {
+    $showStatusArr[] = ResourceDetail::STATUS_PICKED;
+}
+$resourceDetails = ResourceDetail::find()->with(['resource', 'container'])->where(['status' => $showStatusArr])->all();
 foreach ($resourceDetails as $resourceDetail) {
     $select2ResourceDetailData[$resourceDetail->id] = "
     {$resourceDetail->resource->name}(
     货位：{$resourceDetail->container->name}，
     数量：{$resourceDetail->quantity}，
     有源：{$resourceDetail->tag_active}，
-    无源：{$resourceDetail->tag_passive}
+    无源：{$resourceDetail->tag_passive}，
+    状态：{$resourceDetail->getStatusName()}
     )";
 }
 ?>
