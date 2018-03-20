@@ -147,7 +147,6 @@ $resourceDataUrl = Url::to(['/api/resource-data']);
 $containerDataUrl = Url::to(['/api/container-data']);
 $tagReadBaseUrl = Yii::$app->params[ConfigString::PARAMS_TAG_READ_URL];
 $tagSessionId = $applyOrder->id . time();
-$resourceData = new JsExpression(Json::encode($applyOrderResources));
 $tagSessionAutoStart = intval($tagSessionAutoStart);
 $js = <<<JS
 $('#add_more_resource').click(function() {
@@ -157,14 +156,13 @@ $('#add_more_resource').click(function() {
     }
     $.get('{$resourceAddUrl}', {id: selectVal}, function(data) {
         vue.\$set(vue.listData, selectVal, data)
-        console.log(vue.listData);
     }, 'json');
 });
 
 var vue = new Vue({
     el: '#vue-container',
     data: {
-        listData: {$resourceData},
+        listData: {},
         validateErrors: {},
         resourceData: [],
         containerData: [],
