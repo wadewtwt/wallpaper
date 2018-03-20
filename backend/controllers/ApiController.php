@@ -25,22 +25,19 @@ class ApiController extends AuthWebController
     }
 
     // 申请单完成时的扫描设备
-    public function actionApplyOrderOver($tag_passives)
+    public function actionApplyOrderOver($tags)
     {
-        $tagPassives = array_filter(explode(',', $tag_passives));
+        $tags = array_filter(explode(',', $tags));
         $models = ResourceDetail::find()
             ->with('resource')
             ->select(['id', 'container_id', 'resource_id', 'tag_active', 'tag_passive', 'quantity'])
-            ->where(['tag_passive' => $tagPassives])
-            ->indexBy('tag_passive')
+            ->where(['tag_passive' => $tags])
+            ->orWhere(['tag_active' => $tags])
             ->asArray()->all();
         $newData = [];
-        foreach ($tagPassives as $tagPassive) {
-            if (isset($models[$tagPassive])) {
-                // 只显示在库的设备
-                $models[$tagPassive]['can_modify_quantity'] = (int)$models[$tagPassive]['resource']['unit'] == Enum::UNIT_BATCH;
-                $newData[$models[$tagPassive]['id']] = $models[$tagPassive];
-            }
+        foreach ($models as $model) {
+            $model['can_modify_quantity'] = (int)$model['resource']['unit'] == Enum::UNIT_BATCH;
+            $newData[$model['id']] = $model;
         }
         return $newData;
     }

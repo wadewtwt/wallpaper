@@ -147,7 +147,7 @@ foreach ($resourceDetails as $resourceDetail) {
         ?>
     </div>
 <?php
-$resourceTagPassiveUrl = Url::to(['/api/apply-order-over']);
+$resourceTagUrl = Url::to(['/api/apply-order-over']);
 $resourceAddUrl = Url::to(['/api/apply-order-over-add']);
 $resourceDataUrl = Url::to(['/api/resource-data']);
 $containerDataUrl = Url::to(['/api/container-data']);
@@ -174,7 +174,7 @@ var vue = new Vue({
         containerData: [],
         tagSessionId: '{$tagSessionId}',
         tagSessionIsStart: false,
-        tagPassives: '',
+        tags: '',
         tagSessionInterval: null,
         tagSessionIntervalTime: null,
     },
@@ -182,14 +182,15 @@ var vue = new Vue({
         tagSessionIsStart: function() {
             if(this.tagSessionIsStart) {
                 this.tagSessionStart();
-                this.tagPassives = ''; // 开启扫描后重置所有标签数据
-                this.tagSessionInterval = setInterval(this.getTagPassives, 2000);
+                // 开启扫描后重置所有标签数据
+                this.tags = '';
+                this.tagSessionInterval = setInterval(this.getTags, 2000);
             } else {
                 clearInterval(this.tagSessionInterval);
                 this.tagSessionEnd();
             }
         },
-        tagPassives: function() {
+        tags: function() {
             this.getListData()
         }
     },
@@ -200,17 +201,17 @@ var vue = new Vue({
         tagSessionEnd: function () {
             tagRead.endSession(this.tagSessionId);
         },
-        getTagPassives: function() {
+        getTags: function() {
             var _this = this;
             tagRead.session(this.tagSessionId, function(data) {
-                _this.tagPassives = data.join(',')
+                _this.tags = data.join(',')
                 _this.tagSessionIntervalTime = (new Date()).toLocaleString();
             })
         },
         getListData: function () {
             var _this = this;
-            $.get('{$resourceTagPassiveUrl}', {
-                'tag_passives': this.tagPassives
+            $.get('{$resourceTagUrl}', {
+                'tags': this.tags
             }, function(data) {
                 _this.listData = data;
             }, 'json')

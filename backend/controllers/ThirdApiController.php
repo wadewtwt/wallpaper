@@ -50,6 +50,17 @@ class ThirdApiController extends Controller
         return $this->jsonOk();
     }
 
+    // 有源标签不在线的报警接口
+    public function actionTagActiveAlarm()
+    {
+        $ids = array_unique(json_decode(Yii::$app->request->post('ids'), true));
+        $alarmResources = ResourceDetail::findAll(['tag_active' => $ids, 'status' => ResourceDetail::STATUS_NORMAL]);
+        foreach ($alarmResources as $alarmResource) {
+            $alarmResource->triggerAlarm(true);
+        }
+        return $this->jsonOk();
+    }
+
     // 有源标签当前检测到的数据列表
     public function actionTagActiveList()
     {
