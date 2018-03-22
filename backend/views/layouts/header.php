@@ -1,6 +1,7 @@
 <?php
 /* @var $this \yii\web\View */
 
+use common\models\base\ConfigString;
 use yii\helpers\Html;
 
 /** @var $admin \common\models\Admin */
@@ -24,6 +25,17 @@ $admin = Yii::$app->user->identity;
         <a href="javascript:history.back()" class="return-toggle" role="button">
             <span class="sr-only">返回</span>&nbsp;返回
         </a>
+
+        <button class="btn btn-warning header-button" id="clear_alarm">消音</button>
+        <?php
+        $clearAlarmUrl = Yii::$app->params[ConfigString::PARAMS_CLEAR_ALARM];
+        $js = <<<JS
+$('#clear_alarm').click(function() {
+    $.get('{$clearAlarmUrl}');
+});
+JS;
+        $this->registerJs($js);
+        ?>
 
         <div class="navbar-custom-menu">
 

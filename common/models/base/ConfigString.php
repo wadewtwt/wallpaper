@@ -18,6 +18,7 @@ class ConfigString
 
     // params
     const PARAMS_TAG_READ_URL = 'tag_read_url';
+    const PARAMS_CLEAR_ALARM = 'clear_alarm_url';
 
     /**
      * @return null|object|QiNiu

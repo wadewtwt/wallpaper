@@ -166,3 +166,9 @@ td.kv-row-select {
 [v-cloak] {
     display: none
 }
+
+
+.header-button {
+    margin-left: 20px;
+    margin-top: 10px;
+}
