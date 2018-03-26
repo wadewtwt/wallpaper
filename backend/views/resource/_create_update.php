@@ -15,12 +15,10 @@ echo $form->field($model, 'name');
 echo $form->field($model, 'min_stock');
 if ($isEdit) {
     echo $form->field($model, 'current_stock')->textInput(['readonly' => 'true']);
-    echo $form->field($model, 'scrap_cycle')->textInput(['readonly' => 'true']);
-    echo $form->field($model, 'maintenance_cycle')->textInput(['readonly' => 'true']);
 } else {
-    echo $form->field($model, 'scrap_cycle');
-    echo $form->field($model, 'maintenance_cycle');
     echo $form->field($model, 'unit')->dropDownList(Enum::$unitData);
 }
+echo $form->field($model, 'scrap_cycle');
+echo $form->field($model, 'maintenance_cycle');
 
 SimpleAjaxForm::end();
