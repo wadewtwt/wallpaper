@@ -85,6 +85,23 @@ class Resource extends \common\models\base\ActiveRecord
         ];
     }
 
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+        if (!$insert) {
+            // 更新时修改报废时间
+            $diffDay = $this->scrap_cycle - $changedAttributes['scrap_cycle'];
+            if ($diffDay) {
+                ResourceDetail::updateAllCounters([
+                    'scrap_at' => $diffDay * 24 * 3600
+                ], [
+                    'resource_id' => $this->id,
+                    'status' => [ResourceDetail::STATUS_NORMAL, ResourceDetail::STATUS_PICKED]
+                ]);
+            }
+        }
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */
