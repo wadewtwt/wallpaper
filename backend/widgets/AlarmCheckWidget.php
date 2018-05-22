@@ -36,11 +36,15 @@ class AlarmCheckWidget extends Widget
     {
         $alarmRecordUrl = Url::to(['/api/alarm-records']);
         $js = <<<JS
-var intervalTime = 2000;
+var intervalTime = 2,
+    currentTimestamp = Math.round((new Date().getTime()) / 1000),
+    lastTimestamp = currentTimestamp - intervalTime,
+    nextTimestamp = currentTimestamp;
 var audio = $('#{$this->_alarmAudioId}')[0];
 function getAlarmRecords() {
   $.get('{$alarmRecordUrl}', {
-      start_time: Math.round((new Date().getTime() - intervalTime)/1000)
+      start_time: lastTimestamp,
+      end_time: nextTimestamp
   }, function(data) {
       if(data && data.length > 0) {
           $('#{$this->_alarmContainerId}').prepend('<div class="alert alert-danger alert-dismissible">' + 
@@ -51,9 +55,11 @@ function getAlarmRecords() {
             audio.play();
           }
       }
+      lastTimestamp = nextTimestamp;
+      nextTimestamp = lastTimestamp + intervalTime;
   }, 'json');
 }
-setInterval(getAlarmRecords, intervalTime);
+setInterval(getAlarmRecords, intervalTime * 1000);
 JS;
         $this->view->registerJs($js);
     }

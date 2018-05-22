@@ -69,6 +69,7 @@ class ApiController extends AuthWebController
     // 首页温湿度信息
     public function actionHomeTemperatureData()
     {
+        /** @var Temperature[] $models */
         $models = Temperature::find()->with('store')->where(['status' => Temperature::STATUS_NORMAL])->all();
         $data = [];
         foreach ($models as $model) {
@@ -92,12 +93,13 @@ class ApiController extends AuthWebController
     }
 
     // 报警记录
-    public function actionAlarmRecords($start_time)
+    public function actionAlarmRecords($start_time, $end_time)
     {
         $models = AlarmRecord::find()
             ->with('store')
             ->andWhere(['status' => AlarmRecord::STATUS_NORMAL])
             ->andWhere(['>=', 'alarm_at', $start_time])
+            ->andWhere(['<', 'alarm_at', $end_time])
             ->andWhere(['store_id' => Tools::getStoreIds()])
             ->all();
         // 打开以下测试
