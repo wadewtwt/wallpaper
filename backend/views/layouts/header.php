@@ -27,15 +27,7 @@ $admin = Yii::$app->user->identity;
         </a>
 
         <button class="btn btn-warning header-button" id="clear_alarm">消音</button>
-        <?php
-        $clearAlarmUrl = Yii::$app->params[ConfigString::PARAMS_CLEAR_ALARM];
-        $js = <<<JS
-$('#clear_alarm').click(function() {
-    $.get('{$clearAlarmUrl}');
-});
-JS;
-        $this->registerJs($js);
-        ?>
+
 
         <div class="navbar-custom-menu">
 

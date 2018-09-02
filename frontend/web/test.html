@@ -1,0 +1,34 @@
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>999你好</title>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+</head>
+<body>
+    hello world~~~~~~~~~~~
+    <p class="btn-type">1</p>
+<input type="button" class="btn-button" value="按钮">
+</body>
+    <script>
+        var id = $('.btn-type').text();
+        $('.btn-button').click(function () {
+            $.ajax({
+                url:'http://f.wallpaper.com/book/send-email',
+                data:{id:id},
+                type:'post',
+                dataType:'json',
+                async:false,
+                success:function (data) {
+                    alert(data.name);
+                },
+                error:function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(XMLHttpRequest.status);
+                    alert(XMLHttpRequest.readyState);
+                    alert(textStatus);
+                }
+
+            })
+        })
+
+    </script>
+</html>

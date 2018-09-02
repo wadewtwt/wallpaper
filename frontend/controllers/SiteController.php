@@ -33,14 +33,14 @@ class SiteController extends Controller
     public function actions()
     {
         return [
-            'error' => [
-                'class' => ErrorAction::className(),
-                'layout' => 'main-login',
-            ],
-            'offline' => [
-                'class' => OfflineAction::className(),
-                'layout' => 'main-login',
-            ],
+//            'error' => [
+//                'class' => ErrorAction::className(),
+//                'layout' => 'main-login',
+//            ],
+//            'offline' => [
+//                'class' => OfflineAction::className(),
+//                'layout' => 'main-login',
+//            ],
             'captcha' => [
                 'class' => 'yii\captcha\CaptchaAction',
                 'minLength' => 4,
