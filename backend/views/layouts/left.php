@@ -19,6 +19,13 @@ $menu = [
             ['label' => '人员管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/person']],
         ]
     ],
+    [
+        'label' => '图片管理', 'icon' => 'list', 'url' => '#',
+        'items' => [
+            ['label' => '类型管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/kinds']],
+            ['label' => '壁纸管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/paper']],
+        ]
+    ],
 
     ['label' => '管理员管理', 'icon' => 'circle-o', 'url' => [$baseUrl . '/admin']],
 
