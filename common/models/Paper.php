@@ -69,4 +69,8 @@ class Paper extends \common\models\base\ActiveRecord
             'updated_by' => '修改人',
         ];
     }
+
+    public function findAllKinds(){
+
+    }
 }
