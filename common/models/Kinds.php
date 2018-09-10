@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "kinds".
@@ -19,6 +20,9 @@ use Yii;
  */
 class Kinds extends \common\models\base\ActiveRecord
 {
+    const STATUS_NORMAL = 0;
+    const STATUS_DELETED = 99;
+
     /**
      * @inheritdoc
      */
@@ -36,7 +40,7 @@ class Kinds extends \common\models\base\ActiveRecord
             [['title'], 'required'],
             [['type', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['title', 'pid'], 'string', 'max' => 255],
-            [['pid'],'default','value'=>0],
+            [['pid'], 'default', 'value' => 0],
         ];
     }
 
@@ -56,5 +60,14 @@ class Kinds extends \common\models\base\ActiveRecord
             'updated_at' => '修改时间',
             'updated_by' => '修改人',
         ];
+    }
+
+    public static function findAllIdTitle($map = false)
+    {
+        $model = self::find()->select(['id', 'title'])->where(['status' => self::STATUS_NORMAL])->asArray()->all();
+        if ($map) {
+            return ArrayHelper::map($model,'id','title');
+        }
+        return $model;
     }
 }

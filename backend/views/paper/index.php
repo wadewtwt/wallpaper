@@ -34,11 +34,14 @@ $columns = [
         },
         'format' => 'html'
     ],
-    [
-        'attribute' => 'type',
-    ],
+//    [
+//        'attribute' => 'type',
+//    ],
     [
         'attribute' => 'kind',
+        'label' => '类型',
+        'value' => 'kinds.title',
+        'width' => '100px'
     ],
     [
         'attribute' => 'introduction',

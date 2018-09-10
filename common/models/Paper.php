@@ -44,7 +44,7 @@ class Paper extends \common\models\base\ActiveRecord
             [['url'], 'string'],
             [['type', 'kind', 'praise', 'view', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'integer'],
             [['title', 'introduction'], 'string', 'max' => 255],
-            [['praise','view'],'default','value'=>0]
+            [['praise', 'view'], 'default', 'value' => 0]
         ];
     }
 
@@ -70,7 +70,12 @@ class Paper extends \common\models\base\ActiveRecord
         ];
     }
 
-    public function findAllKinds(){
-
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getKinds()
+    {
+        return $this->hasOne(Kinds::className(), ['id' => 'kind']);
     }
+
 }
